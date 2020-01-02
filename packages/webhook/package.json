@@ -1,0 +1,22 @@
+{
+  "name": "civ6-pbc-webhook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "jest",
+    "start:dev": "node --max-old-space-size=4096 ../../node_modules/serverless/bin/serverless offline start",
+    "deploy": "sls deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.15",
+    "node-fetch": "^2.6.0"
+  }
+}

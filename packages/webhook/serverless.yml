@@ -1,0 +1,112 @@
+service: civ6-pbc
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 128
+  stage: dev
+  region: us-east-1
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+      Resource: !GetAtt WebhookSqsQueueDlq.Arn
+
+plugins:
+  - serverless-offline
+
+functions:
+  webhook:
+    reservedConcurrency: 1
+    handler: handler.webhookHandler
+    events:
+      - sqs:
+          arn: !GetAtt WebhookSqsQueue.Arn
+
+resources:
+  Resources:
+    WebhookEventSourceMappingSQSWebhookSqsQueue:
+      Type: AWS::Lambda::EventSourceMapping
+      Properties:
+        DestinationConfig:
+          OnFailure:
+            Destination: !GetAtt WebhookSqsQueueDlq.Arn
+
+    WebhookSqsQueue:
+      Type: AWS::SQS::Queue
+
+    WebhookSqsQueueDlq:
+      Type: AWS::SQS::Queue
+    
+    WebhookApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties: 
+        Body:
+          openapi: "3.0.1"
+          info:
+            title: civ6
+          paths:
+            /:
+              post:
+                # parameters:
+                #   - name: "config"
+                #     in: "query"
+                #     required: true
+                #     type: "string"
+                responses:
+                  200:
+                    description: "200 response"
+                    content:
+                      application/json:
+                        schema:
+                          $ref: "#/components/schemas/Empty"
+                x-amazon-apigateway-integration:
+                  type: "aws"
+                  credentials: !GetAtt WebhookApiSendSqsMessageRole.Arn
+                  httpMethod: "POST"
+                  uri: "arn:aws:apigateway:us-east-1:sqs:path//"
+                  requestParameters:
+                    integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+                  passthroughBehavior: "never"
+                  requestTemplates:
+                    application/json: !Sub |
+                      #set( $Config = $util.urlDecode($input.params('config')))
+                      #if ( $Config == '' )
+                          #set ( $Config = '{}' )
+                      #end
+                      #set( $MessageBody = "{""config"":$Config,""body"":$input.body}" )
+                      Action=SendMessage##
+                      &QueueUrl=$util.urlEncode('${WebhookSqsQueue}')##
+                      &MessageBody=$util.urlEncode($MessageBody).replaceAll("\+","%20")##
+                      
+                  responses:
+                    default:
+                      statusCode: "200"
+                      responseTemplates:
+                        application/json: "{}"
+          components:
+            schemas:
+              Empty:
+                title: "Empty Schema"
+                type: "object"
+
+    WebhookApiSendSqsMessageRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: apigateway.amazonaws.com
+              Action: sts:AssumeRole
+        Path: /
+        Policies:
+          - PolicyName: root
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource: !GetAtt WebhookSqsQueue.Arn
