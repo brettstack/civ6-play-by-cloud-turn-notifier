@@ -11,16 +11,16 @@ describe('webhookHandler: happy paths ', () => {
     await expect(webhookHandler({
       Records: [{
         messageId: 'abc123',
-        body: {
-          config: {
-            targetWebhook: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl;',
-          },
-          body: {
-            value1: 'Game Name',
-            value2: 'Player Name',
-            value3: Math.round(Math.random(0, 100) * 100).toString(),
+        messageAttributes: {
+          discordWebhook: {
+            stringValue: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl;',
           },
         },
+        body: JSON.stringify({
+          value1: 'Game Name',
+          value2: 'Player Name',
+          value3: Math.round(Math.random(0, 100) * 100).toString(),
+        }),
       }],
     })).resolves.toEqual({
       successCount: 1,
@@ -41,16 +41,16 @@ describe('webhookHandler: unhappy paths ', () => {
     await expect(webhookHandler({
       Records: [{
         messageId: 'abc123',
-        body: {
-          config: {
-            targetWebhook: 'hsdfttps://discordapp.com/api/webhooks/invalid',
-          },
-          body: {
-            value1: 'Game Name',
-            value2: 'Player Name',
-            value3: Math.round(Math.random(0, 100) * 100).toString(),
+        messageAttributes: {
+          discordWebhook: {
+            stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
           },
         },
+        body: JSON.stringify({
+          value1: 'Game Name',
+          value2: 'Player Name',
+          value3: Math.round(Math.random(0, 100) * 100).toString(),
+        }),
       }],
     })).resolves.toEqual({
       successCount: 0,
@@ -78,16 +78,16 @@ describe('webhookHandler: unhappy paths ', () => {
     await expect(webhookHandler({
       Records: [{
         messageId: 'abc123',
-        body: {
-          config: {
-            targetWebhook: 'https://discordapp.com/api/webhooks/invalid',
-          },
-          body: {
-            value1: 'Game Name',
-            value2: 'Player Name',
-            value3: Math.round(Math.random(0, 100) * 100).toString(),
+        messageAttributes: {
+          discordWebhook: {
+            stringValue: 'https://discordapp.com/api/webhooks/invalid',
           },
         },
+        body: JSON.stringify({
+          value1: 'Game Name',
+          value2: 'Player Name',
+          value3: Math.round(Math.random(0, 100) * 100).toString(),
+        }),
       }],
     })).resolves.toEqual({
       successCount: 0,

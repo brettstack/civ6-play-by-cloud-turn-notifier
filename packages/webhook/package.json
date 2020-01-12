@@ -6,13 +6,15 @@
   "scripts": {
     "test": "jest",
     "start:dev": "node --max-old-space-size=4096 ../../node_modules/serverless/bin/serverless offline start",
-    "deploy": "sls deploy"
+    "deploy": "sls deploy",
+    "deploy-function": "sls deploy -f webhook"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "serverless-apigateway-service-proxy": "^1.7.0"
   },
   "dependencies": {
     "dotenv": "^8.2.0",

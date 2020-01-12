@@ -3,46 +3,43 @@ const fetch = require('node-fetch')
 
 async function webhookHandler(event) {
   const { Records } = event
-  console.log(Records)
+
   if (!Records || !Array.isArray(Records)) {
     throw new Error(`Lambda didn't receive a \`Records\` array in the \`event\` object. Received: ${Records}.`)
   }
 
   const requestPromises = Records.map(async (record, index) => {
-    const { messageId, body: messageBody } = record
+    const { messageId, body, messageAttributes } = record
 
-    if (!messageId || !messageBody) {
-      throw new Error(`Records[${index}] is missing \`messageId\` or \`body\`.`)
+    if (!messageId) {
+      throw new Error(`Records[${index}] is missing \`messageId\`.`)
     }
 
     // TODO: Check if `messageId` has been processed
-    const messageBodyJson = JSON.parse(messageBody)
-    const { body, config } = messageBodyJson
 
-    if (!body || !config) {
-      throw new Error(`Records[${index}].body is missing \`body\` or \`config\`.`)
+    if (!body) {
+      throw new Error(`Records[${index}].body is missing.`)
     }
 
+    const bodyJson = JSON.parse(body)
+
     const {
-      targetWebhook,
+      discordWebhook,
       botUsername = 'Civ6 Turnbot',
       avatarUrl = 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png',
       messageTemplate = '{{playerName}}, it\'s your turn. Game: {{gameName}}; Turn: {{turnNumber}}.',
-    } = config
+    } = getMessageAttributeStringValues({ messageAttributes })
 
-    if (!targetWebhook) {
-      throw new Error(`Records[${index}].body.config is missing \`targetWebhook\`.`)
-    }
 
-    if (typeof targetWebhook !== 'string') {
-      throw new Error(`Records[${index}].body.config.targetWebhook isn't a string.`)
+    if (!discordWebhook) {
+      throw new Error(`Records[${index}].messageAttributes is missing \`discordWebhook\`.`)
     }
 
     const {
       value1: gameName,
       value2: playerName,
       value3: turnNumber,
-    } = body
+    } = bodyJson
     const message = getMessageFromTemplate({
       messageTemplate,
       gameName,
@@ -64,7 +61,7 @@ async function webhookHandler(event) {
       ]
       */
     }
-    const response = await fetch(targetWebhook, {
+    const response = await fetch(discordWebhook, {
       body: JSON.stringify(targetWebhookBody),
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -87,7 +84,7 @@ async function webhookHandler(event) {
   }
 
   if (rejectedReasons.length) result.failReasons = rejectedReasons
-  console.log(result)
+
   return result
 }
 
@@ -98,6 +95,16 @@ function getMessageFromTemplate({
     .replace(/{{gameName}}/g, gameName)
     .replace(/{{playerName}}/g, playerName)
     .replace(/{{turnNumber}}/g, turnNumber)
+}
+
+function getMessageAttributeStringValues({ messageAttributes }) {
+  const messageAttributeValues = {}
+
+  Object.entries(messageAttributes).forEach(([key, value]) => {
+    messageAttributeValues[key] = value.stringValue
+  })
+
+  return messageAttributeValues
 }
 
 module.exports.webhookHandler = webhookHandler
