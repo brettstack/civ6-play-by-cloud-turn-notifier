@@ -17,6 +17,7 @@
     "serverless-apigateway-service-proxy": "^1.7.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.601.0",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0"

@@ -3,6 +3,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   memorySize: 128
+  timeout: 6
   stage: dev
   region: us-east-1
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
@@ -38,15 +39,15 @@ functions:
 
 resources:
   Resources:
-    WebhookEventSourceMappingSQSWebhookSqsQueue:
-      Type: AWS::Lambda::EventSourceMapping
-      Properties:
-        DestinationConfig:
-          OnFailure:
-            Destination: !GetAtt WebhookSqsQueueDlq.Arn
-
+    # NOTE: Following guidance here to reduce the chance of Lambda throttling
+    # https://medium.com/@zaccharles/lambda-concurrency-limits-and-sqs-triggers-dont-mix-well-sometimes-eb23d90122e0
     WebhookSqsQueue:
       Type: AWS::SQS::Queue
+      Properties:
+        VisibilityTimeout: 36 # functions.webhook.timeout * 6
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt WebhookSqsQueueDlq.Arn
+          maxReceiveCount: 5
 
     WebhookSqsQueueDlq:
       Type: AWS::SQS::Queue
@@ -55,7 +56,7 @@ resources:
       Type: AWS::ApiGateway::Method
       Properties:
         RequestParameters:
-          method.request.querystring.discordWebhook: false
+          method.request.querystring.discordWebhook: true
         Integration:
           IntegrationResponses:
             - StatusCode: 200
