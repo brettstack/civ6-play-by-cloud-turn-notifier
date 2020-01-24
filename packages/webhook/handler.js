@@ -1,21 +1,19 @@
-const _ = require('lodash')
 const fetch = require('node-fetch')
 const middy = require('@middy/core')
 const sqsHandlerWrapper = require('../sqs')
 
 async function webhookHandler(event) {
   const { Records } = event
+
   if (!Records || !Array.isArray(Records)) {
     throw new Error(`Lambda didn't receive a \`Records\` array in the \`event\` object. Received: ${Records}.`)
   }
 
-  const requestPromises = Records.map(async (record, index) => {
+  const recordPromises = Records.map(async (record, index) => {
     const {
       messageId,
       body,
       messageAttributes,
-      // receiptHandle,
-      // eventSourceARN,
     } = record
 
     if (!messageId) {
@@ -82,23 +80,8 @@ async function webhookHandler(event) {
     return response
   })
 
-  const settledPromises = await Promise.allSettled(requestPromises)
-  const [fulfilled, rejected] = _.partition(settledPromises, { status: 'fulfilled' })
-  const rejectedReasons = rejected.map((r) => r.reason && r.reason.message)
-  const rejectedRecords = Records.filter((r, index) => settledPromises[index].status === 'rejected')
-  const fulfilledRecords = Records.filter((r, index) => settledPromises[index].status === 'fulfilled')
-  const result = {
-    successCount: fulfilled.length,
-    failCount: rejected.length,
-    rejectedRecords,
-    fulfilledRecords,
-  }
-
-  if (rejectedReasons.length) {
-    result.rejectedReasons = rejectedReasons
-  }
-
-  return result
+  const settledRecords = await Promise.allSettled(recordPromises)
+  return settledRecords
 }
 
 function getMessageFromTemplate({
