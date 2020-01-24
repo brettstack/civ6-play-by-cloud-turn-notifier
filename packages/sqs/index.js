@@ -1,9 +1,5 @@
-const _ = require('lodash')
-const AWS = require('aws-sdk')
-
-const sqs = new AWS.SQS()
-
-async function deleteSqsMessages({ fulfilledRecords }) {
+/* eslint no-underscore-dangle:0 */
+async function _deleteSqsMessages({ sqs, fulfilledRecords }) {
   if (!fulfilledRecords || !fulfilledRecords.length) return null
 
   const Entries = fulfilledRecords.map((rejectedRecord, key) => ({
@@ -20,17 +16,33 @@ async function deleteSqsMessages({ fulfilledRecords }) {
   return sqs.deleteMessageBatch(params).promise()
 }
 
-function sqsMiddlewareAfter(config) {
+function _getRejectedReasons({ response }) {
+  const rejected = response.filter((r) => r.status === 'rejected')
+  const rejectedReasons = rejected.map((r) => r.reason && r.reason.message)
+
+  return rejectedReasons
+}
+
+function _getFulfilledRecords({ Records, response }) {
+  const fulfilledRecords = Records.filter((r, index) => response[index].status === 'fulfilled')
+
+  return fulfilledRecords
+}
+
+function _sqsMiddlewareAfter({
+  sqs,
+  deleteSqsMessages,
+  getRejectedReasons,
+  getFulfilledRecords,
+}) {
   return async (handler, next) => {
-    const { event, response } = handler
-    const { Records } = event
-    console.log('handler', handler)
+    const { event: { Records }, response } = handler
+    const rejectedReasons = getRejectedReasons({ response })
 
-    const [, rejected] = _.partition(response, { status: 'fulfilled' })
-    const rejectedReasons = rejected.map((r) => r.reason && r.reason.message)
-
-    handler.response = null
-    if (!rejectedReasons || !rejectedReasons.length) return next()
+    if (!rejectedReasons.length) {
+      handler.response = null
+      return next()
+    }
 
     /*
     ** Since we're dealing with batch records, we need to manually delete messages from the queue.
@@ -38,17 +50,30 @@ function sqsMiddlewareAfter(config) {
     ** eventually be automatically put on the DLQ if they continue to fail.
     ** If we didn't manually delete the successful messages, the entire batch would be retried/DLQd.
     */
-    const fulfilledRecords = Records.filter((r, index) => response[index].status === 'fulfilled')
-    await deleteSqsMessages({ fulfilledRecords })
+    const fulfilledRecords = getFulfilledRecords({ Records, response })
+    await deleteSqsMessages({ sqs, fulfilledRecords })
 
     // Lambda's native functionality is to not delete messages from the queue when an error is thrown
     throw new Error(rejectedReasons.join('\n'))
   }
 }
-const sqsMiddleware = (config) => ({
+
+const sqsMiddleware = ({
+  AWS = global.AWS,
+  sqs = new AWS.SQS(),
+  deleteSqsMessages = _deleteSqsMessages,
+  getFulfilledRecords = _getFulfilledRecords,
+  getRejectedReasons = _getRejectedReasons,
+  after = _sqsMiddlewareAfter({
+    sqs,
+    deleteSqsMessages,
+    getFulfilledRecords,
+    getRejectedReasons,
+  }),
+} = {}) => ({
   // before: (handler, next) => {
   // },
-  after: sqsMiddlewareAfter(config),
+  after,
   // onError: (handler, next) => {
   // },
 })

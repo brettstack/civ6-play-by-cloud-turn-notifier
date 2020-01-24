@@ -1,3 +1,4 @@
+const AWS = require('aws-sdk')
 const fetch = require('node-fetch')
 const middy = require('@middy/core')
 const sqsHandlerWrapper = require('../sqs')
@@ -105,10 +106,7 @@ function getMessageAttributeStringValues({ messageAttributes }) {
 const handler = middy(webhookHandler)
 
 handler.use(
-  sqsHandlerWrapper({
-    option1: 'foo',
-    option2: 'bar',
-  }),
+  sqsHandlerWrapper({ AWS }),
 )
 
 module.exports.webhookHandler = handler

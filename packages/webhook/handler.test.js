@@ -1,6 +1,9 @@
 jest.mock('node-fetch')
 const AWS = require('aws-sdk')
 
+// Emulate Lambda's global AWS object
+global.AWS = AWS
+
 const mockDeleteMessageBatch = jest.fn()
 mockDeleteMessageBatch.mockImplementation((params) => ({
   promise() {
