@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk')
 const fetch = require('node-fetch')
 const middy = require('@middy/core')
-const sqsHandlerWrapper = require('../sqs')
+const sqsHandlerWrapper = require('../lambda-batch-sqs-error-cleaner-middleware')
 
 async function webhookHandler(event) {
   const { Records } = event
