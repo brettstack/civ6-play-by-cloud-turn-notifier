@@ -1,5 +1,5 @@
 const eventMocks = require('@serverless/event-mocks').default
-const lambdaTestUtils = require('aws-lambda-test-utils')
+const awsLambdaMockContext = require('aws-lambda-mock-context')
 
 jest.mock('node-fetch')
 const AWS = require('aws-sdk')
@@ -31,11 +31,10 @@ const contextConfig = {
   invokedFunctionArn: 'arn:aws:lambda:eu-west-1:655240711487:function:LambdaTest:ci',
 }
 const lambdaCallback = () => null
-const { mockContextCreator } = lambdaTestUtils
 
 describe('webhookHandler: happy paths ', () => {
   test('Works', async () => {
-    const context = mockContextCreator(contextConfig, lambdaCallback)
+    const context = awsLambdaMockContext()
     const event = eventMocks(
       'aws:sqs',
       {
@@ -62,7 +61,7 @@ describe('webhookHandler: unhappy paths ', () => {
   //     mockS3GetObject.mockReset()
   // })
   test('Fails on an invalid event object', async () => {
-    const context = mockContextCreator(contextConfig, lambdaCallback)
+    const context = awsLambdaMockContext()
     await expect(webhookHandler({}, context)).rejects.toThrow('Lambda didn\'t receive a `Records` array')
   })
 
@@ -83,14 +82,14 @@ describe('webhookHandler: unhappy paths ', () => {
         }],
       },
     )
-    const context = mockContextCreator(contextConfig, lambdaCallback)
+    const context = awsLambdaMockContext()
     fetch.mockRejectedValueOnce(new Error('Only HTTP(S) protocols are supported'))
     const rejectedReasons = 'Only HTTP(S) protocols are supported'
     await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
   })
 
   test('Rejected count increases on non-2xx HTTP status code', async () => {
-    const context = mockContextCreator(contextConfig, lambdaCallback)
+    const context = awsLambdaMockContext()
     const meta = {
       'Content-Type': 'application/json',
       Accept: '*/*',
