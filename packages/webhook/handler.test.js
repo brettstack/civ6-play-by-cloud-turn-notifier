@@ -1,9 +1,12 @@
+const lambdaTestUtils = require('aws-lambda-test-utils')
+
 jest.mock('node-fetch')
 const AWS = require('aws-sdk')
 
 // Emulate Lambda's global AWS object
 global.AWS = AWS
 
+// Mock SQS
 const mockDeleteMessageBatch = jest.fn()
 mockDeleteMessageBatch.mockImplementation((params) => ({
   promise() {
@@ -21,9 +24,18 @@ const fetch = require('node-fetch')
 const { Response, Headers } = jest.requireActual('node-fetch')
 const { webhookHandler } = require('./handler')
 
+const contextConfig = {
+  functionName: 'LambdaTest',
+  functionVersion: '1',
+  invokedFunctionArn: 'arn:aws:lambda:eu-west-1:655240711487:function:LambdaTest:ci',
+}
+const lambdaCallback = () => null
+const { mockContextCreator } = lambdaTestUtils
+
 describe('webhookHandler: happy paths ', () => {
   test('Works', async () => {
-    await expect(webhookHandler({
+    const context = mockContextCreator(contextConfig, lambdaCallback)
+    const event = {
       Records: [{
         messageId: 'abc123',
         receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
@@ -39,7 +51,8 @@ describe('webhookHandler: happy paths ', () => {
           value3: Math.round(Math.random(0, 100) * 100).toString(),
         }),
       }],
-    })).resolves.toEqual(null)
+    }
+    await expect(webhookHandler(event, context)).resolves.toEqual(null)
   })
 })
 
@@ -48,14 +61,15 @@ describe('webhookHandler: unhappy paths ', () => {
   //     mockS3GetObject.mockReset()
   // })
   test('Fails on an invalid event object', async () => {
-    await expect(webhookHandler({})).rejects.toThrow('Lambda didn\'t receive a `Records` array')
+    const context = mockContextCreator(contextConfig, lambdaCallback)
+    await expect(webhookHandler({}, context)).rejects.toThrow('Lambda didn\'t receive a `Records` array')
   })
 
   test('Rejected count increases on fetch error', async () => {
+    const context = mockContextCreator(contextConfig, lambdaCallback)
     fetch.mockRejectedValueOnce(new Error('Only HTTP(S) protocols are supported'))
-
     const rejectedReasons = 'Only HTTP(S) protocols are supported'
-    await expect(webhookHandler({
+    const event = {
       Records: [{
         messageId: 'abc123',
         receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
@@ -71,10 +85,12 @@ describe('webhookHandler: unhappy paths ', () => {
           value3: Math.round(Math.random(0, 100) * 100).toString(),
         }),
       }],
-    })).rejects.toThrow(rejectedReasons)
+    }
+    await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
   })
 
   test('Rejected count increases on non-2xx HTTP status code', async () => {
+    const context = mockContextCreator(contextConfig, lambdaCallback)
     const meta = {
       'Content-Type': 'application/json',
       Accept: '*/*',
@@ -90,7 +106,7 @@ describe('webhookHandler: unhappy paths ', () => {
     const response = new Response(JSON.stringify(responseBody), responseInit)
     fetch.mockResolvedValueOnce(Promise.resolve(response))
     const rejectedReasons = 'HTTP response not ok: 400 {"message":"400"}'
-    await expect(webhookHandler({
+    const event = {
       Records: [{
         messageId: 'abc123',
         receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
@@ -106,6 +122,7 @@ describe('webhookHandler: unhappy paths ', () => {
           value3: Math.round(Math.random(0, 100) * 100).toString(),
         }),
       }],
-    })).rejects.toThrow(rejectedReasons)
+    }
+    await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
   })
 })

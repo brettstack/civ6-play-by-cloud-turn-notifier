@@ -1,6 +1,9 @@
 const AWS = require('aws-sdk')
 const fetch = require('node-fetch')
 const middy = require('@middy/core')
+const sampleLogging = require('@dazn/lambda-powertools-middleware-sample-logging')
+const captureCorrelationIds = require('@dazn/lambda-powertools-middleware-correlation-ids')
+const logTimeout = require('@dazn/lambda-powertools-middleware-log-timeout')
 const sqsHandlerWrapper = require('../lambda-batch-sqs-error-cleaner-middleware')
 
 async function webhookHandler(event) {
@@ -105,8 +108,16 @@ function getMessageAttributeStringValues({ messageAttributes }) {
 }
 const handler = middy(webhookHandler)
 
-handler.use(
-  sqsHandlerWrapper({ AWS }),
-)
+handler
+  .use(captureCorrelationIds({
+    sampleDebugLogRate: parseFloat(process.env.SAMPLE_DEBUG_LOG_RATE || '0.01'),
+  }))
+  .use(sampleLogging({
+    sampleRate: parseFloat(process.env.SAMPLE_DEBUG_LOG_RATE || '0.01'),
+  }))
+  .use(logTimeout())
+  .use(
+    sqsHandlerWrapper({ AWS }),
+  )
 
 module.exports.webhookHandler = handler
