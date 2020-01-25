@@ -1,3 +1,4 @@
+const eventMocks = require('@serverless/event-mocks').default
 const middy = require('@middy/core')
 const AWS = require('aws-sdk')
 
@@ -20,54 +21,54 @@ const lambdaBatchSqsErrorCleanerMiddleware = require('./index')
 
 describe('lambdaBatchSqsErrorCleanerMiddleware', () => {
   test('resolves with null when there are no failed messages', async () => {
-    const Records = [{
-      messageId: 'abc123',
-      receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
-      eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-      messageAttributes: {
-        resolveOrReject: {
-          stringValue: 'resolve',
-        },
+    const event = eventMocks(
+      'aws:sqs',
+      {
+        Records: [{
+          messageAttributes: {
+            resolveOrReject: {
+              stringValue: 'resolve',
+            },
+          },
+          body: '',
+        }],
       },
-      body: '',
-    }]
-    const event = { Records }
-    const settledRecords = await Promise.allSettled(Records.map((r) => Promise.resolve(r)))
+    )
+    const settledRecords = await Promise.allSettled(event.Records.map((r) => Promise.resolve(r)))
     const originalHandler = jest.fn(() => Promise.resolve(settledRecords))
     const handler = middy(originalHandler)
       .use(lambdaBatchSqsErrorCleanerMiddleware())
     await expect(handler(event)).resolves.toEqual(null)
   })
   test('throws with failure reasons', async () => {
-    const Records = [{
-      messageId: 'abc123',
-      receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
-      eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-      messageAttributes: {
-        resolveOrReject: {
-          stringValue: 'resolve',
-        },
+    const event = eventMocks(
+      'aws:sqs',
+      {
+        Records: [{
+          messageAttributes: {
+            resolveOrReject: {
+              stringValue: 'resolve',
+            },
+          },
+          body: '',
+        }, {
+          messageAttributes: {
+            resolveOrReject: {
+              stringValue: 'reject',
+            },
+          },
+          body: '',
+        }],
       },
-      body: '',
-    }, {
-      messageId: 'def456',
-      receiptHandle: 'BQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
-      eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-      messageAttributes: {
-        resolveOrReject: {
-          stringValue: 'reject',
-        },
-      },
-      body: '',
-    }]
-    const event = { Records }
-    const settledRecords = await Promise.allSettled(Records.map((r) => {
+    )
+    const settledRecords = await Promise.allSettled(event.Records.map((r) => {
       if (r.messageAttributes.resolveOrReject.stringValue === 'resolve') return Promise.resolve(r.messageId)
-      return Promise.reject(new Error(r.messageId))
+      return Promise.reject(new Error('Error message...'))
     }))
     const originalHandler = jest.fn(() => Promise.resolve(settledRecords))
     const handler = middy(originalHandler)
       .use(lambdaBatchSqsErrorCleanerMiddleware())
-    await expect(handler(event)).rejects.toThrow('def456')
+    await expect(handler(event)).rejects.toThrow('Error message...')
+    expect(mockDeleteMessageBatch).toHaveBeenCalled()
   })
 })
