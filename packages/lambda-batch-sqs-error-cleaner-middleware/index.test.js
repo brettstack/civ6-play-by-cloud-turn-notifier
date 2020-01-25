@@ -45,19 +45,18 @@ describe('lambdaBatchSqsErrorCleanerMiddleware', () => {
       'aws:sqs',
       {
         Records: [{
+          receiptHandle: 'successfulMessageReceiptHandle',
           messageAttributes: {
             resolveOrReject: {
               stringValue: 'resolve',
             },
           },
-          body: '',
         }, {
           messageAttributes: {
             resolveOrReject: {
               stringValue: 'reject',
             },
           },
-          body: '',
         }],
       },
     )
@@ -69,6 +68,12 @@ describe('lambdaBatchSqsErrorCleanerMiddleware', () => {
     const handler = middy(originalHandler)
       .use(lambdaBatchSqsErrorCleanerMiddleware())
     await expect(handler(event)).rejects.toThrow('Error message...')
-    expect(mockDeleteMessageBatch).toHaveBeenCalled()
+    expect(mockDeleteMessageBatch).toHaveBeenCalledWith({
+      Entries: [{
+        Id: '0',
+        ReceiptHandle: 'successfulMessageReceiptHandle',
+      }],
+      QueueUrl: 'https://...123456789012/my-queue',
+    })
   })
 })
