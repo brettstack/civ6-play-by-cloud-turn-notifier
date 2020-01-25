@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@serverless/event-mocks": "^1.1.1",
     "aws-lambda-test-utils": "^1.3.0",
     "jest": "^24.9.0",
     "serverless-apigateway-service-proxy": "^1.7.0"

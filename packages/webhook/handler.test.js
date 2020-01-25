@@ -1,3 +1,4 @@
+const eventMocks = require('@serverless/event-mocks').default
 const lambdaTestUtils = require('aws-lambda-test-utils')
 
 jest.mock('node-fetch')
@@ -35,23 +36,23 @@ const { mockContextCreator } = lambdaTestUtils
 describe('webhookHandler: happy paths ', () => {
   test('Works', async () => {
     const context = mockContextCreator(contextConfig, lambdaCallback)
-    const event = {
-      Records: [{
-        messageId: 'abc123',
-        receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
-        eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-        messageAttributes: {
-          discordWebhook: {
-            stringValue: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl;',
+    const event = eventMocks(
+      'aws:sqs',
+      {
+        Records: [{
+          messageAttributes: {
+            discordWebhook: {
+              stringValue: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl;',
+            },
           },
-        },
-        body: JSON.stringify({
-          value1: 'Game Name',
-          value2: 'Player Name',
-          value3: Math.round(Math.random(0, 100) * 100).toString(),
-        }),
-      }],
-    }
+          body: JSON.stringify({
+            value1: 'Game Name',
+            value2: 'Player Name',
+            value3: Math.round(Math.random(0, 100) * 100).toString(),
+          }),
+        }],
+      },
+    )
     await expect(webhookHandler(event, context)).resolves.toEqual(null)
   })
 })
@@ -66,26 +67,25 @@ describe('webhookHandler: unhappy paths ', () => {
   })
 
   test('Rejected count increases on fetch error', async () => {
+    const event = eventMocks(
+      'aws:sqs', {
+        Records: [{
+          messageAttributes: {
+            discordWebhook: {
+              stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
+            },
+          },
+          body: JSON.stringify({
+            value1: 'Game Name',
+            value2: 'Player Name',
+            value3: Math.round(Math.random(0, 100) * 100).toString(),
+          }),
+        }],
+      },
+    )
     const context = mockContextCreator(contextConfig, lambdaCallback)
     fetch.mockRejectedValueOnce(new Error('Only HTTP(S) protocols are supported'))
     const rejectedReasons = 'Only HTTP(S) protocols are supported'
-    const event = {
-      Records: [{
-        messageId: 'abc123',
-        receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
-        eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-        messageAttributes: {
-          discordWebhook: {
-            stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
-          },
-        },
-        body: JSON.stringify({
-          value1: 'Game Name',
-          value2: 'Player Name',
-          value3: Math.round(Math.random(0, 100) * 100).toString(),
-        }),
-      }],
-    }
     await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
   })
 
@@ -106,23 +106,22 @@ describe('webhookHandler: unhappy paths ', () => {
     const response = new Response(JSON.stringify(responseBody), responseInit)
     fetch.mockResolvedValueOnce(Promise.resolve(response))
     const rejectedReasons = 'HTTP response not ok: 400 {"message":"400"}'
-    const event = {
-      Records: [{
-        messageId: 'abc123',
-        receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
-        eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-        messageAttributes: {
-          discordWebhook: {
-            stringValue: 'https://discordapp.com/api/webhooks/invalid',
+    const event = eventMocks(
+      'aws:sqs', {
+        Records: [{
+          messageAttributes: {
+            discordWebhook: {
+              stringValue: 'https://discordapp.com/api/webhooks/invalid',
+            },
           },
-        },
-        body: JSON.stringify({
-          value1: 'Game Name',
-          value2: 'Player Name',
-          value3: Math.round(Math.random(0, 100) * 100).toString(),
-        }),
-      }],
-    }
+          body: JSON.stringify({
+            value1: 'Game Name',
+            value2: 'Player Name',
+            value3: Math.round(Math.random(0, 100) * 100).toString(),
+          }),
+        }],
+      },
+    )
     await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
   })
 })
