@@ -52,7 +52,12 @@ describe('webhookHandler: happy paths ', () => {
         }],
       },
     )
-    await expect(webhookHandler(event, context)).resolves.toEqual(null)
+    await expect(webhookHandler(event, context)).resolves.toEqual([
+      {
+        status: 'fulfilled',
+        value: '{}',
+      },
+    ])
   })
 })
 

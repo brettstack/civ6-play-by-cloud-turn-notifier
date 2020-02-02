@@ -4,7 +4,7 @@ const middy = require('@middy/core')
 const sampleLogging = require('@dazn/lambda-powertools-middleware-sample-logging')
 const captureCorrelationIds = require('@dazn/lambda-powertools-middleware-correlation-ids')
 const logTimeout = require('@dazn/lambda-powertools-middleware-log-timeout')
-const sqsHandlerWrapper = require('../lambda-batch-sqs-error-cleaner-middleware')
+const sqsPartialBatchFailureMiddleware = require('@middy/sqs-partial-batch-failure')
 
 async function webhookHandler(event) {
   const { Records } = event
@@ -76,16 +76,15 @@ async function webhookHandler(event) {
       headers: { 'Content-Type': 'application/json' },
     })
 
+    const responseText = await response.text()
     if (!response.ok) {
-      const text = await response.text()
-      throw new Error(`HTTP response not ok: ${response.status} ${text}`)
+      throw new Error(`HTTP response not ok: ${response.status} ${responseText}`)
     }
 
-    return response
+    return responseText
   })
 
-  const settledRecords = await Promise.allSettled(recordPromises)
-  return settledRecords
+  return Promise.allSettled(recordPromises)
 }
 
 function getMessageFromTemplate({
@@ -116,8 +115,6 @@ handler
     sampleRate: parseFloat(process.env.SAMPLE_DEBUG_LOG_RATE || '0.01'),
   }))
   .use(logTimeout())
-  .use(
-    sqsHandlerWrapper({ AWS }),
-  )
+  .use(sqsPartialBatchFailureMiddleware({ AWS }))
 
 module.exports.webhookHandler = handler
