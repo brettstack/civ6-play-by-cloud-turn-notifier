@@ -34,16 +34,24 @@ custom:
           integration.request.querystring.MessageAttribute.1.Name: "'discordWebhook'"
           integration.request.querystring.MessageAttribute.1.Value.StringValue: method.request.querystring.discordWebhook
           integration.request.querystring.MessageAttribute.1.Value.DataType: "'String'"
-  validationDomain: halfstack.software
-  enableCustomDomains:
-    dev: false
-    stage: true
-    prod: true
+  domain:
+    # dev:
+    #   domain: civ.halfstack.software
+    #   validationDomain: halfstack.software
+    #   enabled: false
+    # stage:
+    #   domain: staging.civ.halfstack.software
+    #   validationDomain: halfstack.software
+    #   enabled: true
+    prod:
+      domain: civ.halfstack.software
+      validationDomain: halfstack.software
+      enabled: true
   customDomain:
-    domainName: civ.halfstack.software
-    createRoute53Record: false
+    domainName: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.domain}}
     certificateName: '*.civ.halfstack.software'
-    enabled: ${{self:custom.enableCustomDomains.${{opt:stage, self:provider.stage}}}}
+    enabled: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.enabled}}
+    createRoute53Record: false
 
 functions:
   webhook:
@@ -89,11 +97,11 @@ resources:
       Type: AWS::CertificateManager::Certificate
       Condition: UseDomainName
       Properties:
-        DomainName: !Sub '*.${{self:custom.customDomain.domainName}}'
+        DomainName: '*.${{self:custom.customDomain.domainName}}'
         DomainValidationOptions:
-          - DomainName: !Sub '*.${{self:custom.customDomain.domainName}}'
-            ValidationDomain: ${{self:custom.validationDomain}}
+          - DomainName: '*.${{self:custom.customDomain.domainName}}'
+            ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
           - DomainName: ${{self:custom.customDomain.domainName}}
-            ValidationDomain: ${{self:custom.validationDomain}}
+            ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
         SubjectAlternativeNames:
           - ${{self:custom.customDomain.domainName}}
