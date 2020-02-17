@@ -22,7 +22,7 @@ const EVENT = {
     },
     messageAttributes: {
       discordWebhook: {
-        stringValue: `htsfdtps://discordapp.com/api/webhooks/${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}`,
+        stringValue: `https://discordapp.com/api/webhooks/${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}`,
         stringListValues: [],
         binaryListValues: [],
         dataType: 'String',
