@@ -4,7 +4,8 @@ provider:
   runtime: nodejs12.x
   memorySize: 128
   timeout: 6
-  stage: dev
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  profile: ${{self:custom.profiles.${{self:provider.stage}}}}
   region: us-east-1
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
   iamRoleStatements:
@@ -16,8 +17,14 @@ provider:
 plugins:
   - serverless-offline
   - serverless-apigateway-service-proxy
+  - serverless-domain-manager
 
 custom:
+  defaultStage: prod
+  profiles:
+    # dev: civ6_dev
+    # stage: civ6_stage
+    prod: civ6_prod
   apiGatewayServiceProxies:
     - sqs:
         path: /
@@ -27,7 +34,16 @@ custom:
           integration.request.querystring.MessageAttribute.1.Name: "'discordWebhook'"
           integration.request.querystring.MessageAttribute.1.Value.StringValue: method.request.querystring.discordWebhook
           integration.request.querystring.MessageAttribute.1.Value.DataType: "'String'"
-
+  validationDomain: halfstack.software
+  enableCustomDomains:
+    dev: false
+    stage: true
+    prod: true
+  customDomain:
+    domainName: civ.halfstack.software
+    createRoute53Record: false
+    certificateName: '*.civ.halfstack.software'
+    enabled: ${{self:custom.enableCustomDomains.${{opt:stage, self:provider.stage}}}}
 
 functions:
   webhook:
@@ -38,6 +54,12 @@ functions:
           arn: !GetAtt WebhookSqsQueue.Arn
 
 resources:
+  Conditions:
+    UseDomainName:
+      !Equals
+        - ${{self:custom.customDomain.enabled}}
+        - true
+  
   Resources:
     # NOTE: Following guidance here to reduce the chance of Lambda throttling
     # https://medium.com/@zaccharles/lambda-concurrency-limits-and-sqs-triggers-dont-mix-well-sometimes-eb23d90122e0
@@ -62,3 +84,16 @@ resources:
             - StatusCode: 200
               ResponseTemplates:
                 application/json: '{}'
+
+    AcmCertificate:
+      Type: AWS::CertificateManager::Certificate
+      Condition: UseDomainName
+      Properties:
+        DomainName: !Sub '*.${{self:custom.customDomain.domainName}}'
+        DomainValidationOptions:
+          - DomainName: !Sub '*.${{self:custom.customDomain.domainName}}'
+            ValidationDomain: ${{self:custom.validationDomain}}
+          - DomainName: ${{self:custom.customDomain.domainName}}
+            ValidationDomain: ${{self:custom.validationDomain}}
+        SubjectAlternativeNames:
+          - ${{self:custom.customDomain.domainName}}
