@@ -2,8 +2,7 @@ require('dotenv').config()
 const webhookLambda = require('../handler')
 
 const {
-  DISCORD_WEBHOOK_ID,
-  DISCORD_WEBHOOK_TOKEN,
+  DISCORD_WEBHOOK_URL,
 } = process.env
 const EVENT = {
   Records: [{
@@ -22,7 +21,7 @@ const EVENT = {
     },
     messageAttributes: {
       discordWebhook: {
-        stringValue: `https://discordapp.com/api/webhooks/${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}`,
+        stringValue: DISCORD_WEBHOOK_URL,
         stringListValues: [],
         binaryListValues: [],
         dataType: 'String',

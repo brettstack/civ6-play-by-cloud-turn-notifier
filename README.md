@@ -12,6 +12,13 @@ The initial version simply posts to a Discord channel, and to hook it up you jus
 2. Copy the webhook URL and slap it on the end of this URL https://civ.halfstack.software?discordWebhookUrl=DISCORD_WEBHOOK_URL
 3. Paste that URL into the Civ6 settings
 
+## Testing
+
+### Sending a test request to the service
+
+1. Copy `.env.sample` to a `.env` file in the root directory and update it with your Discord Webhook URL
+2. Run `node packages/webhook/scripts/send-webhook-request.js`
+
 ## Setup
 
 # Domain
