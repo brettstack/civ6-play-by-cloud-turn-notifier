@@ -4,7 +4,17 @@
 
 ![architecture diagram](https://raw.githubusercontent.com/brettstack/civ6-play-by-cloud-turn-notifier/master/architecture-diagram.jpg)
 
-## Domain
+## Usage
+
+The initial version simply posts to a Discord channel, and to hook it up you just need to:
+
+1. Create a webhook in your Discord channel via the channel settings
+2. Copy the webhook URL and slap it on the end of this URL https://civ.halfstack.software?discordWebhookUrl=DISCORD_WEBHOOK_URL
+3. Paste that URL into the Civ6 settings
+
+## Setup
+
+# Domain
 
 1. After deploying the stack, run `sls create_domain` to create the API Gateway Custom Domain.
 2. Run `npm run deploy` again to create the base path mappings
