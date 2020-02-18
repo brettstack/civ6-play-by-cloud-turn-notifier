@@ -1,27 +1,31 @@
-# Civilization 6 Turn Notifier
+# Civilization VI Turn Notifier
 
-## Architecture
+A hosted service for Civilization VI's Play By Cloud game format, for notifying players in Discord when it's their turn. Simply create a Webhook in your Discord Channel, and use this URL `https://civ.halfstack.software?discordWebhookUrl=DISCORD_WEBHOOK_URL` in your Civilization VI game settings, replacing `DISCORD_WEBHOOK_URL` with the URL from your Discord Webhook.
+
+Having issues? Reach out to me on Twitter [@AWSBrett](https://twitter.com/AWSbrett) or open a GitHub Issue.
+
+## Development
+
+Below is for development purposes only. If you're having problems using the service, reach out to me on Twitter [@AWSBrett](https://twitter.com/AWSbrett) or open a GitHub Issue.
+
+### Architecture
 
 ![architecture diagram](https://raw.githubusercontent.com/brettstack/civ6-play-by-cloud-turn-notifier/master/architecture-diagram.png)
 
-## Usage
+### Testing
 
-The initial version simply posts to a Discord channel, and to hook it up you just need to:
+## Running unit tests
 
-1. Create a webhook in your Discord channel via the channel settings
-2. Copy the webhook URL and slap it on the end of this URL https://civ.halfstack.software?discordWebhookUrl=DISCORD_WEBHOOK_URL
-3. Paste that URL into the Civ6 settings
+`npm test`
 
-## Testing
-
-### Sending a test request to the service
+#### Sending a test request to the service
 
 1. Copy `.env.sample` to a `.env` file in the root directory and update it with your Discord Webhook URL
 2. Run `node packages/webhook/scripts/send-webhook-request.js`
 
-## Setup
+### Setup
 
-# Domain
+#### Domain
 
 1. After deploying the stack, run `sls create_domain` to create the API Gateway Custom Domain.
 2. Run `npm run deploy` again to create the base path mappings
