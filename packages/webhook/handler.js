@@ -1,3 +1,4 @@
+const Discord = require('discord.js')
 const fetch = require('node-fetch')
 const middy = require('@middy/core')
 const sqsPartialBatchFailureMiddleware = require('@middy/sqs-partial-batch-failure')
@@ -74,6 +75,7 @@ async function processMessage(record, index) {
     ]
     */
   }
+  // const hook = new Discord.WebhookClient('webhook id', 'webhook token')
   const response = await fetch(discordWebhook, {
     body: JSON.stringify(targetWebhookBody),
     method: 'POST',

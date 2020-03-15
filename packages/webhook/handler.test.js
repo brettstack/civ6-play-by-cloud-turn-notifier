@@ -2,14 +2,13 @@ const eventMocks = require('@serverless/event-mocks').default
 const awsLambdaMockContext = require('aws-lambda-mock-context')
 
 jest.mock('node-fetch')
-const AWS = require('aws-sdk')
 
-// Emulate Lambda's global AWS object
-global.AWS = AWS
+// HACK: require('discord.js') fails if `window` is defined (which it is during testing for some reason)
+delete global.window
 
 // Mock SQS
 const mockDeleteMessageBatch = jest.fn()
-mockDeleteMessageBatch.mockImplementation((params) => ({
+mockDeleteMessageBatch.mockImplementation(() => ({
   promise() {
     return Promise.resolve({ Body: 'test document' })
   },
@@ -24,13 +23,6 @@ const fetch = require('node-fetch')
 
 const { Response, Headers } = jest.requireActual('node-fetch')
 const { webhookHandler } = require('./handler')
-
-const contextConfig = {
-  functionName: 'LambdaTest',
-  functionVersion: '1',
-  invokedFunctionArn: 'arn:aws:lambda:eu-west-1:655240711487:function:LambdaTest:ci',
-}
-const lambdaCallback = () => null
 
 describe('webhookHandler: happy paths ', () => {
   test('Works', async () => {
@@ -72,22 +64,23 @@ describe('webhookHandler: unhappy paths ', () => {
 
   test('Rejected count increases on fetch error', async () => {
     const event = eventMocks(
-      'aws:sqs', {
-      Records: [
-        {
-          messageAttributes: {
-            discordWebhook: {
-              stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
+      'aws:sqs',
+      {
+        Records: [
+          {
+            messageAttributes: {
+              discordWebhook: {
+                stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
+              },
             },
+            body: JSON.stringify({
+              value1: 'Game Name',
+              value2: 'Player Name',
+              value3: Math.round(Math.random(0, 100) * 100).toString(),
+            }),
           },
-          body: JSON.stringify({
-            value1: 'Game Name',
-            value2: 'Player Name',
-            value3: Math.round(Math.random(0, 100) * 100).toString(),
-          }),
-        }
-      ],
-    },
+        ],
+      },
     )
     const context = awsLambdaMockContext()
     fetch.mockRejectedValueOnce(new Error('Only HTTP(S) protocols are supported'))
@@ -113,11 +106,24 @@ describe('webhookHandler: unhappy paths ', () => {
     fetch.mockResolvedValueOnce(Promise.resolve(response))
     const rejectedReasons = 'HTTP response not ok: 400 {"message":"400"}'
     const event = eventMocks(
-      'aws:s        
-      Recor                 messageAttribu                   discordWebh                     stringValue: 'https://discordapp.com/api/webhooks/inv                                             body: JSON.strin                   value1: 'Game                    value2: 'Player                    value3: Math.round(Math.random(0, 100) * 100).toStr                      
-         ],
-  },
-  )
-  await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
-})
+      'aws:sqs',
+      {
+        Records: [
+          {
+            messageAttributes: {
+              discordWebhook: {
+                stringValue: 'https://discordapp.com/api/webhooks/invalid',
+              },
+            },
+            body: JSON.stringify({
+              value1: 'Game Name',
+              value2: 'Player Name',
+              value3: Math.round(Math.random(0, 100) * 100).toString(),
+            }),
+          },
+        ],
+      },
+    )
+    await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
+  })
 })
