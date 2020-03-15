@@ -12,12 +12,12 @@ async function webhookHandler(event) {
     throw new Error(`Lambda didn't receive a \`Records\` array in the \`event\` object. Received: ${Records}.`)
   }
 
-  const recordPromises = Records.map(processMessages)
+  const recordPromises = Records.map(processMessage)
 
   return Promise.allSettled(recordPromises)
 }
 
-async function processMessages(record, index) {
+async function processMessage(record, index) {
   const {
     messageId,
     body,
@@ -45,7 +45,7 @@ async function processMessages(record, index) {
 
 
   if (!discordWebhook) {
-    throw new Error(`Records[${index}].messageAttributes is missing \`discordWebhook\`.`)
+    throw new Error(`\`Records[${index}].messageAttributes.discordWebhook\` is missing.`)
   }
 
   const {
@@ -90,7 +90,10 @@ async function processMessages(record, index) {
 }
 
 function getMessageFromTemplate({
-  messageTemplate, gameName, playerName, turnNumber,
+  messageTemplate,
+  gameName,
+  playerName,
+  turnNumber,
 }) {
   return messageTemplate
     .replace(/{{gameName}}/g, gameName)
@@ -102,7 +105,9 @@ function getMessageAttributeStringValues({ messageAttributes }) {
   const messageAttributeValues = {
     botUsername: 'Civ6 Turnbot',
     avatarUrl: 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png',
-    messageTemplate: '{{playerName}}, it\'s your turn. Game: {{gameName}}; Turn: {{turnNumber}}.',
+    messageTemplate: `{{playerName}}, it's your turn.
+Turn: {{turnNumber}}
+Game: {{gameName}}`,
   }
 
   Object.entries(messageAttributes).forEach(([key, value]) => {

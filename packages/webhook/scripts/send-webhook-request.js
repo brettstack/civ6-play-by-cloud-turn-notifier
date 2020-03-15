@@ -7,8 +7,8 @@ const {
 } = process.env
 
 const WEBHOOK_REQUEST_VALUE = {
-  value1: 'Game Name',
-  value2: 'Player Name',
+  value1: 'Free-for-all',
+  value2: 'Brett',
   value3: Math.round(Math.random(0, 100) * 100).toString(),
 }
 async function main() {

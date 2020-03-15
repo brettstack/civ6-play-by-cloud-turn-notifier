@@ -98,10 +98,10 @@ resources:
       Condition: UseDomainName
       Properties:
         DomainName: '*.${{self:custom.customDomain.domainName}}'
+        SubjectAlternativeNames:
+          - ${{self:custom.customDomain.domainName}}
         DomainValidationOptions:
           - DomainName: '*.${{self:custom.customDomain.domainName}}'
             ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
           - DomainName: ${{self:custom.customDomain.domainName}}
             ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
-        SubjectAlternativeNames:
-          - ${{self:custom.customDomain.domainName}}

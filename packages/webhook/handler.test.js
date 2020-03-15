@@ -73,7 +73,8 @@ describe('webhookHandler: unhappy paths ', () => {
   test('Rejected count increases on fetch error', async () => {
     const event = eventMocks(
       'aws:sqs', {
-        Records: [{
+      Records: [
+        {
           messageAttributes: {
             discordWebhook: {
               stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
@@ -84,8 +85,9 @@ describe('webhookHandler: unhappy paths ', () => {
             value2: 'Player Name',
             value3: Math.round(Math.random(0, 100) * 100).toString(),
           }),
-        }],
-      },
+        }
+      ],
+    },
     )
     const context = awsLambdaMockContext()
     fetch.mockRejectedValueOnce(new Error('Only HTTP(S) protocols are supported'))
@@ -111,21 +113,11 @@ describe('webhookHandler: unhappy paths ', () => {
     fetch.mockResolvedValueOnce(Promise.resolve(response))
     const rejectedReasons = 'HTTP response not ok: 400 {"message":"400"}'
     const event = eventMocks(
-      'aws:sqs', {
-        Records: [{
-          messageAttributes: {
-            discordWebhook: {
-              stringValue: 'https://discordapp.com/api/webhooks/invalid',
-            },
-          },
-          body: JSON.stringify({
-            value1: 'Game Name',
-            value2: 'Player Name',
-            value3: Math.round(Math.random(0, 100) * 100).toString(),
-          }),
-        }],
-      },
-    )
-    await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
-  })
+      'aws:s        
+      Recor                 messageAttribu                   discordWebh                     stringValue: 'https://discordapp.com/api/webhooks/inv                                             body: JSON.strin                   value1: 'Game                    value2: 'Player                    value3: Math.round(Math.random(0, 100) * 100).toStr                      
+         ],
+  },
+  )
+  await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
+})
 })
