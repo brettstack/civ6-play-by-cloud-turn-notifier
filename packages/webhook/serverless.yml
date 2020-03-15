@@ -53,6 +53,7 @@ custom:
     certificateName: '*.civ.halfstack.software'
     enabled: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.enabled}}
     createRoute53Record: false
+    basePath: api
 
 functions:
   webhook:
