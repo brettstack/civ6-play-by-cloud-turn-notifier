@@ -1,0 +1,120 @@
+service: civ6-pbc-ui
+provider:
+  name: aws
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  profile: ${{self:custom.profiles.${{self:provider.stage}}}}
+  region: us-east-1
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
+
+plugins:
+  - serverless-dotenv-plugin
+
+custom:
+  domain:
+    # dev:
+    #   domain: api.civ.halfstack.software
+    #   validationDomain: halfstack.software
+    #   enabled: false
+    # stage:
+    #   domain: staging.api.civ.halfstack.software
+    #   validationDomain: halfstack.software
+    #   enabled: true
+    prod:
+      domain: civ.halfstack.software
+      enabled: false
+  defaultStage: prod
+  profiles:
+    # dev: civ6_dev
+    # stage: civ6_stage
+    prod: civ6_prod
+  repository: https://github.com/brettstack/civ6-play-by-cloud-turn-notifier
+  branch: ui
+  customDomain:
+    domainName: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.domain}}
+    enabled: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.enabled}}
+  dotenv:
+    path: ../../.env
+
+resources:
+  Conditions:
+    UseDomainName:
+      !Equals
+        - ${{self:custom.customDomain.enabled}}
+        - true
+  
+  Resources:
+    # AmplifyRole:
+    #   Type: AWS::IAM::Role
+    #   Properties:
+    #     AssumeRolePolicyDocument:
+    #       Version: "2012-10-17"
+    #       Statement:
+    #         - Effect: Allow
+    #           Principal:
+    #             Service:
+    #               - amplify.amazonaws.com
+    #           Action:
+    #             - sts:AssumeRole
+    #     Policies:
+    #       - PolicyName: Amplify
+    #         PolicyDocument:
+    #           Version: "2012-10-17"
+    #           Statement:
+    #             - Effect: Allow
+    #               Action: "amplify:*"
+    #               Resource: "*"
+
+    AmplifyApp:
+      Type: "AWS::Amplify::App"
+      Properties:
+        Name: ${{self:service}}
+        Repository: ${{self:custom.repository}}
+        OauthToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}
+        BuildSpec: |-
+          version: 0.1
+          frontend:
+            phases:
+              preBuild:
+                commands:
+                  - cd packages/ui
+                  - npm ci
+              build:
+                commands:
+                  - npm run build
+            artifacts:
+              baseDirectory: /packages/ui/dist
+              files:
+                - '**/*'
+            cache:
+              paths:
+                - node_modules/**/*
+        # CustomRules:
+        #   - Source: /dist/vue.min.js
+        #     Target: /vue.min.js
+        #     Status: '200'
+        # IAMServiceRole: !GetAtt AmplifyRole.Arn
+
+    AmplifyBranch:
+      Type: AWS::Amplify::Branch
+      Properties:
+        AppId: !GetAtt AmplifyApp.AppId
+        BranchName: ${{self:custom.branch}}
+        EnableAutoBuild: true
+
+    AmplifyDomain:
+      Type: AWS::Amplify::Domain
+      Condition: UseDomainName
+      Properties:
+        DomainName: ${{self:custom.customDomain.domainName}}
+        AppId: !GetAtt AmplifyApp.AppId
+        SubDomainSettings:
+          - Prefix: ${{self:custom.branch}}
+            BranchName: !GetAtt AmplifyBranch.BranchName
+
+  Outputs:
+    DefaultDomain:
+      Value: !GetAtt AmplifyApp.DefaultDomain
+
+    BranchUrl:
+      Condition: UseDomainName
+      Value: !Join [ ".", [ !GetAtt AmplifyBranch.BranchName, !GetAtt AmplifyDomain.DomainName ]]

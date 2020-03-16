@@ -1,4 +1,4 @@
-service: civ6-pbc
+service: civ6-pbc-api
 provider:
   name: aws
   runtime: nodejs12.x
@@ -37,15 +37,15 @@ custom:
           integration.request.querystring.MessageAttribute.1.Value.DataType: "'String'"
   domain:
     # dev:
-    #   domain: civ.halfstack.software
+    #   domain: api.civ.halfstack.software
     #   validationDomain: halfstack.software
     #   enabled: false
     # stage:
-    #   domain: staging.civ.halfstack.software
+    #   domain: staging.api.civ.halfstack.software
     #   validationDomain: halfstack.software
     #   enabled: true
     prod:
-      domain: civ.halfstack.software
+      domain: api.civ.halfstack.software
       validationDomain: halfstack.software
       enabled: true
   customDomain:
@@ -53,7 +53,6 @@ custom:
     certificateName: '*.civ.halfstack.software'
     enabled: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.enabled}}
     createRoute53Record: false
-    basePath: api
 
 functions:
   webhook:

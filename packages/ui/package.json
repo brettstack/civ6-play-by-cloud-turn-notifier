@@ -7,9 +7,10 @@
     "@aws-amplify/pubsub": "latest"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^4.5.2",
+    "serverless-dotenv-plugin": "^2.3.2",
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
-    "copy-webpack-plugin": "^4.5.2",
     "webpack-dev-server": "^3.1.5"
   },
   "scripts": {
