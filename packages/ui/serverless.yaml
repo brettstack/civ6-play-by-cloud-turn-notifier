@@ -69,7 +69,7 @@ resources:
       Properties:
         Name: ${{self:service}}
         Repository: ${{self:custom.repository}}
-        OauthToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}
+        AccessToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}
         BuildSpec: |-
           version: 0.1
           frontend:
