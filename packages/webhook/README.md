@@ -14,6 +14,8 @@ The initial version simply posts to a Discord channel, and to hook it up you jus
 
 ## Setup
 
+Run `npm run deploy`
+
 # Domain
 
 1. After deploying the stack, run `sls create_domain` to create the API Gateway Custom Domain.

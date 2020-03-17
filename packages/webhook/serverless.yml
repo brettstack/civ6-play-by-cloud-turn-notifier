@@ -10,7 +10,6 @@ provider:
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
   logs:
     restApi:
-      roleManagedExternally: true
       format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
       level: INFO # INFO, ERROR
 
@@ -28,7 +27,7 @@ custom:
     prod: civ6_prod
   apiGatewayServiceProxies:
     - sqs:
-        path: /
+        path: /webhook
         method: post
         queueName: !GetAtt WebhookSqsQueue.QueueName
         requestParameters:
@@ -88,7 +87,7 @@ resources:
     WebhookSqsQueueDlq:
       Type: AWS::SQS::Queue
     
-    ApiGatewayMethodPost:
+    ApiGatewayMethodWebhookPost:
       Type: AWS::ApiGateway::Method
       Properties:
         RequestParameters:
@@ -111,22 +110,3 @@ resources:
             ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
           - DomainName: ${{self:custom.customDomain.domainName}}
             ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
-
-    ApiGwAccountConfig:
-        Type: "AWS::ApiGateway::Account"
-        Properties:
-          CloudWatchRoleArn: !GetAtt "ApiGatewayLoggingRole.Arn"
-    ApiGatewayLoggingRole:
-      Type: "AWS::IAM::Role"
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - "apigateway.amazonaws.com"
-              Action: "sts:AssumeRole"
-        Path: "/"
-        ManagedPolicyArns:
-          - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
