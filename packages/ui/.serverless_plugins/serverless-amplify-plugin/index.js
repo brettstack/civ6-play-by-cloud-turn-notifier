@@ -91,14 +91,13 @@ frontend:
 
       Outputs[`${namePascalCase}AmplifyBranchUrl`] = {
         "Value": {
-          "Fn::Sub": "${" + namePascalCase + "AmplifyBranch.BranchName}.${" + namePascalCase + "AmplifyDomain.DomainName}"
+          "Fn::Sub": `\${${namePascalCase}AmplifyBranch.BranchName}.\${${namePascalCase}AmplifyDomain.DomainName}`
         }
       }
     }
 
     Outputs[[`${namePascalCase}AmplifyDefaultDomain`]] = {
       "Value": {
-        // "Fn::Sub": "${" + namePascalCase + "AmplifyBranch.BranchName}.${" + namePascalCase + "AmplifyApp.DefaultDomain}"
         "Fn::Sub": `\${${namePascalCase}AmplifyBranch.BranchName}.\${${namePascalCase}AmplifyApp.DefaultDomain}`
       }
     }
