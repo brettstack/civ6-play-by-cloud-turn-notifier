@@ -43,7 +43,7 @@ custom:
             commands:
               - npm run build
         artifacts:
-          baseDirectory: build
+          baseDirectory: packages/ui/build
           files:
             - '**/*'
         cache:
