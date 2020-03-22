@@ -44,7 +44,8 @@ describe('happy path', () => {
 
     const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
     serverlessAmplifyPluginInstance.addAmplify()
-    expect(serverless.service.provider.compiledCloudFormationTemplate.Resources.MyServiceAmplifyApp).toStrictEqual({
+    const { MyServiceAmplifyApp, MyServiceAmplifyBranch } = serverless.service.provider.compiledCloudFormationTemplate.Resources
+    expect(MyServiceAmplifyApp).toStrictEqual({
       "Type": "AWS::Amplify::App",
       "Properties": {
         "Name": "my-service",
@@ -68,12 +69,25 @@ frontend:
       - node_modules/**/*`
       }
     })
+    expect(MyServiceAmplifyBranch).toStrictEqual({
+      "Type": "AWS::Amplify::Branch",
+      "Properties": {
+        "AppId": {
+          "Fn::GetAtt": [
+            "MyServiceAmplifyApp",
+            "AppId"
+          ]
+        },
+        "BranchName": "master",
+        "EnableAutoBuild": true
+      }
+    })
   })
   it('creates Amplify resources using all properties', () => {
     const serverless = makeMockServerless({
       amplify: {
         repository: 'https://github.com/user/repo',
-        branch: 'ui',
+        branch: 'dev',
         domainName: 'asdf',
         accessToken: '123abc123abc123abc123abc',
         enableAutoBuild: false,
@@ -96,10 +110,11 @@ frontend:
 
     const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
     serverlessAmplifyPluginInstance.addAmplify()
-    expect(serverless.service.provider.compiledCloudFormationTemplate.Resources.MyServiceAmplifyApp).toStrictEqual({
+    const { MyAppAmplifyApp, MyAppAmplifyBranch } = serverless.service.provider.compiledCloudFormationTemplate.Resources
+    expect(MyAppAmplifyApp).toStrictEqual({
       "Type": "AWS::Amplify::App",
       "Properties": {
-        "Name": "my-service",
+        "Name": "my-app",
         "Repository": "https://github.com/user/repo",
         "AccessToken": "123abc123abc123abc123abc",
         "BuildSpec": `version: 0.1
@@ -115,6 +130,19 @@ frontend:
     baseDirectory: public
     files:
       - '**/*'`
+      }
+    })
+    expect(MyAppAmplifyBranch).toStrictEqual({
+      "Type": "AWS::Amplify::Branch",
+      "Properties": {
+        "AppId": {
+          "Fn::GetAtt": [
+            "MyAppAmplifyApp",
+            "AppId"
+          ]
+        },
+        "BranchName": "dev",
+        "EnableAutoBuild": false
       }
     })
   })
