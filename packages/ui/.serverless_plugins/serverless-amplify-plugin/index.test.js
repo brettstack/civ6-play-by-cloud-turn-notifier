@@ -1,12 +1,18 @@
 const _ = require('lodash')
 const ServerlessAmplifyPlugin = require('./index')
 
-function makeMockServerless({ amplify, overrides = {} }) {
+const repository = 'https://github.com/user/repo'
+const accessToken = '123abc123abc123abc123abc'
+
+function makeMockServerless({ amplify, overrides = {} } = {}) {
   const serverlessBase = {
     // getProvider: ,
     service: {
       custom: {
-        amplify: {}
+        amplify: {
+          repository,
+          accessToken
+        }
       },
       serviceObject: {
         name: 'my-service'
@@ -35,13 +41,7 @@ function makeMockServerless({ amplify, overrides = {} }) {
 
 describe('happy path', () => {
   it('creates Amplify resources using only required properties', () => {
-    const amplifyConfig = {
-      repository: 'https://github.com/user/repo',
-      accessToken: '123abc123abc123abc123abc',
-    }
-    const serverless = makeMockServerless({
-      amplify: amplifyConfig
-    })
+    const serverless = makeMockServerless()
 
     const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
     serverlessAmplifyPluginInstance.addAmplify()
@@ -59,8 +59,8 @@ describe('happy path', () => {
       "Type": "AWS::Amplify::App",
       "Properties": {
         "Name": "my-service",
-        "Repository": amplifyConfig.repository,
-        "AccessToken": amplifyConfig.accessToken,
+        "Repository": serverless.service.custom.amplify.repository,
+        "AccessToken": serverless.service.custom.amplify.accessToken,
         "BuildSpec": `version: 0.1
 frontend:
   phases:
@@ -104,10 +104,8 @@ frontend:
   })
   it('creates Amplify resources using all properties', () => {
     const amplifyConfig = {
-      repository: 'https://github.com/user/repo',
       branch: 'dev',
       domainName: 'asdf',
-      accessToken: '123abc123abc123abc123abc',
       enableAutoBuild: false,
       name: 'my-app',
       buildSpec: `version: 0.1
@@ -144,10 +142,10 @@ artifacts:
     expect(MyAppAmplifyApp).toStrictEqual({
       "Type": "AWS::Amplify::App",
       "Properties": {
-        "Name": amplifyConfig.name,
-        "Repository": amplifyConfig.repository,
-        "AccessToken": amplifyConfig.accessToken,
-        "BuildSpec": amplifyConfig.buildSpec
+        "Name": serverless.service.custom.amplify.name,
+        "Repository": serverless.service.custom.amplify.repository,
+        "AccessToken": serverless.service.custom.amplify.accessToken,
+        "BuildSpec": serverless.service.custom.amplify.buildSpec
       }
     })
 
@@ -160,15 +158,15 @@ artifacts:
             "AppId"
           ]
         },
-        "BranchName": amplifyConfig.branch,
-        "EnableAutoBuild": amplifyConfig.enableAutoBuild
+        "BranchName": serverless.service.custom.amplify.branch,
+        "EnableAutoBuild": serverless.service.custom.amplify.enableAutoBuild
       }
     })
 
     expect(MyAppAmplifyDomain).toStrictEqual({
       "Type": "AWS::Amplify::Domain",
       "Properties": {
-        "DomainName": amplifyConfig.domainName,
+        "DomainName": serverless.service.custom.amplify.domainName,
         "AppId": {
           "Fn::GetAtt": [
             "MyAppAmplifyApp",
@@ -177,7 +175,7 @@ artifacts:
         },
         "SubDomainSettings": [
           {
-            "Prefix": amplifyConfig.branch,
+            "Prefix": serverless.service.custom.amplify.branch,
             "BranchName": {
               "Fn::GetAtt": [
                 "MyAppAmplifyBranch",
@@ -199,5 +197,34 @@ artifacts:
         "Fn::Sub": "${MyAppAmplifyBranch.BranchName}.${MyAppAmplifyApp.DefaultDomain}"
       }
     })
+  })
+  it('creates buildSpec based on defaultBuildSpecOverrides', () => {
+    const amplifyConfig = {
+      defaultBuildSpecOverrides: {
+        baseDirectory: 'public'
+      }
+    }
+    const serverless = makeMockServerless({
+      amplify: amplifyConfig
+    })
+
+    const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
+    serverlessAmplifyPluginInstance.addAmplify()
+    expect(serverless.service.provider.compiledCloudFormationTemplate.Resources.MyServiceAmplifyApp.Properties.BuildSpec).toStrictEqual(`version: 0.1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: public
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*`)
   })
 })
