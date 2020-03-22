@@ -30,3 +30,5 @@ custom:
     branch: ${{self:custom.stages.${{self:provider.stage}}.branch}}
     domainName: ${{self:custom.stages.${{self:provider.stage}}.domainName, ''}}
     accessToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}
+    defaultBuildSpecOverrides:
+      baseDirectory: build
