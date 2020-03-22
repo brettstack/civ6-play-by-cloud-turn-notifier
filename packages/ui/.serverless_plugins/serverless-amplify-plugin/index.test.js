@@ -44,7 +44,7 @@ describe('happy path', () => {
     const serverless = makeMockServerless()
 
     const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
-    serverlessAmplifyPluginInstance.addAmplify()
+    serverlessAmplifyPluginInstance.hooks['before:package:finalize']()
     const { Resources, Outputs } = serverless.service.provider.compiledCloudFormationTemplate
     const {
       MyServiceAmplifyApp,
@@ -127,7 +127,7 @@ artifacts:
     })
 
     const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
-    serverlessAmplifyPluginInstance.addAmplify()
+    serverlessAmplifyPluginInstance.hooks['before:package:finalize']()
 
     const { Resources, Outputs } = serverless.service.provider.compiledCloudFormationTemplate
     const {
@@ -209,7 +209,7 @@ artifacts:
     })
 
     const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
-    serverlessAmplifyPluginInstance.addAmplify()
+    serverlessAmplifyPluginInstance.hooks['before:package:finalize']()
     expect(serverless.service.provider.compiledCloudFormationTemplate.Resources.MyServiceAmplifyApp.Properties.BuildSpec).toStrictEqual(`version: 0.1
 frontend:
   phases:

@@ -22,6 +22,7 @@ custom:
     prod:
       profile: civ6_prod
       domainName: civ.halfstack.software
+      branch: master
   defaultStage: prod
   dotenv:
     path: ../../.env

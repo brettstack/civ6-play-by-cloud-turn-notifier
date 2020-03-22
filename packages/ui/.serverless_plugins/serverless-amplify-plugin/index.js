@@ -9,7 +9,7 @@ class ServerlessAmplifyPlugin {
     this.hooks = {
       'before:package:finalize': () => this.addAmplify(),
       // TODO: Get correct hook to run after CloudFormation success
-      'before:package:finalize': () => this.startFirstJob(),
+      'after:deploy:finalize': () => this.startFirstJob(),
     }
     this.variableResolvers = {
       amplify: {
@@ -58,7 +58,6 @@ frontend:
     } = amplify
     const { Resources, Outputs } = provider.compiledCloudFormationTemplate
     const namePascalCase = pascalCase(name)
-
     Resources[`${namePascalCase}AmplifyApp`] = {
       Type: 'AWS::Amplify::App',
       Properties: {
