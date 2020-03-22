@@ -33,6 +33,13 @@ class ServerlessAmplifyPlugin {
       baseDirectory = 'dist'
     } = defaultBuildSpecOverrides
     const {
+      repository,
+      accessToken,
+      branch = 'master',
+      domainName,
+      enableAutoBuild = true,
+      name = serviceObject.name,
+      stage = 'PRODUCTION',
       buildSpec = `version: 0.1
 frontend:
   phases:
@@ -49,12 +56,6 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`,
-      repository,
-      accessToken,
-      branch = 'master',
-      domainName,
-      enableAutoBuild = true,
-      name = serviceObject.name
     } = amplify
     const { Resources, Outputs } = provider.compiledCloudFormationTemplate
     const namePascalCase = pascalCase(name)
@@ -73,7 +74,8 @@ frontend:
       Properties: {
         AppId: { 'Fn::GetAtt': [`${namePascalCase}AmplifyApp`, 'AppId'] },
         BranchName: branch,
-        EnableAutoBuild: enableAutoBuild
+        EnableAutoBuild: enableAutoBuild,
+        Stage: stage
       }
     }
 

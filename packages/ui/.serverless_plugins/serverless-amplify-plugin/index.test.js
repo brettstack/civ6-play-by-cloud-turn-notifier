@@ -90,6 +90,7 @@ frontend:
           ]
         },
         "BranchName": "master",
+        "Stage": "PRODUCTION",
         "EnableAutoBuild": true
       }
     })
@@ -105,6 +106,7 @@ frontend:
   it('creates Amplify resources using all properties', () => {
     const amplifyConfig = {
       branch: 'dev',
+      stage: 'BETA',
       domainName: 'asdf',
       enableAutoBuild: false,
       name: 'my-app',
@@ -159,6 +161,7 @@ artifacts:
           ]
         },
         "BranchName": serverless.service.custom.amplify.branch,
+        "Stage": "BETA",
         "EnableAutoBuild": serverless.service.custom.amplify.enableAutoBuild
       }
     })

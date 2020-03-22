@@ -17,12 +17,12 @@ custom:
       branch: dev
     staging:
       profile: civ6_staging
-      domainName: staging.api.civ.halfstack.software
+      domainName: staging.civ.halfstack.software
       branch: staging
     prod:
       profile: civ6_prod
       domainName: civ.halfstack.software
-      branch: master
+      branch: ui
   defaultStage: prod
   dotenv:
     path: ../../.env
@@ -31,5 +31,21 @@ custom:
     branch: ${{self:custom.stages.${{self:provider.stage}}.branch}}
     domainName: ${{self:custom.stages.${{self:provider.stage}}.domainName, ''}}
     accessToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}
-    defaultBuildSpecOverrides:
-      baseDirectory: build
+    buildSpec: |-
+      version: 0.1
+      frontend:
+        phases:
+          preBuild:
+            commands:
+              - cd packages/ui
+              - npm ci
+          build:
+            commands:
+              - npm run build
+        artifacts:
+          baseDirectory: build
+          files:
+            - '**/*'
+        cache:
+          paths:
+            - node_modules/**/*
