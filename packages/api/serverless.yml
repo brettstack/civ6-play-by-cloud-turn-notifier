@@ -5,7 +5,7 @@ provider:
   memorySize: 128
   timeout: 6
   stage: ${{opt:stage, self:custom.defaultStage}}
-  profile: ${{self:custom.profiles.${{self:provider.stage}}}}
+  profile: ${{self:custom.stages.${{self:provider.stage}}.profile}}
   region: us-east-1
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
   logs:
@@ -21,10 +21,20 @@ plugins:
 
 custom:
   defaultStage: prod
-  profiles:
-    # dev: civ6_dev
-    # stage: civ6_stage
-    prod: civ6_prod
+  stages:
+    dev:
+      profile: civ6_dev
+      domainEnabled: false
+    staging:
+      profile: civ6_staging
+      domainName: staging.api.civ.halfstack.software
+      validationDomain: halfstack.software
+      domainEnabled: true
+    prod:
+      profile: civ6_prod
+      domainName: api.civ.halfstack.software
+      validationDomain: halfstack.software
+      domainEnabled: true
   apiGatewayServiceProxies:
     - sqs:
         path: /webhook
@@ -34,23 +44,10 @@ custom:
           integration.request.querystring.MessageAttribute.1.Name: "'discordWebhook'"
           integration.request.querystring.MessageAttribute.1.Value.StringValue: method.request.querystring.discordWebhook
           integration.request.querystring.MessageAttribute.1.Value.DataType: "'String'"
-  domain:
-    # dev:
-    #   domain: api.civ.halfstack.software
-    #   validationDomain: halfstack.software
-    #   enabled: false
-    # stage:
-    #   domain: staging.api.civ.halfstack.software
-    #   validationDomain: halfstack.software
-    #   enabled: true
-    prod:
-      domain: api.civ.halfstack.software
-      validationDomain: halfstack.software
-      enabled: true
   customDomain:
-    domainName: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.domain}}
+    domainName: ${{self:custom.stages.${{self:provider.stage}}.domainName}}
     certificateName: '*.civ.halfstack.software'
-    enabled: ${{self:custom.domain.${{opt:stage, self:provider.stage}}.enabled}}
+    enabled: ${{self:custom.stages.${{self:provider.stage}}.domainEnabled}}
     createRoute53Record: false
 
 functions:
@@ -107,6 +104,6 @@ resources:
           - ${{self:custom.customDomain.domainName}}
         DomainValidationOptions:
           - DomainName: '*.${{self:custom.customDomain.domainName}}'
-            ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
+            ValidationDomain: ${{self:custom.stages.${{self:provider.stage}}.validationDomain}}
           - DomainName: ${{self:custom.customDomain.domainName}}
-            ValidationDomain: ${{self:custom.domain.${{self:provider.stage}}.validationDomain}}
+            ValidationDomain: ${{self:custom.stages.${{self:provider.stage}}.validationDomain}}
