@@ -20,7 +20,7 @@ function App() {
   const classes = useStyles()
 
   return (
-    <Container className={classes.root} alignItems="center">
+    <Container className={classes.root}>
       <div className={classes.inner}>
         <GeneratePlayByCloudWebhook />
       </div>

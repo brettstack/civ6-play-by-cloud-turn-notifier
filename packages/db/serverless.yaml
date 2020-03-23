@@ -2,9 +2,9 @@ service: chaos-arena-db
 provider:
   name: aws
   stage: ${{opt:stage, self:custom.defaultStage}}
+  region: us-east-1
   profile: ${{self:custom.stages.${{self:provider.stage}}.profile}}
   runtime: nodejs8.10
-  profile: ${{self:custom.profiles.${{self:provider.stage}}}}
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
 
 plugins:
@@ -15,51 +15,40 @@ custom:
   stages:
     dev:
       profile: civ6_dev
-      branch: dev
     staging:
       profile: civ6_staging
-      subdomain: staging.civ
-      domainName: halfstack.software
-      branch: staging
     prod:
       profile: civ6_prod
-      subdomain: civ
-      domainName: halfstack.software
-      branch: master
   dynamodb:
     stages:
-        - dev # ?
+        - dev
     start:
       port: 889
       migrate: true
       seed: true
     seed:
-      CivPbc:
+      Game:
         sources:
-          - table: CivPbc
-            sources: [./db-seed/CivPbc.json]
+          - table: Game
+            sources: [./db-seed/Game.json]
 
 resources:
   Resources:
-    AbilityTable:
+    GameTable:
         Type: AWS::DynamoDB::Table
         Properties:
-          TableName: CivPbc
+          TableName: Game
           BillingMode: PAY_PER_REQUEST
           PointInTimeRecoverySpecification:
             PointInTimeRecoveryEnabled: false
           KeySchema:
             - KeyType: HASH
-              AttributeName: pk
-            - KeyType: RANGE
-              AttributeName: sk
+              AttributeName: id
           AttributeDefinitions:
-            - AttributeName: pk
-              AttributeType: S
-            - AttributeName: sk
+            - AttributeName: id
               AttributeType: S
 
   Outputs:
     DynamoDbGameTableConsoleUrl:
       Description: Console URL for the DynamoDB Table.
-      Value: !Sub 'https://console.aws.amazon.com/dynamodb/home?region=${AWS::Region}#tables:selected=${HeroTable}'
+      Value: !Sub 'https://console.aws.amazon.com/dynamodb/home?region=${AWS::Region}#tables:selected=${GameTable}'

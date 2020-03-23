@@ -1,6 +1,7 @@
 service: civ6-pbc-api
 provider:
   name: aws
+  stackName: ${{self:service}}-${{self:provider.stage}}
   runtime: nodejs12.x
   memorySize: 128
   timeout: 6
@@ -14,10 +15,13 @@ provider:
       level: INFO # INFO, ERROR
 
 plugins:
-  - serverless-iam-roles-per-function
-  - serverless-offline
-  - serverless-apigateway-service-proxy
   - serverless-domain-manager
+  - serverless-prune-plugin
+  - serverless-plugin-tracing
+  - serverless-iam-roles-per-function
+  - serverless-webpack
+  - serverless-apigateway-service-proxy
+  - serverless-offline
 
 custom:
   defaultStage: prod
@@ -53,7 +57,7 @@ custom:
 functions:
   webhook:
     reservedConcurrency: 1
-    handler: functions/webhook/handler.webhookHandler
+    handler: functions/webhook/lambda.webhookHandler
     events:
       - sqs:
           arn: !GetAtt WebhookSqsQueue.Arn
@@ -62,6 +66,39 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: !GetAtt WebhookSqsQueueDlq.Arn
+  express:
+    handler: functions/express/lambda.handler
+    events:
+        - http: ANY /
+          cors: true
+        - http: 'ANY {proxy+}'
+          cors: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "xray:PutTraceSegments"
+          - "xray:PutTelemetryRecords"
+        Resource:
+          - "*"
+      - Effect: "Allow"
+        Action:
+          - dynamodb:BatchGetItem
+          - dynamodb:BatchWriteItem
+          - dynamodb:DeleteItem
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:UpdateItem
+        Resource:
+          - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Game
+      - Effect: Allow
+        Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+        Resource:
+          - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${{self:provider.stackName}}-express:*:*
 
 resources:
   Conditions:

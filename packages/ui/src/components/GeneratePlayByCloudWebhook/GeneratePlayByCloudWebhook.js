@@ -1,5 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
+import axios from 'axios'
 import {
   Grid,
   TextField,
@@ -29,7 +30,12 @@ const useStyles = makeStyles({
 });
 
 async function makeRequest() {
-  return 1
+  const discordWebhookUrl = document.querySelector('[name="discordWebhookUrl"]').value
+  const response = await axios.post('http://localhost:3000/game', {
+    discordWebhookUrl
+  })
+
+  return response
 }
 
 export default function GeneratePlayByCloudWebhook() {
@@ -45,9 +51,14 @@ export default function GeneratePlayByCloudWebhook() {
       setSuccess(false);
       setLoading(true);
 
-      await makeRequest()
-      // setSuccess(true);
-      // setLoading(false);
+      try {
+        await makeRequest()
+        setSuccess(true);
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "sls dynamodb start",
+    "start:dev": "sls dynamodb start --stage dev",
     "deploy": "sls deploy"
   },
   "keywords": [],
