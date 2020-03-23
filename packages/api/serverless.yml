@@ -53,7 +53,7 @@ custom:
 functions:
   webhook:
     reservedConcurrency: 1
-    handler: handler.webhookHandler
+    handler: functions/webhook/handler.webhookHandler
     events:
       - sqs:
           arn: !GetAtt WebhookSqsQueue.Arn
