@@ -1,13 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  Container,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import GeneratePlayByCloudWebhook from './components/GeneratePlayByCloudWebhook';
+
+const useStyles = makeStyles({
+  root: {
+    height: '100vh',
+    alignItems: 'center',
+    display: 'flex'
+  },
+  inner: {
+    flex: '1'
+  }
+});
 
 function App() {
+  const classes = useStyles()
+
   return (
-    <div className="App">
-      <label for="discordWebhookUrl">Discord Webhook URL</label>
-      <input type="text" id="discordWebhookUrl" name="discordWebhookUrl" />
-    </div>
+    <Container className={classes.root} alignItems="center">
+      <div className={classes.inner}>
+        <GeneratePlayByCloudWebhook />
+      </div>
+    </Container>
   );
 }
 
