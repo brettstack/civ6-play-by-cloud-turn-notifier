@@ -1,19 +1,56 @@
-import React from 'react';
+import React from 'react'
+import clsx from 'clsx'
 import {
   Grid,
   TextField,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
+import { green } from '@material-ui/core/colors'
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   root: {
-    // height: '100vh'
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700],
+    },
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
   },
 });
 
+async function makeRequest() {
+  return 1
+}
+
 export default function GeneratePlayByCloudWebhook() {
   const classes = useStyles()
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const buttonClassname = clsx({
+    [classes.buttonSuccess]: success,
+  });
+
+  const handleButtonClick = async () => {
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+
+      await makeRequest()
+      // setSuccess(true);
+      // setLoading(false);
+    }
+  };
+
   return (
     <form
       noValidate
@@ -42,9 +79,19 @@ export default function GeneratePlayByCloudWebhook() {
           />
         </Grid>
         <Grid item xs={12} align="right">
-          <Button variant="contained" color="primary">
-            Generate Civ Play By Cloud Webhook
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              className={buttonClassname}
+              disabled={loading}
+              onClick={handleButtonClick}
+            >
+              {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+              Generate Civ Play By Cloud Webhook
       </Button>
+
+          </div>
         </Grid>
       </Grid>
     </form>)
