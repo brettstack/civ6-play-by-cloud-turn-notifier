@@ -178,7 +178,7 @@ artifacts:
         },
         "SubDomainSettings": [
           {
-            "Prefix": serverless.service.custom.amplify.branch,
+            "Prefix": '',
             "BranchName": {
               "Fn::GetAtt": [
                 "MyAppAmplifyBranch",

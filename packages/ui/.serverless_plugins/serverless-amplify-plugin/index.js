@@ -38,6 +38,7 @@ class ServerlessAmplifyPlugin {
       branch = 'master',
       domainName,
       enableAutoBuild = true,
+      redirectNakedToWww = false,
       name = serviceObject.name,
       stage = 'PRODUCTION',
       buildSpec = `version: 0.1
@@ -80,6 +81,14 @@ frontend:
     }
 
     if (domainName) {
+      if (redirectNakedToWww) {
+        Resources[`${namePascalCase}AmplifyApp`].Properties.CustomRules = {
+          Source: `https://${domainName}`,
+          Target: `https://www.${domainName}`,
+          Status: "302"
+        }
+      }
+
       Resources[`${namePascalCase}AmplifyDomain`] = {
         Type: 'AWS::Amplify::Domain',
         Properties: {
@@ -87,7 +96,7 @@ frontend:
           AppId: { 'Fn::GetAtt': [`${namePascalCase}AmplifyApp`, 'AppId'] },
           SubDomainSettings: [
             {
-              Prefix: branch,
+              Prefix: '',
               BranchName: { 'Fn::GetAtt': [`${namePascalCase}AmplifyBranch`, 'BranchName'] }
             }
           ]

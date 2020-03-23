@@ -11,6 +11,7 @@ plugins:
   - serverless-amplify-plugin
 
 custom:
+  defaultStage: prod
   stages:
     dev:
       profile: civ6_dev
@@ -23,7 +24,6 @@ custom:
       profile: civ6_prod
       domainName: civ.halfstack.software
       branch: master
-  defaultStage: prod
   dotenv:
     path: ../../.env
   amplify:
