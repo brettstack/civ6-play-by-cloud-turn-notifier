@@ -53,6 +53,10 @@ custom:
     certificateName: '*.civ.halfstack.software'
     enabled: ${{self:custom.stages.${{self:provider.stage}}.domainEnabled}}
     createRoute53Record: false
+  serverless-offline:
+    port: 4911
+    useSeparateProcesses: true
+    showDuration: showDuration
 
 functions:
   webhook:

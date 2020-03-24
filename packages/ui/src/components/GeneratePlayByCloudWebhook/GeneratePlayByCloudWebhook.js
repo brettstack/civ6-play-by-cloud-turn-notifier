@@ -1,5 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
 import axios from 'axios'
 import {
   Grid,
@@ -13,12 +12,6 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles({
   root: {
   },
-  buttonSuccess: {
-    backgroundColor: green[500],
-    '&:hover': {
-      backgroundColor: green[700],
-    },
-  },
   buttonProgress: {
     color: green[500],
     position: 'absolute',
@@ -29,33 +22,47 @@ const useStyles = makeStyles({
   },
 });
 
-async function makeRequest() {
-  const discordWebhookUrl = document.querySelector('[name="discordWebhookUrl"]').value
-  const response = await axios.post('http://localhost:3000/game', {
-    discordWebhookUrl
-  })
+axios.defaults.baseURL = 'http://localhost:4911/'
 
-  return response
+async function createGame() {
+  const discordWebhookUrl = document.querySelector('[name="discordWebhookUrl"]').value
+
+  try {
+    const response = await axios.post('/game', {
+      discordWebhookUrl
+    })
+
+    return {
+      game: response.data
+    }
+  } catch (error) {
+    const { response } = error
+    return {
+      error: response.data,
+      errorMessage: 'There was an error creating a webhook. Please confirm you entered a URL in the format https://discordapp.com/api/webhooks/123456789/123abc123abc123abc123abc123abc123abc'
+    }
+  }
 }
 
-export default function GeneratePlayByCloudWebhook() {
+export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
   const classes = useStyles()
+  const [errorMessage, setErrorMessage] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
-  const buttonClassname = clsx({
-    [classes.buttonSuccess]: success,
-  });
 
   const handleButtonClick = async () => {
     if (!loading) {
-      setSuccess(false);
       setLoading(true);
+      setErrorMessage('')
 
       try {
-        await makeRequest()
-        setSuccess(true);
+        const { game, errorMessage } = await createGame()
+        if (errorMessage) {
+          setErrorMessage(errorMessage)
+        } else {
+          onCreateGame({ game })
+        }
       } catch (error) {
-        console.log(error)
+        setErrorMessage(error.message)
       } finally {
         setLoading(false);
       }
@@ -77,6 +84,7 @@ export default function GeneratePlayByCloudWebhook() {
         <Grid item xs={12}>
           <TextField
             label="Discord Webhook URL"
+            error={Boolean(errorMessage)}
             name="discordWebhookUrl"
             required
             fullWidth
@@ -94,9 +102,9 @@ export default function GeneratePlayByCloudWebhook() {
             <Button
               variant="contained"
               color="primary"
-              className={buttonClassname}
               disabled={loading}
               onClick={handleButtonClick}
+              type="submit"
             >
               {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
               Generate Civ Play By Cloud Webhook
