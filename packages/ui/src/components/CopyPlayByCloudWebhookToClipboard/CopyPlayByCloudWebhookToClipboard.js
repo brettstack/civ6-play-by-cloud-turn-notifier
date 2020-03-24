@@ -35,7 +35,6 @@ export default function CopyPlayByCloudWebhookToClipboard({ playByCloudWebhookUr
   }, []);
 
   const copyToClipboard = (e) => {
-    console.log(textAreaRef.current)
     textAreaRef.current.select();
     document.execCommand('copy');
     e.target.focus();

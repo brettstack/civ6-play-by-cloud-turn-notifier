@@ -22,7 +22,7 @@ function App() {
   const [playByCloudWebhookUrl, setPlayByCloudWebhookUrl] = React.useState('');
 
   const onCreateGame = ({ game }) => {
-    setPlayByCloudWebhookUrl(`https://api.civ.halfstack.software/webhook/${game.id}`)
+    setPlayByCloudWebhookUrl(`https://api.civ.halfstack.software/webhook?gameId=${game.id}`)
   }
 
   return (
