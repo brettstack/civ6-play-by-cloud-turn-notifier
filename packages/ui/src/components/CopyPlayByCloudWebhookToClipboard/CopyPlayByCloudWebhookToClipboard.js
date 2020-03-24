@@ -58,8 +58,11 @@ export default function CopyPlayByCloudWebhookToClipboard({ playByCloudWebhookUr
           name="playByCloudWebhookUrl"
           fullWidth
           defaultValue={playByCloudWebhookUrl}
-          disabled
           inputRef={textAreaRef}
+          readOnly
+          InputProps={{
+            readOnly: true,
+          }}
         />
       </Grid>
       <Grid item xs={1}>
