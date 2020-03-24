@@ -1,8 +1,8 @@
 require('dotenv').config()
-const webhookLambda = require('../handler')
+const webhookLambda = require('../functions/webhook/lambda')
 
 const {
-  DISCORD_WEBHOOK_URL,
+  GAME_ID,
 } = process.env
 const EVENT = {
   Records: [{
@@ -20,8 +20,8 @@ const EVENT = {
       ApproximateFirstReceiveTimestamp: '1545082649185',
     },
     messageAttributes: {
-      discordWebhook: {
-        stringValue: DISCORD_WEBHOOK_URL,
+      gameId: {
+        stringValue: GAME_ID,
         stringListValues: [],
         binaryListValues: [],
         dataType: 'String',

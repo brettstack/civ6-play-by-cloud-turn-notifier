@@ -1,12 +1,15 @@
-// const Discord = require('discord.js')
-const fetch = require('node-fetch')
-const middy = require('@middy/core')
-const sqsPartialBatchFailureMiddleware = require('@middy/sqs-partial-batch-failure')
-// const sampleLogging = require('@dazn/lambda-powertools-middleware-sample-logging')
-// const captureCorrelationIds = require('@dazn/lambda-powertools-middleware-correlation-ids')
-// const logTimeout = require('@dazn/lambda-powertools-middleware-log-timeout')
+import 'source-map-support/register'
+// import Discord from 'discord.js'
+import fetch from 'node-fetch'
+import middy from '@middy/core'
+import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
+// import sampleLogging from '@dazn/lambda-powertools-middleware-sample-logging'
+// import captureCorrelationIds from '@dazn/lambda-powertools-middleware-correlation-ids'
+// import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
+import '../../aws'
+import Game from '../../models/Game'
 
-async function webhookHandler(event) {
+export async function webhookHandler(event) {
   const { Records } = event
 
   if (!Records || !Array.isArray(Records)) {
@@ -38,15 +41,15 @@ async function processMessage(record, index) {
   const bodyJson = JSON.parse(body)
 
   const {
-    discordWebhook,
+    gameId,
     botUsername,
     avatarUrl,
     messageTemplate,
   } = getMessageAttributeStringValues({ messageAttributes })
 
 
-  if (!discordWebhook) {
-    throw new Error(`\`Records[${index}].messageAttributes.discordWebhook\` is missing.`)
+  if (!gameId) {
+    throw new Error(`\`Records[${index}].messageAttributes.gameId\` is missing.`)
   }
 
   const {
@@ -76,7 +79,9 @@ async function processMessage(record, index) {
     */
   }
   // const hook = new Discord.WebhookClient('webhook id', 'webhook token')
-  const response = await fetch(discordWebhook, {
+  const game = await Game.get(gameId)
+  const discordWebhookUrl = game.get('discordWebhookUrl')
+  const response = await fetch(discordWebhookUrl, {
     body: JSON.stringify(targetWebhookBody),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -129,5 +134,3 @@ handler
   // }))
   // .use(logTimeout())
   .use(sqsPartialBatchFailureMiddleware())
-
-module.exports.webhookHandler = handler

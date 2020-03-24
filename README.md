@@ -1,6 +1,6 @@
 # Civilization VI Turn Notifier
 
-A hosted service for Civilization VI's Play By Cloud game format, for notifying players in Discord when it's their turn. Simply create a Webhook in your Discord Channel, and use this URL `https://civ.halfstack.software?discordWebhookUrl=DISCORD_WEBHOOK_URL` in your Civilization VI game settings, replacing `DISCORD_WEBHOOK_URL` with the URL from your Discord Webhook.
+A hosted service for Civilization VI's Play By Cloud game format, for notifying players in Discord when it's their turn. Simply create a Webhook in your Discord Channel, and use this URL `https://api.civ.halfstack.software/webhook?gameId=GAME_ID` in your Civilization VI game settings..
 
 Having issues? Reach out to me on Twitter [@AWSBrett](https://twitter.com/AWSbrett) or open a GitHub Issue.
 

@@ -1,5 +1,6 @@
-const eventMocks = require('@serverless/event-mocks').default
-const awsLambdaMockContext = require('aws-lambda-mock-context')
+import 'regenerator-runtime/runtime'
+import eventMocks from '@serverless/event-mocks'
+import awsLambdaMockContext from 'aws-lambda-mock-context'
 
 jest.mock('node-fetch')
 
@@ -8,21 +9,39 @@ delete global.window
 
 // Mock SQS
 const mockDeleteMessageBatch = jest.fn()
+
 mockDeleteMessageBatch.mockImplementation(() => ({
   promise() {
     return Promise.resolve({ Body: 'test document' })
   },
 }))
+
 jest.mock('aws-sdk', () => ({
   SQS: jest.fn(() => ({
     deleteMessageBatch: mockDeleteMessageBatch,
   })),
+  config: {
+    update: jest.fn(),
+  },
+}))
+
+jest.mock('../../models/Game', () => ({
+  get: jest.fn((gameId) => {
+    const games = {
+      'f41l960f-d4ac-44be-ab1b-aa415b73ff7f': 'hsdfttps://discordapp.com/api/webhooks/invalid',
+      'd096960f-d4ac-44be-ab1b-aa415b73ff7f': 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl',
+    }
+
+    return {
+      discordWebhookUrl: games[gameId],
+    }
+  }),
 }))
 
 const fetch = require('node-fetch')
 
 const { Response, Headers } = jest.requireActual('node-fetch')
-const { webhookHandler } = require('./handler')
+const { webhookHandler } = require('./lambda')
 
 describe('webhookHandler: happy paths ', () => {
   test('Works', async () => {
@@ -32,8 +51,8 @@ describe('webhookHandler: happy paths ', () => {
       {
         Records: [{
           messageAttributes: {
-            discordWebhook: {
-              stringValue: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl;',
+            gameId: {
+              stringValue: 'd096960f-d4ac-44be-ab1b-aa415b73ff7f',
             },
           },
           body: JSON.stringify({
@@ -69,8 +88,8 @@ describe('webhookHandler: unhappy paths ', () => {
         Records: [
           {
             messageAttributes: {
-              discordWebhook: {
-                stringValue: 'hsdfttps://discordapp.com/api/webhooks/invalid',
+              gameId: {
+                stringValue: 'f41l960f-d4ac-44be-ab1b-aa415b73ff7f',
               },
             },
             body: JSON.stringify({
@@ -111,7 +130,7 @@ describe('webhookHandler: unhappy paths ', () => {
         Records: [
           {
             messageAttributes: {
-              discordWebhook: {
+              gameId: {
                 stringValue: 'https://discordapp.com/api/webhooks/invalid',
               },
             },

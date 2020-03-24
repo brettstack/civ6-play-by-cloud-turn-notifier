@@ -14,8 +14,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-async-to-generator": "^7.8.3",
+    "@babel/preset-env": "^7.9.0",
     "@serverless/event-mocks": "^1.1.1",
     "aws-lambda-mock-context": "^3.2.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "jest": "^24.9.0",
     "serverless-apigateway-service-proxy": "^1.7.0",
     "serverless-domain-manager": "^3.3.1",

@@ -2,7 +2,7 @@ require('dotenv').config()
 const fetch = require('node-fetch')
 
 const {
-  DISCORD_WEBHOOK_URL,
+  GAME_ID
   API_GATEWAY_ENDPOINT,
 } = process.env
 
@@ -12,12 +12,7 @@ const WEBHOOK_REQUEST_VALUE = {
   value3: Math.round(Math.random(0, 100) * 100).toString(),
 }
 async function main() {
-  // fetch(`${API_GATEWAY_ENDPOINT}?discordWebhook=FAIL${discordWebhook}`, {
-  //   body: JSON.stringify(WEBHOOK_REQUEST_VALUE),
-  //   method: 'POST',
-  //   headers: { 'content-type': 'application/json' },
-  // })
-  const response = await fetch(`${API_GATEWAY_ENDPOINT}?discordWebhook=${DISCORD_WEBHOOK_URL}`, {
+  const response = await fetch(`${API_GATEWAY_ENDPOINT}webhook?gameId=${GAME_ID}`, {
     body: JSON.stringify(WEBHOOK_REQUEST_VALUE),
     method: 'POST',
     headers: { 'content-type': 'application/json' },

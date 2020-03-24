@@ -1,6 +1,6 @@
-import Game from '../tables/Game'
+import Game from '../../../models/Game'
 
-export async function createGame({
+export function createGame({
   discordWebhookUrl,
 }) {
   return Game.create({ discordWebhookUrl })

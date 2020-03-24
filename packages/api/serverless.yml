@@ -45,12 +45,12 @@ custom:
         method: post
         queueName: !GetAtt WebhookSqsQueue.QueueName
         requestParameters:
-          integration.request.querystring.MessageAttribute.1.Name: "'discordWebhook'"
-          integration.request.querystring.MessageAttribute.1.Value.StringValue: method.request.querystring.discordWebhook
+          integration.request.querystring.MessageAttribute.1.Name: "'gameId'"
+          integration.request.querystring.MessageAttribute.1.Value.StringValue: method.request.querystring.gameId
           integration.request.querystring.MessageAttribute.1.Value.DataType: "'String'"
   customDomain:
     domainName: ${{self:custom.stages.${{self:provider.stage}}.domainName}}
-    certificateName: '*.civ.halfstack.software'
+    certificateName: ${{self:custom.stages.${{self:provider.stage}}.domainName}}
     enabled: ${{self:custom.stages.${{self:provider.stage}}.domainEnabled}}
     createRoute53Record: false
   serverless-offline:
@@ -70,6 +70,18 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: !GetAtt WebhookSqsQueueDlq.Arn
+      - Effect: "Allow"
+        Action:
+          - dynamodb:GetItem
+        Resource:
+          - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Game
+      # - Effect: Allow
+      #   Action:
+      #     - logs:CreateLogGroup
+      #     - logs:CreateLogStream
+      #     - logs:PutLogEvents
+      #   Resource:
+      #     - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${{self:provider.stackName}}-webhook:*:*
   express:
     handler: functions/express/lambda.handler
     events:
@@ -96,13 +108,13 @@ functions:
           - dynamodb:UpdateItem
         Resource:
           - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Game
-      - Effect: Allow
-        Action:
-          - logs:CreateLogGroup
-          - logs:CreateLogStream
-          - logs:PutLogEvents
-        Resource:
-          - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${{self:provider.stackName}}-express:*:*
+      # - Effect: Allow
+      #   Action:
+      #     - logs:CreateLogGroup
+      #     - logs:CreateLogStream
+      #     - logs:PutLogEvents
+      #   Resource:
+      #     - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${{self:provider.stackName}}-express:*:*
 
 resources:
   Conditions:
@@ -129,7 +141,7 @@ resources:
       Type: AWS::ApiGateway::Method
       Properties:
         RequestParameters:
-          method.request.querystring.discordWebhook: true
+          method.request.querystring.gameId: true
         Integration:
           IntegrationResponses:
             - StatusCode: 200
@@ -140,11 +152,7 @@ resources:
       Type: AWS::CertificateManager::Certificate
       Condition: UseDomainName
       Properties:
-        DomainName: '*.${{self:custom.customDomain.domainName}}'
-        SubjectAlternativeNames:
-          - ${{self:custom.customDomain.domainName}}
+        DomainName: ${{self:custom.customDomain.domainName}}
         DomainValidationOptions:
-          - DomainName: '*.${{self:custom.customDomain.domainName}}'
-            ValidationDomain: ${{self:custom.stages.${{self:provider.stage}}.validationDomain}}
           - DomainName: ${{self:custom.customDomain.domainName}}
             ValidationDomain: ${{self:custom.stages.${{self:provider.stage}}.validationDomain}}
