@@ -22,7 +22,8 @@ const useStyles = makeStyles({
   },
 });
 
-axios.defaults.baseURL = 'http://localhost:4911/'
+// Consider using https://www.npmjs.com/package/@beam-australia/react-env instead
+axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:4911/' : 'https://api.civ.halfstack.software'
 
 async function createGame() {
   const discordWebhookUrl = document.querySelector('[name="discordWebhookUrl"]').value
@@ -58,12 +59,12 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
         const { game, errorMessage } = await createGame()
         if (errorMessage) {
           setErrorMessage(errorMessage)
+          setLoading(false);
         } else {
           onCreateGame({ game })
         }
       } catch (error) {
         setErrorMessage(error.message)
-      } finally {
         setLoading(false);
       }
     }
