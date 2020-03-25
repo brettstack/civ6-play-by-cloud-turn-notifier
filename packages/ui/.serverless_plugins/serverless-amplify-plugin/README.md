@@ -100,3 +100,15 @@ frontend:
     paths:
       - node_modules/**/*
 ```
+
+## Limitations and future considerations
+
+This plugin is currently only written with a basic single branch setup in mind. In the future we'd like to add support for all of Amplify Console's features including:
+
+1. Multiple branches
+2. Multiple domains
+3. PR Previews
+4. Environment Variables
+5. Email Notifications
+6. Access Control
+7. Rewrites and redirects
