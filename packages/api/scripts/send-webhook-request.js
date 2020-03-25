@@ -2,7 +2,7 @@ require('dotenv').config()
 const fetch = require('node-fetch')
 
 const {
-  GAME_ID
+  GAME_ID,
   API_GATEWAY_ENDPOINT,
 } = process.env
 

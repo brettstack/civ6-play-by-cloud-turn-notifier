@@ -33,3 +33,7 @@ Below is for development purposes only. If you're having problems using the serv
    1. Specify the subdomain in the `@` field (e.g. `civ`)
    2. Copy `Target Domain Name` from the API Gateway console into `Target Domain`
    3. This takes time to propagate
+
+## See also
+
+https://glitch.com/edit/#!/civ6-cloud-hook-to-distord?path=server.js:9:0
