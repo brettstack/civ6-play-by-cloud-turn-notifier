@@ -16,13 +16,24 @@ plugins:
 custom:
   amplify:
     repository: https://github.com/USER/REPO # required
-    accessToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}} # required
-    branch: master # optional; default: master
-    domainName: example.com # optional; 
-    buildSpec: |- # optional; default: 
+    accessTokenSecretName: AmplifyGithub # optional
+    accessTokenSecretKey: accessToken # optional
+    branch: master # optional
+    domainName: example.com # optional;
+    buildSpec: |- # optional
       version: 0.1
       frontend:
         ...
+```
+
+### 🔒 Securing your GitHub Personal Access Token Secret
+
+It's important **not** to paste your GitHub Personal Access Token directly into the `accessToken` property. At a minimum, you should use `${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}` along with the <a href="serverless-dotenv-plugin" target="_blank">serverless-dotenv-plugin</a>, however, this will still be visible in the CloudFormation template and logs.
+
+The recommended way is to store your secret in <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a>. You can do this via the AWS Console or by running this command (ensure your profile and region are correct):
+
+```shell
+aws secretsmanager create-secret --name AmplifyGithub --secret-string '[{"personalAccessToken":"82dcc67482dcc67482dcc67482dcc67482dcc67482dcc674"}]'
 ```
 
 ## Options
@@ -31,9 +42,27 @@ custom:
 
 The GitHub repository URL (`https://github.com/USER/REPO`) of the project for which you want to set up Continuous Deployment and hosting.
 
-### accessToken
+### accessTokenSecretName (optional)
+
+Shorthand equivalent of `accessToken: '{{resolve:secretsmanager:AmplifyGithub:SecretString:personalAccessToken}}'` where:
+
+```yaml
+accessTokenSecretName: AmplifyGithub
+accessTokenSecretKey: personalAccessToken
+```
+
+**Default**: AmplifyGithub
+
+### accessTokenSecretKey (optional)
+
+**Default:** accessToken
+
+
+### 🔒 accessToken  (required*)
 
 A <a href="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line" target="_blank">GitHub Personal Access Token</a> with `repo` permissions. Amplify Console sets up a <a href="https://developer.github.com/webhooks/" target="_blank">GitHub Webhook</a> so that it can be notified of new commits to build and deploy any changes.
+
+🔒 This is a secret! It's recommended to store this in <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a>.
 
 ### branch (optional)
 

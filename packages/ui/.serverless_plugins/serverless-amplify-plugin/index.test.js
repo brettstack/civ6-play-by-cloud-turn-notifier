@@ -2,7 +2,6 @@ const _ = require('lodash')
 const ServerlessAmplifyPlugin = require('./index')
 
 const repository = 'https://github.com/user/repo'
-const accessToken = '123abc123abc123abc123abc'
 
 function makeMockServerless({ amplify, overrides = {} } = {}) {
   const serverlessBase = {
@@ -11,7 +10,6 @@ function makeMockServerless({ amplify, overrides = {} } = {}) {
       custom: {
         amplify: {
           repository,
-          accessToken
         }
       },
       serviceObject: {
@@ -55,13 +53,7 @@ describe('happy path', () => {
       MyServiceAmplifyBranchUrl,
       MyServiceAmplifyDefaultDomain
     } = Outputs
-    expect(MyServiceAmplifyApp).toStrictEqual({
-      "Type": "AWS::Amplify::App",
-      "Properties": {
-        "Name": "my-service",
-        "Repository": serverless.service.custom.amplify.repository,
-        "AccessToken": serverless.service.custom.amplify.accessToken,
-        "BuildSpec": `version: 0.1
+    const defaultBuildSpec = `version: 0.1
 frontend:
   phases:
     preBuild:
@@ -77,6 +69,13 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`
+    expect(MyServiceAmplifyApp).toStrictEqual({
+      "Type": "AWS::Amplify::App",
+      "Properties": {
+        "Name": "my-service",
+        "Repository": serverless.service.custom.amplify.repository,
+        "AccessToken": '{{resolve:secretsmanager:AmplifyGithub:SecretString:accessToken}}',
+        "BuildSpec": defaultBuildSpec
       }
     })
 
@@ -104,13 +103,7 @@ frontend:
     })
   })
   it('creates Amplify resources using all properties', () => {
-    const amplifyConfig = {
-      branch: 'dev',
-      stage: 'BETA',
-      domainName: 'asdf',
-      enableAutoBuild: false,
-      name: 'my-app',
-      buildSpec: `version: 0.1
+    const buildSpec = `version: 0.1
 frontend:
 phases:
   preBuild:
@@ -123,6 +116,15 @@ artifacts:
   baseDirectory: public
   files:
     - '**/*'`
+    const amplifyConfig = {
+      accessTokenSecretName: 'MySecret',
+      accessTokenSecretKey: 'personalAccessToken',
+      branch: 'dev',
+      stage: 'BETA',
+      domainName: 'asdf',
+      enableAutoBuild: false,
+      name: 'my-app',
+      buildSpec
     }
     const serverless = makeMockServerless({
       amplify: amplifyConfig
@@ -146,7 +148,7 @@ artifacts:
       "Properties": {
         "Name": serverless.service.custom.amplify.name,
         "Repository": serverless.service.custom.amplify.repository,
-        "AccessToken": serverless.service.custom.amplify.accessToken,
+        "AccessToken": '{{resolve:secretsmanager:MySecret:SecretString:personalAccessToken}}',
         "BuildSpec": serverless.service.custom.amplify.buildSpec
       }
     })
@@ -229,5 +231,17 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`)
+  })
+  it('sets AccessToken based on accessToken', () => {
+    const amplifyConfig = {
+      accessToken: '123abc123abc123abc123abc123abc123abc'
+    }
+    const serverless = makeMockServerless({
+      amplify: amplifyConfig
+    })
+
+    const serverlessAmplifyPluginInstance = new ServerlessAmplifyPlugin(serverless)
+    serverlessAmplifyPluginInstance.hooks['before:package:finalize']()
+    expect(serverless.service.provider.compiledCloudFormationTemplate.Resources.MyServiceAmplifyApp.Properties.AccessToken).toStrictEqual(serverless.service.custom.amplify.accessToken)
   })
 })

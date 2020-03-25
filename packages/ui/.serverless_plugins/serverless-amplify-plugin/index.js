@@ -34,7 +34,9 @@ class ServerlessAmplifyPlugin {
     } = defaultBuildSpecOverrides
     const {
       repository,
-      accessToken,
+      accessTokenSecretName = 'AmplifyGithub',
+      accessTokenSecretKey = 'accessToken',
+      accessToken = `{{resolve:secretsmanager:${accessTokenSecretName}:SecretString:${accessTokenSecretKey}}}`,
       branch = 'master',
       domainName,
       enableAutoBuild = true,
