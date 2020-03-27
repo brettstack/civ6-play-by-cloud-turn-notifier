@@ -8,7 +8,7 @@ provider:
 
 plugins:
   - serverless-dotenv-plugin
-  - serverless-amplify-plugin
+  - ../../../serverless-amplify-plugin
 
 custom:
   defaultStage: prod
@@ -30,7 +30,6 @@ custom:
     repository: https://github.com/brettstack/civ6-play-by-cloud-turn-notifier
     branch: ${{self:custom.stages.${{self:provider.stage}}.branch}}
     domainName: ${{self:custom.stages.${{self:provider.stage}}.domainName, ''}}
-    accessToken: ${{env:GITHUB_PERSONAL_ACCESS_TOKEN}}
     buildSpec: |-
       version: 0.1
       frontend:
