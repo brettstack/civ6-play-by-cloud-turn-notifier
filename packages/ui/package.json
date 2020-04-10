@@ -20,6 +20,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "package": "serverless package && zip -r civ6-pbc-ui.zip build .serverless serverless.yaml package.json package-lock.json",
     "deploy": "sls deploy"
   },
   "eslintConfig": {
