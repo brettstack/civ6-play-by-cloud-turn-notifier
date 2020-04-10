@@ -1,4 +1,4 @@
-service: chaos-arena-db
+service: civ6-pbc-db
 provider:
   name: aws
   stage: ${{opt:stage, self:custom.defaultStage}}
