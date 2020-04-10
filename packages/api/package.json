@@ -39,7 +39,7 @@
     "@dazn/lambda-powertools-middleware-sample-logging": "^1.16.0",
     "@hapi/joi": "^15.1.1",
     "@middy/core": "^1.0.0-beta.2",
-    "@middy/sqs-partial-batch-failure": "file:../../../middy/packages/sqs-partial-batch-failure",
+    "@middy/sqs-partial-batch-failure": "^1.0.0-beta.8",
     "aws-sdk": "^2.601.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

@@ -4,6 +4,6 @@ import App from './App';
 
 test('renders learn react link', () => {
   const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const instructionElement = getByText(/Generate a Discord Webhook for your channel and copy-paste the Webhook URL to the field below./i);
+  expect(instructionElement).toBeInTheDocument();
 });
