@@ -76,6 +76,7 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
       autoComplete="off"
       className={`GeneratePlayByCloudWebhook ${classes.root}`}
     >
+      <p>Generate a Discord Webhook for your channel and copy-paste the Webhook URL to the field below.</p>
       <Grid
         container
         spacing={1}

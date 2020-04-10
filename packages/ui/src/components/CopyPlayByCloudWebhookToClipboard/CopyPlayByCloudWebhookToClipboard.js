@@ -45,42 +45,44 @@ export default function CopyPlayByCloudWebhookToClipboard({ playByCloudWebhookUr
   };
 
   return (
-    <Grid
-      container
-      spacing={1}
-      justify="center"
-      align="center"
-    >
-      <Grid item xs={11}>
-        <TextField
-          label="Play by Cloud Webhook URL"
-          name="playByCloudWebhookUrl"
-          fullWidth
-          defaultValue={playByCloudWebhookUrl}
-          inputRef={textAreaRef}
-          readOnly
-          InputProps={{
-            readOnly: true,
-          }}
-        />
+    <React.Fragment>
+      <p>Copy-paste the URL below into the <strong>Play By Cloud Webhook URL</strong> field in Civilization 6 <strong>Game Options</strong> and select <strong>Every Turn</strong> for <strong>Play By Cloud Webhook Frequency</strong>.</p>
+      <Grid
+        container
+        spacing={1}
+        justify="center"
+        align="center"
+      >
+        <Grid item xs={11}>
+          <TextField
+            label="Play by Cloud Webhook URL"
+            name="playByCloudWebhookUrl"
+            fullWidth
+            defaultValue={playByCloudWebhookUrl}
+            inputRef={textAreaRef}
+            readOnly
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          {
+            /* Logical shortcut for only displaying the 
+               button if the copy command exists */
+            document.queryCommandSupported('copy') &&
+            <div>
+              <Fab
+                aria-label="save"
+                color="primary"
+                className={buttonClassname}
+                onClick={copyToClipboard}
+              >
+                {copied ? <CheckIcon /> : <FileCopyIcon />}
+              </Fab>
+            </div>
+          }
+        </Grid>
       </Grid>
-      <Grid item xs={1}>
-        {
-          /* Logical shortcut for only displaying the 
-             button if the copy command exists */
-          document.queryCommandSupported('copy') &&
-          <div>
-            <Fab
-              aria-label="save"
-              color="primary"
-              className={buttonClassname}
-              onClick={copyToClipboard}
-            >
-              {copied ? <CheckIcon /> : <FileCopyIcon />}
-            </Fab>
-          </div>
-        }
-      </Grid>
-    </Grid>
-  );
+    </React.Fragment>);
 }
