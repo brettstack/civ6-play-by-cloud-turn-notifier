@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "serverless": "^1.67.3",
+    "serverless-dynamodb-local": "^0.2.39"
   }
 }

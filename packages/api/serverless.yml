@@ -13,6 +13,8 @@ provider:
     restApi:
       format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
       level: INFO # INFO, ERROR
+  environment:
+    IS_OFFLINE: ${{env:IS_OFFLINE}}
 
 plugins:
   - serverless-domain-manager
@@ -54,9 +56,10 @@ custom:
     enabled: ${{self:custom.stages.${{self:provider.stage}}.domainEnabled}}
     createRoute53Record: false
   serverless-offline:
-    port: 4911
+    httpPort: 4911
+    noPrependStageInUrl: true
+    useChildProcesses: true # hack to get watching working
     useSeparateProcesses: true
-    showDuration: showDuration
 
 functions:
   webhook:

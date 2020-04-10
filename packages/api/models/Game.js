@@ -8,7 +8,7 @@ const Game = dynamo.define('Game', {
   timestamps: true,
 
   schema: {
-    id: dynamo.types.uuid(),
+    id: Joi.string(),
     discordWebhookUrl: Joi.string().uri(),
   },
   tableName: 'Game',
