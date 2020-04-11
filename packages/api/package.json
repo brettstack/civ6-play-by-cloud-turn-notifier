@@ -9,6 +9,7 @@
     "start:dev": "IS_OFFLINE=true serverless offline start",
     "package": "serverless package && zip -r civ6-pbc-api.zip .serverless serverless.yaml package.json package-lock.json",
     "deploy": "sls deploy",
+    "deploy-package": "serverless deploy --package .serverless",
     "deploy-function": "sls deploy -f webhook",
     "sqs-lambda": "node_modules/.bin/babel-node --require dotenv/config scripts/sqs-lambda.js"
   },

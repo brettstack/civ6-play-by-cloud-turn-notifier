@@ -7,7 +7,8 @@
     "test": "",
     "start:dev": "sls dynamodb start --stage dev",
     "package": "serverless package && zip -r civ6-pbc-db.zip .serverless serverless.yaml package.json package-lock.json",
-    "deploy": "sls deploy"
+    "deploy": "sls deploy",
+    "deploy-package": "serverless deploy --package .serverless"
   },
   "keywords": [],
   "author": "",
