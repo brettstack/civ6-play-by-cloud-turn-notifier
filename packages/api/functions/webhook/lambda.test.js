@@ -25,18 +25,30 @@ jest.mock('aws-sdk', () => ({
   },
 }))
 
-jest.mock('../../models/Game', () => ({
-  get: jest.fn((gameId) => {
-    const games = {
-      'f41l960f-d4ac-44be-ab1b-aa415b73ff7f': 'hsdfttps://discordapp.com/api/webhooks/invalid',
-      'd096960f-d4ac-44be-ab1b-aa415b73ff7f': 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl',
-    }
-
-    return {
-      discordWebhookUrl: games[gameId],
-    }
-  }),
-}))
+jest.mock('../../models/Game', () => {
+  const games = {
+    'invalid-discord-webhook-protocol': {
+      discordWebhookUrl: 'hsdfttps://discordapp.com/api/webhooks/invalid',
+    },
+    'd096960f-d4ac-44be-ab1b-aa415b73ff7f': {
+      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl',
+    },
+    'invalid-discord-webhook-url': {
+      discordWebhookUrl: 'https://discordapp.com/api/webhooks/invalid',
+    },
+  }
+  return {
+    get: jest.fn(async (gameId) => {
+      const game = games[gameId]
+      if (!game) return null
+      return {
+        get(property) {
+          return game[property]
+        },
+      }
+    }),
+  }
+})
 
 const fetch = require('node-fetch')
 
@@ -73,9 +85,9 @@ describe('webhookHandler: happy paths ', () => {
 })
 
 describe('webhookHandler: unhappy paths ', () => {
-  //   beforeEach(() => {
-  //     mockS3GetObject.mockReset()
-  // })
+  beforeEach(() => {
+    fetch.mockReset()
+  })
   test('Fails on an invalid event object', async () => {
     const context = awsLambdaMockContext()
     await expect(webhookHandler({}, context)).rejects.toThrow('Lambda didn\'t receive a `Records` array')
@@ -89,7 +101,7 @@ describe('webhookHandler: unhappy paths ', () => {
           {
             messageAttributes: {
               gameId: {
-                stringValue: 'f41l960f-d4ac-44be-ab1b-aa415b73ff7f',
+                stringValue: 'invalid-discord-webhook-protocol',
               },
             },
             body: JSON.stringify({
@@ -102,9 +114,41 @@ describe('webhookHandler: unhappy paths ', () => {
       },
     )
     const context = awsLambdaMockContext()
-    fetch.mockRejectedValueOnce(new Error('Only HTTP(S) protocols are supported'))
     const rejectedReasons = 'Only HTTP(S) protocols are supported'
-    await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
+    fetch.mockRejectedValueOnce(new Error(rejectedReasons))
+    await expect(webhookHandler(event, context)).resolves.toEqual([{
+      reason: new Error(rejectedReasons),
+      status: 'rejected',
+    }])
+  })
+
+  test('Rejected count increases on missing game', async () => {
+    const event = eventMocks(
+      'aws:sqs',
+      {
+        Records: [
+          {
+            messageAttributes: {
+              gameId: {
+                stringValue: 'missing',
+              },
+            },
+            body: JSON.stringify({
+              value1: 'Game Name',
+              value2: 'Player Name',
+              value3: Math.round(Math.random(0, 100) * 100).toString(),
+            }),
+          },
+        ],
+      },
+    )
+    const context = awsLambdaMockContext()
+    const rejectedReasons = 'No game found with id: missing'
+    fetch.mockRejectedValueOnce(new Error(rejectedReasons))
+    await expect(webhookHandler(event, context)).resolves.toEqual([{
+      reason: new Error(rejectedReasons),
+      status: 'rejected',
+    }])
   })
 
   test('Rejected count increases on non-2xx HTTP status code', async () => {
@@ -131,7 +175,7 @@ describe('webhookHandler: unhappy paths ', () => {
           {
             messageAttributes: {
               gameId: {
-                stringValue: 'https://discordapp.com/api/webhooks/invalid',
+                stringValue: 'invalid-discord-webhook-url',
               },
             },
             body: JSON.stringify({
@@ -143,6 +187,9 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    await expect(webhookHandler(event, context)).rejects.toThrow(rejectedReasons)
+    await expect(webhookHandler(event, context)).resolves.toEqual([{
+      reason: new Error(rejectedReasons),
+      status: 'rejected',
+    }])
   })
 })

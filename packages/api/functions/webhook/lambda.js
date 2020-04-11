@@ -81,6 +81,11 @@ async function processMessage(record, index) {
   // const hook = new Discord.WebhookClient('webhook id', 'webhook token')
   // Use \@username to get user id in slack channel
   const game = await Game.get(gameId)
+
+  if (!game) {
+    throw new Error(`No game found with id: ${gameId}`)
+  }
+
   const discordWebhookUrl = game.get('discordWebhookUrl')
   const response = await fetch(discordWebhookUrl, {
     body: JSON.stringify(targetWebhookBody),

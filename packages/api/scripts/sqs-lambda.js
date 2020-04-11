@@ -1,9 +1,9 @@
-require('dotenv').config()
-const webhookLambda = require('../functions/webhook/lambda')
+import { webhookHandler } from '../functions/webhook/lambda'
 
 const {
   GAME_ID,
 } = process.env
+
 const EVENT = {
   Records: [{
     messageId: '059f36b4-87a3-44ab-83d2-661975830a7d',
@@ -30,8 +30,12 @@ const EVENT = {
     md5OfBody: '098f6bcd4621d373cade4e832627b4f6',
     eventSource: 'aws:sqs',
     eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-    awsRegion: 'us-east-2',
+    awsRegion: 'us-east-1',
   }],
 }
+async function run() {
+  const r = await webhookHandler(EVENT)
+  console.log(r)
+}
 
-webhookLambda.webhookHandler(EVENT)
+run()
