@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: [identity, db, api, ui]
+        package: [db, api]
     steps:
     - name: Download release
       uses: Legion2/download-release-action@v2.1.0
