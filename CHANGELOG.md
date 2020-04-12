@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.0.2...v1.0.3) (2020-04-12)
+
+
+### Bug Fixes
+
+* add link to civilization.com ([90627fc](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/90627fc9d21b4cf4590f7d0e58d9adbc4708021d))
+
 ## [1.0.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.0.1...v1.0.2) (2020-04-12)
 
 
