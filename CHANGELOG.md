@@ -1,3 +1,11 @@
+## [1.0.4](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.0.3...v1.0.4) (2020-04-15)
+
+
+### Bug Fixes
+
+* **ui:** wrap @wizeline/serverless-amplify-plugin in quotes ([c8a8054](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/c8a805435c77b0a84098d408331abdd719cbf0f5))
+* use @wizeline/serverless-amplify-plugin from npm ([f3284fe](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/f3284fe0fda71a9156d851749d6b0f620c73a6aa))
+
 ## [1.0.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.0.2...v1.0.3) (2020-04-12)
 
 
