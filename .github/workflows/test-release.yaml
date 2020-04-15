@@ -22,10 +22,17 @@ jobs:
     
     - name: Install root
       run: npm ci
+    
+    - name: Check for vulnerable dependencies in root
+      run: npm audit --audit-level high
 
     - name: Install package
       working-directory: "./packages/${{ matrix.package }}"
       run: npm ci
+    
+    - name: Check for vulnerable dependencies in package
+      working-directory: "./packages/${{ matrix.package }}"
+      run: npm audit --audit-level high
 
     - name: Test
       working-directory: "./packages/${{ matrix.package }}"
