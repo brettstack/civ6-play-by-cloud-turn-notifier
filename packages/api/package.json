@@ -25,7 +25,7 @@
     "@serverless/event-mocks": "^1.1.1",
     "aws-lambda-mock-context": "^3.2.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "serverless": "^1.67.3",
     "serverless-apigateway-service-proxy": "^1.7.0",
     "serverless-domain-manager": "^3.3.1",
