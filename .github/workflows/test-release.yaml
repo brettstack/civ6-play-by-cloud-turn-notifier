@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: [db, api]
+        package: [db, api, ui]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
