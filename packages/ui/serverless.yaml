@@ -8,7 +8,7 @@ provider:
 
 plugins:
   - serverless-dotenv-plugin
-  - @wizeline/serverless-amplify-plugin
+  - '@wizeline/serverless-amplify-plugin'
 
 custom:
   defaultStage: prod
