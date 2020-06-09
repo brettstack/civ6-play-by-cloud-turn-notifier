@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.0.5...v1.1.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* npm audit fix ([e57bcf9](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/e57bcf970f55d26232f659406f8001c6b46f9940))
+* npm audit fix ([1feeebf](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/1feeebfec58fa61c2ac7642a4fdd69852dcb19e8))
+
+
+### Features
+
+* add google analytics ([329bd2e](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/329bd2e35d8e374041e4b32e0cac5164fe35c542))
+
 ## [1.0.5](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.0.4...v1.0.5) (2020-04-15)
 
 
