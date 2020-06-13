@@ -163,15 +163,28 @@ resources:
     Dashboard:
       Type: AWS::CloudWatch::Dashboard
       Properties:
-        Foo: !Sub |
+        DashboardBody: !Sub |
           {
-          "metrics": [
-            [ "AWS/Lambda", "Invocations", "FunctionName", "${WebhookLambdaFuncion}", "Resource", "${WebhookLambdaFuncion}" ]
-          ],
-          "region": ${AWS::Region},
-          "title": "Send notifications (# invokes)",
-          "view": "timeSeries",
-          "stacked": false,
-          "stat": "Sum",
-          "period": 86400
+            "start": "-P7D",
+            "end": "P0D",
+            "widgets": [
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 6,
+                "height": 6,
+                "properties": {
+                  "metrics": [
+                    [ "AWS/Lambda", "Invocations", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
+                  ],
+                  "region": "${AWS::Region}",
+                  "title": "Send notifications (# invokes)",
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "stat": "Sum",
+                  "period": 86400
+                }
+              }
+            ]
           }

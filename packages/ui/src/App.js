@@ -43,8 +43,8 @@ function App() {
         <h2>Detaild instructions</h2>
         <ol>
           <li>Create a Discord Channel with your players and create a new <strong>Webhook</strong> via the <strong>Edit Channel</strong> gear icon.</li>
-          <li>Copy-Paste the Discord <strong><abbr title="https://discordapp.com/api/webhooks/720506520748507765/xOclopi_4LQN1aSajr_UrWpCxwo2_sYdVSYozn4Xg5nPDMSbms_Et6pRRMfYCeIAKeug">Webhook URL</abbr></strong> into the field below and click the <strong>Generate Civ Play By Cloud Webhook</strong> button.</li>
-          <li>Copy-Paste the newly generated <strong><abbr title="https://api.civ.halfstack.software/webhook?gameId=x9-cQ8tnu">Webhook URL</abbr></strong> into the <strong>Play By Cloud Webhook URL</strong> setting in <strong>Game Options</strong> and change the <strong>Frequency</strong> to <strong>Every Turn</strong>.</li>
+          <li>Copy-Paste the Discord <strong><abbr title="Example: https://discordapp.com/api/webhooks/720506520748507765/xOclopi_4LQN1aSajr_UrWpCxwo2_sYdVSYozn4Xg5nPDMSbms_Et6pRRMfYCeIAKeug">Webhook URL</abbr></strong> into the field below and click the <strong>Generate Civ Play By Cloud Webhook</strong> button.</li>
+          <li>Copy-Paste the newly generated <strong><abbr title="Example: https://api.civ.halfstack.software/webhook?gameId=x9-cQ8tnu">Webhook URL</abbr></strong> into the <strong>Play By Cloud Webhook URL</strong> setting in <strong>Game Options</strong> and change the <strong>Frequency</strong> to <strong>Every Turn</strong>.</li>
         </ol>
 
         <h2>How is this different to Steam notifications?</h2>
