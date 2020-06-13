@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.3.0...v1.4.0) (2020-06-13)
+
+
+### Features
+
+* add dashboard ([c28e2ab](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/c28e2ab0bb5b5e9ddb8cf75ba9dda7cf722ead96))
+
 # [1.3.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.2.0...v1.3.0) (2020-06-13)
 
 
