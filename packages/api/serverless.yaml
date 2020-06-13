@@ -159,3 +159,19 @@ resources:
         DomainValidationOptions:
           - DomainName: ${{self:custom.customDomain.domainName}}
             ValidationDomain: ${{self:custom.stages.${{self:provider.stage}}.validationDomain}}
+
+    Dashboard:
+      Type: AWS::CloudWatch::Dashboard
+      Properties:
+        Foo: !Sub |
+          {
+          "metrics": [
+            [ "AWS/Lambda", "Invocations", "FunctionName", "${WebhookLambdaFuncion}", "Resource", "${WebhookLambdaFuncion}" ]
+          ],
+          "region": ${AWS::Region},
+          "title": "Send notifications (# invokes)",
+          "view": "timeSeries",
+          "stacked": false,
+          "stat": "Sum",
+          "period": 86400
+          }
