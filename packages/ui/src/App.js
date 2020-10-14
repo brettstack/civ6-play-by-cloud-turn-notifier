@@ -57,6 +57,9 @@ function App() {
         <h2>How does it work?</h2>
         <p>When you configure the <strong>Civ 6 Play By Cloud Webhook</strong> setting, a request to that Webhook is sent with information on the Game Name, the Turn Number, and the name of the player whose turn it is. This service takes that data and transforms it into something Discord can understand, and then forwards the request to the Discord Webhook you provide. For a detailed techincal writeup, check out this blog post on <a href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">Building a Civilization VI "Play by Cloud" Webhook Turn Notifier Service</a></p>
 
+        <h2>Contact and Feedback</h2>
+        <p>You can reach out to me on Twitter - <a href="https://twitter.com/AWSbrett">Brett Andrews</a>. Or create an Issue on the <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">civ6-play-by-cloud-turn-notifier GitHub repo</a></p>
+
         <h2>Open Source</h2>
         <p>The source code for this project is available on the <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</a></p>
       </div>
