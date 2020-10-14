@@ -12,7 +12,7 @@
     "clsx": "^1.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^3.4.3",
     "serverless": "^1.72.0",
     "typeface-roboto": "0.0.75"
   },
