@@ -9,3 +9,9 @@ export function createGame({
     discordWebhookUrl,
   })
 }
+
+export function getGame({
+  gameId,
+}) {
+  return Game.get(gameId)
+}
