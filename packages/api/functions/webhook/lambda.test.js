@@ -53,7 +53,12 @@ jest.mock('../../models/Game', () => {
 const fetch = require('node-fetch')
 
 const { Response, Headers } = jest.requireActual('node-fetch')
-const { webhookHandler } = require('./lambda')
+const {
+  webhookHandler,
+  getDiscordUserId,
+  getMessageFromTemplate,
+  MESSAGE_TEMPLATE,
+} = require('./lambda')
 
 describe('webhookHandler: happy paths ', () => {
   test('Works', async () => {
@@ -81,6 +86,66 @@ describe('webhookHandler: happy paths ', () => {
         value: '{}',
       },
     ])
+  })
+
+  describe('getDiscordUserId', () => {
+    const players = {
+      'player one': {
+        discordUserId: '269379221674000384',
+      },
+      'player two': {
+        discordUserId: '@269379221674000384',
+      },
+      'player three': {
+        discordUserId: '<@269379221674000384>',
+      },
+      'player four': {
+        discordUserId: '<@invalid>',
+      },
+    }
+    test('discordUserId with correct format', async () => {
+      expect(getDiscordUserId({
+        playerName: 'player one',
+        players,
+      })).toEqual('<@269379221674000384>')
+    })
+    test('discordUserId with @ prefix only', async () => {
+      expect(getDiscordUserId({
+        playerName: 'player two',
+        players,
+      })).toEqual('<@269379221674000384>')
+    })
+    test('discordUserId number only', async () => {
+      expect(getDiscordUserId({
+        playerName: 'player three',
+        players,
+      })).toEqual('<@269379221674000384>')
+    })
+    test('discordUserId with incorrect (non-numerical) value', async () => {
+      expect(getDiscordUserId({
+        playerName: 'player four',
+        players,
+      })).toEqual('player four')
+    })
+    test('discordUserId not set for player', async () => {
+      expect(getDiscordUserId({
+        playerName: 'player five',
+        players,
+      })).toEqual('player five')
+    })
+  })
+
+  describe('getMessageFromTemplate', () => {
+    test('discordUserId with correct format', async () => {
+      expect(getMessageFromTemplate({
+        messageTemplate: MESSAGE_TEMPLATE,
+        gameName: 'my game',
+        playerNameOrDiscordUserId: 'player one',
+        turnNumber: 3,
+      })).toEqual(`player one, it's your turn.
+Turn: 3
+Game: my game`)
+    })
   })
 })
 

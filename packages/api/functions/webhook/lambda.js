@@ -9,6 +9,12 @@ import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 import '../../aws'
 import Game from '../../models/Game'
 
+export const MESSAGE_TEMPLATE = `{{playerName}}, it's your turn.
+Turn: {{turnNumber}}
+Game: {{gameName}}`
+const BOT_USERNAME = 'Civ6 Turnbot'
+const AVATAR_URL = 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png'
+
 export async function webhookHandler(event) {
   const { Records } = event
 
@@ -57,11 +63,22 @@ async function processMessage(record, index) {
     value2: playerName,
     value3: turnNumber,
   } = bodyJson
+  // const hook = new Discord.WebhookClient('webhook id', 'webhook token')
+  // Use \@username to get user id in discord channel, e.g. \@Brett
+  const game = await Game.get(gameId)
+
+  if (!game) {
+    throw new Error(`No game found with id: ${gameId}`)
+  }
+
+  const discordWebhookUrl = game.get('discordWebhookUrl')
+  const players = game.get('players')
   const message = getMessageFromTemplate({
     messageTemplate,
     gameName,
     playerName,
     turnNumber,
+    players,
   })
   const targetWebhookBody = {
     username: botUsername,
@@ -78,15 +95,6 @@ async function processMessage(record, index) {
     ]
     */
   }
-  // const hook = new Discord.WebhookClient('webhook id', 'webhook token')
-  // Use \@username to get user id in slack channel
-  const game = await Game.get(gameId)
-
-  if (!game) {
-    throw new Error(`No game found with id: ${gameId}`)
-  }
-
-  const discordWebhookUrl = game.get('discordWebhookUrl')
   const response = await fetch(discordWebhookUrl, {
     body: JSON.stringify(targetWebhookBody),
     method: 'POST',
@@ -102,25 +110,51 @@ async function processMessage(record, index) {
   return responseText
 }
 
-function getMessageFromTemplate({
+export function getMessageFromTemplate({
   messageTemplate,
   gameName,
   playerName,
   turnNumber,
+  players = {},
+  playerNameOrDiscordUserId = getDiscordUserId({
+    players,
+    playerName,
+  }),
 }) {
   return messageTemplate
     .replace(/{{gameName}}/g, gameName)
-    .replace(/{{playerName}}/g, playerName)
+    .replace(/{{playerName}}/g, playerNameOrDiscordUserId)
     .replace(/{{turnNumber}}/g, turnNumber)
+}
+
+export function getDiscordUserId({
+  players = {},
+  playerName,
+}) {
+  const discordUserId = players && players[playerName] && players[playerName].discordUserId
+
+  // Default to using playerName if no discordUserId is set, or discordUserId is invalid (non-numerical)
+  let playerNameOrDiscordUserId = playerName
+
+  if (discordUserId) {
+    // correct format for @ing someone on Discord
+    if (/^<@\d+>$/.test(discordUserId)) playerNameOrDiscordUserId = discordUserId
+
+    // includes @ prefix only: wrap in <>
+    else if (/^@\d+$/.test(discordUserId)) playerNameOrDiscordUserId = `<${discordUserId}>`
+
+    // account number only: wrap in <@>
+    else if (/^\d+$/.test(discordUserId)) playerNameOrDiscordUserId = `<@${discordUserId}>`
+  }
+
+  return playerNameOrDiscordUserId
 }
 
 function getMessageAttributeStringValues({ messageAttributes }) {
   const messageAttributeValues = {
-    botUsername: 'Civ6 Turnbot',
-    avatarUrl: 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png',
-    messageTemplate: `{{playerName}}, it's your turn.
-Turn: {{turnNumber}}
-Game: {{gameName}}`,
+    botUsername: BOT_USERNAME,
+    avatarUrl: AVATAR_URL,
+    messageTemplate: MESSAGE_TEMPLATE,
   }
 
   Object.entries(messageAttributes).forEach(([key, value]) => {
