@@ -31,3 +31,7 @@ Run `npm run deploy`
 ## Error: Cannot find module './build/Release/DTraceProviderBindings' from 'dtrace-provider.js'
 
 Rerun `npm i`
+
+## command not found: zip
+
+`sudo apt-get install zip`
