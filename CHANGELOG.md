@@ -1,3 +1,21 @@
+# [1.5.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.4.0...v1.5.0) (2020-11-13)
+
+
+### Bug Fixes
+
+* fix build ([6f6c914](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/6f6c914aa9255d1adf6780580a968b0c486c1d02))
+* npm audit fix ([4cdb097](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/4cdb0972927b9b43211a02255615e56651e456f5))
+* **api:** npm audit fix depth ([8a04ed1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/8a04ed10d578857ad03d5b6aa910539ba8b2d29f))
+* **ui:** npm audit fix depth ([26c07fd](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/26c07fd52cb6343ea06fd14cf00af65317f04da2))
+* npm audit fix ([917a446](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/917a44619ddd7fe7ee46a936fce63165fc0a5632))
+
+
+### Features
+
+* add contact and feedback section to service ([803032a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/803032a08fedba6929bcc00bb69e0474b2ce4c77))
+* add game route ([c0d1e98](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/c0d1e98e27f59c87a5c478759c68860a74e7fe51))
+* add players config to webhook lambda ([ae4ea08](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/ae4ea0889e83fefaa204e4821d455043b5ef64b3))
+
 # [1.4.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.3.0...v1.4.0) (2020-06-13)
 
 
