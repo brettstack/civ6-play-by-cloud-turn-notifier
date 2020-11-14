@@ -4,8 +4,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-} from "react-router-dom"
-import GamePage from './pages/GamePage';
+} from 'react-router-dom'
+import GamePage from './pages/GamePage'
 import HomePage from './pages/HomePage'
 
 // Consider using https://www.npmjs.com/package/@beam-australia/react-env instead
@@ -24,7 +24,7 @@ function App() {
         </Route>
       </Switch>
     </Router>
-  );
+  )
 }
 
-export default App;
+export default App

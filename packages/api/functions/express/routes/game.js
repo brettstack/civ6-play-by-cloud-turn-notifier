@@ -22,7 +22,7 @@ gameRouter.get('/:gameId', wrapAsync(async (req, res) => {
 
   // Don't return sensitive data
   delete gameData.discordWebhookUrl
-  
+
   res.json(gameData)
 }))
 

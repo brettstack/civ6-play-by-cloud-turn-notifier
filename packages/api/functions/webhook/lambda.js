@@ -53,7 +53,6 @@ async function processMessage(record, index) {
     messageTemplate,
   } = getMessageAttributeStringValues({ messageAttributes })
 
-
   if (!gameId) {
     throw new Error(`\`Records[${index}].messageAttributes.gameId\` is missing.`)
   }

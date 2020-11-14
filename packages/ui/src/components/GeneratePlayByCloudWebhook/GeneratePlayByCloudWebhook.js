@@ -5,9 +5,9 @@ import {
   TextField,
   Button,
   CircularProgress,
-} from '@material-ui/core';
+} from '@material-ui/core'
 import { green } from '@material-ui/core/colors'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles({
   root: {
@@ -20,24 +20,24 @@ const useStyles = makeStyles({
     marginTop: -12,
     marginLeft: -12,
   },
-});
+})
 
 async function createGame() {
   const discordWebhookUrl = document.querySelector('[name="discordWebhookUrl"]').value
 
   try {
     const response = await axios.post('/game', {
-      discordWebhookUrl
+      discordWebhookUrl,
     })
 
     return {
-      game: response.data
+      game: response.data,
     }
   } catch (error) {
     const { response } = error
     return {
       error: response.data,
-      errorMessage: 'There was an error creating a webhook. Please confirm you entered a URL in the format https://discordapp.com/api/webhooks/123456789/123abc123abc123abc123abc123abc123abc'
+      errorMessage: 'There was an error creating a webhook. Please confirm you entered a URL in the format https://discordapp.com/api/webhooks/123456789/123abc123abc123abc123abc123abc123abc',
     }
   }
 }
@@ -49,20 +49,20 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
 
   const handleButtonClick = async () => {
     if (!loading) {
-      setLoading(true);
+      setLoading(true)
       setErrorMessage('')
 
       try {
         const { game, errorMessage } = await createGame()
         if (errorMessage) {
           setErrorMessage(errorMessage)
-          setLoading(false);
+          setLoading(false)
         } else {
           onCreateGame({ game })
         }
       } catch (error) {
         setErrorMessage(error.message)
-        setLoading(false);
+        setLoading(false)
       }
     }
   }
@@ -107,10 +107,11 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
             >
               {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
               Generate Civ Play By Cloud Webhook
-      </Button>
+            </Button>
 
           </div>
         </Grid>
       </Grid>
-    </form>)
+    </form>
+  )
 }
