@@ -1,0 +1,1 @@
+**spawn java ENOENT** - `sls dynamodb install`

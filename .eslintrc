@@ -1,10 +1,11 @@
 {
   "extends": [
-    "airbnb",
+    "airbnb"
   ],
   "env": {
     "node": true,
-    "jest": true
+    "jest": true,
+    "browser": true
   },
   "rules": {
     "default-case": "off",
@@ -50,5 +51,8 @@
     "import/no-extraneous-dependencies": "off",
     "global-require": "off",
     "import/no-dynamic-require": "off",
+    "react/jsx-filename-extension": "off",
+    "react/no-unescaped-entities": "off",
+    "react/prop-types": "off"
   }
 }

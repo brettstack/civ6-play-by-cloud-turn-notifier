@@ -12,6 +12,25 @@ Below is for development purposes only. If you're having problems using the serv
 
 ![architecture diagram](https://raw.githubusercontent.com/brettstack/civ6-play-by-cloud-turn-notifier/master/architecture-diagram.png)
 
+### Local development
+
+Start the individual services in separate terminals:
+
+```shell
+cd packages/db
+npm run start:dev
+```
+
+```shell
+cd packages/api
+npm run start:dev
+```
+
+```shell
+cd packages/ui
+npm run start:dev
+```
+
 ### Deploying the project
 
 Ensure you have AWS CLI set up correctly with credentials set to your desired account, then deploy the `api` and `db` packages:
@@ -32,7 +51,7 @@ After `api` and `db` are deployed to AWS, you can run the UI locally using `npm 
 
 ### Testing
 
-## Running unit tests
+#### Running unit tests
 
 `npm test`
 

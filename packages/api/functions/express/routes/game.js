@@ -12,10 +12,18 @@ gameRouter.get('/:gameId', wrapAsync(async (req, res) => {
   const { gameId } = req.params
   const game = await getGame({ gameId })
 
-  // Don't return sensitive data
-  delete game.discordWebhookUrl
+  if (!game) {
+    return res
+      .status(404)
+      .json({})
+  }
 
-  res.json(game)
+  const gameData = game.get()
+
+  // Don't return sensitive data
+  delete gameData.discordWebhookUrl
+  
+  res.json(gameData)
 }))
 
 export default gameRouter

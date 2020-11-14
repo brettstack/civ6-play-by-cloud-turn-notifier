@@ -45,7 +45,7 @@ export default function CopyPlayByCloudWebhookToClipboard({ playByCloudWebhookUr
   };
 
   return (
-    <React.Fragment>
+    <>
       <p>Copy-paste the URL below into the <strong>Play By Cloud Webhook URL</strong> field in Civilization 6 <strong>Game Options</strong> and select <strong>Every Turn</strong> for <strong>Play By Cloud Webhook Frequency</strong>.</p>
       <Grid
         container
@@ -84,5 +84,5 @@ export default function CopyPlayByCloudWebhookToClipboard({ playByCloudWebhookUr
           }
         </Grid>
       </Grid>
-    </React.Fragment>);
+    </>)
 }

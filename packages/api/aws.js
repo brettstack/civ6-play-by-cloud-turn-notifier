@@ -8,7 +8,7 @@ const baseConfig = {
 const dynamodbOfflineOptions = {
   ...baseConfig,
   region: 'localhost',
-  endpoint: 'http://localhost:889',
+  endpoint: 'http://localhost:1889',
 }
 
 const dynamoDb = process.env.IS_OFFLINE ? new DynamoDB.DocumentClient(dynamodbOfflineOptions) : new DynamoDB.DocumentClient(baseConfig)

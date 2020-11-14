@@ -23,7 +23,7 @@ custom:
     stages:
         - dev
     start:
-      port: 889
+      port: 1889
       migrate: true
       seed: true
     seed:

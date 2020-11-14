@@ -64,7 +64,7 @@ async function processMessage(record, index) {
     value3: turnNumber,
   } = bodyJson
   // const hook = new Discord.WebhookClient('webhook id', 'webhook token')
-  // Use \@username to get user id in discord channel, e.g. \@Brett
+  // Use \@their_username to get user id in discord channel, e.g. \@Brett
   const game = await Game.get(gameId)
 
   if (!game) {

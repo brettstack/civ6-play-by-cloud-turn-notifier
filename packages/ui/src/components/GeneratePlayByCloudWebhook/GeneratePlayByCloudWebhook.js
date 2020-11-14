@@ -44,8 +44,8 @@ async function createGame() {
 
 export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
   const classes = useStyles()
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
 
   const handleButtonClick = async () => {
     if (!loading) {
@@ -65,7 +65,7 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
         setLoading(false);
       }
     }
-  };
+  }
 
   return (
     <form
