@@ -39,7 +39,11 @@ function HomePage() {
           {' '}
           <a href="https://civilization.com/" target="_blank" rel="noopener noreferrer">Civ 6</a>
           {' '}
-          with friends without needing to be online at the same time. Simply take your turn when it suits you and the game state is saved to the cloud, ready for the next player. Use this service to send messages to your Discord channel to notify players of a new turn.
+          with friends without needing to be online at the same time.
+          {' '}
+          Simply take your turn when it suits you and the game state is saved to the cloud, ready for the next player.
+          {' '}
+          Use this service to send messages to your Discord channel to notify players of a new turn.
         </p>
 
         <GeneratePlayByCloudWebhook onCreateGame={onCreateGame} />
@@ -123,17 +127,31 @@ function HomePage() {
           Notifications usually only works for new games created
           <strong>after</strong>
           {' '}
-          setting the Webhook setting, however, there have been people who say it worked for existing games after several turns. You can also save your game and create a new Play By Cloud game based on the save file, though it can be quite tricky ensuring all players get their original Civ leader (you need to have players join in the order of their turns).
+          setting the Webhook setting, however, there have been people who say it worked for existing games after several turns.
+          {' '}
+          You can also save your game and create a new Play By Cloud game based on the save file,
+          {' '}
+          though it can be quite tricky ensuring all players get their original Civ leader (you need to have players join in the order of their turns).
         </p>
-        <p>Additionally, Civ 6 on Mac OSX is known to have issues with Webhook, so you may have an even harder time there. There are simply certain things that are outside the control of this service.</p>
+        <p>
+          Additionally, Civ 6 on Mac OSX is known to have issues with Webhook, so you may have an even harder time there.
+          {' '}
+          There are simply certain things that are outside the control of this service.
+        </p>
 
         <h2>How does it work?</h2>
         <p>
           When you configure the
           <strong>Civ 6 Play By Cloud Webhook</strong>
           {' '}
-          setting, a request to that Webhook is sent with information on the Game Name, the Turn Number, and the name of the player whose turn it is. This service takes that data and transforms it into something Discord can understand, and then forwards the request to the Discord Webhook you provide. For a detailed techincal writeup, check out this blog post on
-          <a href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">Building a Civilization VI "Play by Cloud" Webhook Turn Notifier Service</a>
+          setting, a request to that Webhook is sent with information on the Game Name, the Turn Number, and the name of the player whose turn it is.
+          {' '}
+          This service takes that data and transforms it into something Discord can understand, and then forwards the request to the Discord Webhook you provide.
+          {' '}
+          For a detailed techincal writeup, check out this blog post on
+          <a href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">
+            Building a Civilization VI "Play by Cloud" Webhook Turn Notifier Service
+          </a>
         </p>
 
         <h2>Contact and Feedback</h2>

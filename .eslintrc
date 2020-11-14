@@ -2,6 +2,9 @@
   "extends": [
     "airbnb"
   ],
+  "plugins": [
+    "only-warn"
+  ],
   "env": {
     "node": true,
     "jest": true,

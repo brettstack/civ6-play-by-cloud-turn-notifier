@@ -53,9 +53,9 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
       setErrorMessage('')
 
       try {
-        const { game, errorMessage } = await createGame()
-        if (errorMessage) {
-          setErrorMessage(errorMessage)
+        const { game, errorMessage: createGameErrorMessage } = await createGame()
+        if (createGameErrorMessage) {
+          setErrorMessage(createGameErrorMessage)
           setLoading(false)
         } else {
           onCreateGame({ game })

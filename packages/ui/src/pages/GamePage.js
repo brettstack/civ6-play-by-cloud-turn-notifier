@@ -36,7 +36,7 @@ function GamePage() {
         setGame(g)
       } else {
         // TODO: display error
-        console.log(error)
+        console.error(error)
       }
     }
     f()
@@ -82,6 +82,7 @@ function GamePage() {
         <h2>Player mappings</h2>
         <p>
           To @ mention a player when it's their turn, create a mapping below of the player's name in Civ to the player's Discord user id.
+          {' '}
           You can get a player's discord user id by typing "\@their_username" into the Discord channel. For example, "\@Brett".
         </p>
         <Grid
