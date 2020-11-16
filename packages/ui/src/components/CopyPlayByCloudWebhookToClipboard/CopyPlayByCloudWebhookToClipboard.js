@@ -46,15 +46,19 @@ export default function CopyPlayByCloudWebhookToClipboard({ playByCloudWebhookUr
     <>
       <p>
         Copy-paste the URL below into the
+        {' '}
         <strong>Play By Cloud Webhook URL</strong>
         {' '}
         field in Civilization 6
+        {' '}
         <strong>Game Options</strong>
         {' '}
         and select
+        {' '}
         <strong>Every Turn</strong>
         {' '}
         for
+        {' '}
         <strong>Play By Cloud Webhook Frequency</strong>
         .
       </p>

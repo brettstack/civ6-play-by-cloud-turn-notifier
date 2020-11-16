@@ -1,11 +1,17 @@
 import express from 'express'
 import wrapAsync from '../wrap-async'
-import { createGame, getGame } from '../controllers/game'
+import { createGame, getGame, updateGame } from '../controllers/game'
 
 const gameRouter = express.Router()
 gameRouter.post('/', wrapAsync(async (req, res) => {
   const { discordWebhookUrl } = req.body
   const game = await createGame({ discordWebhookUrl })
+  res.json(game)
+}))
+gameRouter.put('/:gameId', wrapAsync(async (req, res) => {
+  const { gameId } = req.params
+  const { players } = req.body
+  const game = await updateGame({ gameId, players })
   res.json(game)
 }))
 gameRouter.get('/:gameId', wrapAsync(async (req, res) => {
@@ -18,12 +24,7 @@ gameRouter.get('/:gameId', wrapAsync(async (req, res) => {
       .json({})
   }
 
-  const gameData = game.get()
-
-  // Don't return sensitive data
-  delete gameData.discordWebhookUrl
-
-  return res.json(gameData)
+  return res.json(game)
 }))
 
 export default gameRouter

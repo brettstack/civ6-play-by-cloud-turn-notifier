@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react'
 import {
   Button,
   CircularProgress,
-  Container, Grid, TextField,
+  Container,
+  Grid,
+  TextField,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useParams } from 'react-router-dom'
@@ -42,28 +44,30 @@ function GamePage() {
     f()
   }, [gameId])
 
-  const handleSaveButtonClick = async () => {
-    if (!loading) {
-      setLoading(true)
-      setErrorMessage('')
+  async function handleSaveButtonClick() {
+    if (loading) return
+    setLoading(true)
+    setErrorMessage('')
 
-      try {
-        const { game: saveGameGame, errorMessage: saveGameErrorMessage } = await saveGame()
-        if (saveGameErrorMessage) {
-          setErrorMessage(saveGameErrorMessage)
-          setLoading(false)
-        } else {
-          onSaveGame({ game: saveGameGame })
-        }
-      } catch (error) {
-        setErrorMessage(error.message)
+    try {
+      const players = getPlayersFromInputs()
+
+      const { game: saveGameGame, errorMessage: saveGameErrorMessage } = await saveGame({ gameId, players })
+      if (saveGameErrorMessage) {
+        setErrorMessage(saveGameErrorMessage)
+        setLoading(false)
+      } else {
         setLoading(false)
       }
+    } catch (error) {
+      setErrorMessage(error.message)
+      setLoading(false)
     }
   }
+
   const playerNameToDiscordIdMappings = Object.entries(game.players || {})
-  // Create an array of length 10 for rendering 10 times
-  while (playerNameToDiscordIdMappings.length < 10) {
+  // Create an array of length 9 for rendering 9 times
+  while (playerNameToDiscordIdMappings.length < 9) {
     playerNameToDiscordIdMappings.push([null, {}])
   }
 
@@ -85,31 +89,33 @@ function GamePage() {
           {' '}
           You can get a player's discord user id by typing "\@their_username" into the Discord channel. For example, "\@Brett".
         </p>
-        <Grid
-          container
-          spacing={1}
-          justify="center"
-          align="center"
-        >
-          {playerNameToDiscordIdMappings.map(([playerName, player], key) => (
-            <PlayerNameToDiscordIdMapping
-              key={key} // eslint-disable-line react/no-array-index-key
-              playerName={playerName}
-              player={player}
-            />
-          ))}
-        </Grid>
-
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={loading}
-          onClick={handleSaveButtonClick}
-          type="submit"
-        >
-          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-          Save
-        </Button>
+        <form>
+          <Grid
+            container
+            spacing={3}
+            align="center"
+          >
+            {playerNameToDiscordIdMappings.map(([playerName, player], key) => (
+              <PlayerNameToDiscordIdMapping
+                key={key} // eslint-disable-line react/no-array-index-key
+                playerName={playerName}
+                player={player}
+              />
+            ))}
+            <Grid item xs={12} align="right">
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                onClick={handleSaveButtonClick}
+                type="submit"
+              >
+                {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+                Save
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
       </div>
     </Container>
   )
@@ -117,24 +123,25 @@ function GamePage() {
 
 function PlayerNameToDiscordIdMapping({ playerName, player }) {
   return (
-    <>
-      <Grid item xs={6}>
-        <TextField
-          label="Player name"
-          name="playerName"
-          fullWidth
-          defaultValue={playerName}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <TextField
-          label="Discord user ID"
-          name="discordUserId"
-          fullWidth
-          defaultValue={player.discordUserId}
-        />
-      </Grid>
-    </>
+    <Grid
+      item
+      xs={12}
+      md={6}
+      lg={4}
+      className="PlayerNameToDiscordIdMapping"
+    >
+      <TextField
+        label="Player name"
+        name="playerName"
+        defaultValue={playerName}
+      />
+      {' '}
+      <TextField
+        label="Discord user ID"
+        name="discordUserId"
+        defaultValue={player.discordUserId}
+      />
+    </Grid>
   )
 }
 
@@ -155,12 +162,10 @@ async function getGame({ gameId }) {
   }
 }
 
-async function saveGame() {
-  const discordWebhookUrl = document.querySelector('[name="discordWebhookUrl"]').value
-
+async function saveGame({ gameId, players }) {
   try {
-    const response = await axios.post('/game', {
-      discordWebhookUrl,
+    const response = await axios.put(`/game/${gameId}`, {
+      players,
     })
 
     return {
@@ -175,6 +180,21 @@ async function saveGame() {
   }
 }
 
-function onSaveGame() {}
+function getPlayersFromInputs() {
+  const players = {}
+  const playerRowElements = document.getElementsByClassName('PlayerNameToDiscordIdMapping')
+
+  Array.from(playerRowElements).forEach((playerRowElement) => {
+    const playerNameElement = playerRowElement.querySelector('[name="playerName"]')
+    const discordUserIdElement = playerRowElement.querySelector('[name="discordUserId"]')
+    const playerName = playerNameElement.value
+    const discordUserId = discordUserIdElement.value
+    if (playerName && discordUserId) {
+      players[playerName] = discordUserId
+    }
+  })
+
+  return players
+}
 
 export default GamePage

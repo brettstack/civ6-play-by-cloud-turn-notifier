@@ -52,21 +52,26 @@ function HomePage() {
         <h2>What is this?</h2>
         <p>
           The
+          {' '}
           <strong>Civ 6 Play By Cloud Webhook URL</strong>
           {' '}
           setting allows you to receive
+          {' '}
           <strong>notifications</strong>
           {' '}
           when it's the next player's turn in the
+          {' '}
           <strong>Play by Cloud</strong>
           {' '}
           game, e.g. you can recieve notifications to your
+          {' '}
           <a href="https://discordapp.com/" target="_blank" rel="noopener noreferrer">Discord</a>
           {' '}
           channel. However, setting this up requires significant technical knowledge.
         </p>
         <p>
           This service makes it easy to configure the
+          {' '}
           <strong>Civ 6 Webhook</strong>
           {' '}
           to receive notifications to your Discord channel (additional notification methods coming soon).
@@ -76,36 +81,45 @@ function HomePage() {
         <ol>
           <li>
             Create a Discord Channel with your players and create a new
+            {' '}
             <strong>Webhook</strong>
             {' '}
             via the
+            {' '}
             <strong>Edit Channel</strong>
             {' '}
             gear icon.
           </li>
           <li>
             Copy-Paste the Discord
+            {' '}
             <strong><abbr title="Example: https://discordapp.com/api/webhooks/720506520748507765/xOclopi_4LQN1aSajr_UrWpCxwo2_sYdVSYozn4Xg5nPDMSbms_Et6pRRMfYCeIAKeug">Webhook URL</abbr></strong>
             {' '}
             into the field below and click the
+            {' '}
             <strong>Generate Civ Play By Cloud Webhook</strong>
             {' '}
             button.
           </li>
           <li>
             Copy-Paste the newly generated
+            {' '}
             <strong><abbr title="Example: https://api.civ.halfstack.software/webhook?gameId=x9-cQ8tnu">Webhook URL</abbr></strong>
             {' '}
             into the
+            {' '}
             <strong>Play By Cloud Webhook URL</strong>
             {' '}
             setting in
+            {' '}
             <strong>Game Options</strong>
             {' '}
             and change the
+            {' '}
             <strong>Frequency</strong>
             {' '}
             to
+            {' '}
             <strong>Every Turn</strong>
             .
           </li>
@@ -114,9 +128,11 @@ function HomePage() {
         <h2>How is this different to Steam notifications?</h2>
         <p>
           Steam notifications only let you know when it's
+          {' '}
           <em>your</em>
           {' '}
           turn, whereas Discord notifications let
+          {' '}
           <em>everyone</em>
           {' '}
           know whose turn it is.
@@ -125,6 +141,7 @@ function HomePage() {
         <h2>I'm not getting notifications after setting this up</h2>
         <p>
           Notifications usually only works for new games created
+          {' '}
           <strong>after</strong>
           {' '}
           setting the Webhook setting, however, there have been people who say it worked for existing games after several turns.
@@ -142,6 +159,7 @@ function HomePage() {
         <h2>How does it work?</h2>
         <p>
           When you configure the
+          {' '}
           <strong>Civ 6 Play By Cloud Webhook</strong>
           {' '}
           setting, a request to that Webhook is sent with information on the Game Name, the Turn Number, and the name of the player whose turn it is.
@@ -149,6 +167,7 @@ function HomePage() {
           This service takes that data and transforms it into something Discord can understand, and then forwards the request to the Discord Webhook you provide.
           {' '}
           For a detailed techincal writeup, check out this blog post on
+          {' '}
           <a href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">
             Building a Civilization VI "Play by Cloud" Webhook Turn Notifier Service
           </a>
@@ -157,14 +176,17 @@ function HomePage() {
         <h2>Contact and Feedback</h2>
         <p>
           You can reach out to me on Twitter -
+          {' '}
           <a href="https://twitter.com/AWSbrett">Brett Andrews</a>
           . Or create an Issue on the
+          {' '}
           <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">civ6-play-by-cloud-turn-notifier GitHub repo</a>
         </p>
 
         <h2>Open Source</h2>
         <p>
           The source code for this project is available on the
+          {' '}
           <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</a>
         </p>
       </div>
