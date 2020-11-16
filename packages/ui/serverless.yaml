@@ -35,7 +35,7 @@ custom:
       artifactBaseDirectory: packages/ui/build
       preBuildWorkingDirectory: packages/ui
     buildSpec:
-     version: 0.1
+      version: 0.1
       frontend:
         phases:
           preBuild:
