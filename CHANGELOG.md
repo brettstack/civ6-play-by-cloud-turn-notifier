@@ -1,3 +1,10 @@
+## [1.6.5](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.4...v1.6.5) (2020-11-16)
+
+
+### Bug Fixes
+
+* redirect ui routes to / and let client router take over ([bb9b42b](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/bb9b42b5252b25f241e5e14c1f17b70adb95b1db))
+
 ## [1.6.4](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.3...v1.6.4) (2020-11-16)
 
 
