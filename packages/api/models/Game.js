@@ -10,6 +10,7 @@ const Game = dynamo.define('Game', {
   schema: {
     id: Joi.string(),
     discordWebhookUrl: Joi.string().uri(),
+    players: Joi.object(),
   },
   tableName: 'Game',
 })

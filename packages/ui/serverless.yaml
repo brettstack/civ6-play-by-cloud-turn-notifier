@@ -34,13 +34,13 @@ custom:
     buildSpecValues:
       artifactBaseDirectory: packages/ui/build
       preBuildWorkingDirectory: packages/ui
+    # TODO: update amplify-plugin to accept custom buildSpecValues.preBuild command so we don't have to set the entire buildSpec
     buildSpec: |
       version: 0.1
       frontend:
         phases:
           preBuild:
             commands:
-              - ls
               - npm ci
               - cd packages/ui
               - npm ci

@@ -190,7 +190,7 @@ function getPlayersFromInputs() {
     const playerName = playerNameElement.value
     const discordUserId = discordUserIdElement.value
     if (playerName && discordUserId) {
-      players[playerName] = discordUserId
+      players[playerName] = { discordUserId }
     }
   })
 
