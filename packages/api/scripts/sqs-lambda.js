@@ -10,7 +10,7 @@ const EVENT = {
     receiptHandle: 'AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...',
     body: JSON.stringify({
       value1: 'Game Name',
-      value2: 'Player Name',
+      value2: 'Brett',
       value3: Math.round(Math.random(1, 100) * 100).toString(),
     }),
     attributes: {

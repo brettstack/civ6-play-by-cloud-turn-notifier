@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({ path: `${__dirname}/../.env` })
 const fetch = require('node-fetch')
 
 const {
@@ -12,7 +12,9 @@ const WEBHOOK_REQUEST_VALUE = {
   value3: Math.round(Math.random(0, 100) * 100).toString(),
 }
 async function main() {
-  const response = await fetch(`${API_GATEWAY_ENDPOINT}webhook?gameId=${GAME_ID}`, {
+  const endpoint = `webhook?gameId=${GAME_ID}`
+  const url = new URL(endpoint, API_GATEWAY_ENDPOINT)
+  const response = await fetch(url, {
     body: JSON.stringify(WEBHOOK_REQUEST_VALUE),
     method: 'POST',
     headers: { 'content-type': 'application/json' },

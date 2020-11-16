@@ -34,3 +34,23 @@ custom:
     buildSpecValues:
       artifactBaseDirectory: packages/ui/build
       preBuildWorkingDirectory: packages/ui
+    buildSpec:
+     version: 0.1
+      frontend:
+        phases:
+          preBuild:
+            commands:
+              - ls
+              - npm ci
+              - cd packages/ui
+              - npm ci
+          build:
+            commands:
+              - npm run build
+        artifacts:
+          baseDirectory: packages/ui/build
+          files:
+            - '**/*'
+        cache:
+          paths:
+            - node_modules/**/*

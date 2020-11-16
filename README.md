@@ -58,7 +58,7 @@ After `api` and `db` are deployed to AWS, you can run the UI locally using `npm 
 #### Sending a test request to the service
 
 1. Copy `.env.sample` to a `.env` file in the root directory and update it with your Discord Webhook URL
-2. Run `node packages/webhook/scripts/send-webhook-request.js`
+2. Run `node packages/api/scripts/send-webhook-request.js`
 
 ### Setup
 
