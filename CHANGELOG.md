@@ -1,3 +1,10 @@
+## [1.6.4](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.3...v1.6.4) (2020-11-16)
+
+
+### Bug Fixes
+
+* save players map as { discordUserId } instead of discordUserId ([9c95caf](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/9c95cafdbcc2e884f41030339b56452e4af9ba8c))
+
 ## [1.6.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.2...v1.6.3) (2020-11-16)
 
 
