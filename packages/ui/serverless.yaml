@@ -54,3 +54,12 @@ custom:
         cache:
           paths:
             - node_modules/**/*
+resources:
+  Resources:
+    Civ6PbcUiAmplifyApp:
+      Properties:
+        # TODO: update amplify-plugin to accept CusomRules including a convenience property useSpaRouterRedirectRule
+        CustomRules:
+          - Source: </^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$)([^.]+$)/>
+            Target: /
+            Status: 200
