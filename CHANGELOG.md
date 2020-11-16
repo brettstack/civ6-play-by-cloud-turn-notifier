@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.1...v1.6.2) (2020-11-16)
+
+
+### Bug Fixes
+
+* fix amplify buildspec ([6ff84fd](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/6ff84fdb603e7d15672562aba88e97cab333d3ff))
+
 ## [1.6.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.0...v1.6.1) (2020-11-16)
 
 
