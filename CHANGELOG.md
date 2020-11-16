@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.5.0...v1.6.0) (2020-11-16)
+
+
+### Features
+
+* add player config (wip) ([f794c70](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/f794c70377da17330dee0d47b2fd2537ec5e81c8))
+* add players config to UI and API ([c6dcb1a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/c6dcb1aa4bea6bcac3347b1ebfb958f4e7b08676))
+
 # [1.5.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.4.0...v1.5.0) (2020-11-13)
 
 
