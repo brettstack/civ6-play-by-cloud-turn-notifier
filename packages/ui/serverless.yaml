@@ -35,7 +35,7 @@ custom:
       artifactBaseDirectory: packages/ui/build
       preBuildWorkingDirectory: packages/ui
     # TODO: update amplify-plugin to accept custom buildSpecValues.preBuild command so we don't have to set the entire buildSpec
-    buildSpec: |
+    buildSpec: |-
       version: 0.1
       frontend:
         phases:
@@ -58,7 +58,7 @@ resources:
   Resources:
     Civ6PbcUiAmplifyApp:
       Properties:
-        # TODO: update amplify-plugin to accept CusomRules including a convenience property useSpaRouterRedirectRule
+        # TODO: update amplify-plugin to accept CusomRules including a convenience property redirect404PagesToRoot
         CustomRules:
           - Source: </^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$)([^.]+$)/>
             Target: /
