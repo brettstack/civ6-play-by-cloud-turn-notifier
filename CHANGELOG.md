@@ -1,3 +1,16 @@
+# [1.7.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.6...v1.7.0) (2020-11-20)
+
+
+### Bug Fixes
+
+* increase webhook function memory to 256 and set log retention ([afe5f01](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/afe5f010cc462af6c991cf07c38267e06e009196))
+* npm audit fix ([9da7770](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/9da7770fbe468da87c75cb74ee2f5751cbd40dbc))
+
+
+### Features
+
+* add logging to webhook handler ([b4f09d5](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/b4f09d5bc1a3ff1971f635534c27966733beb38f))
+
 ## [1.6.6](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.6.5...v1.6.6) (2020-11-17)
 
 
