@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.1...v1.7.2) (2020-11-20)
+
+
+### Bug Fixes
+
+* remove IS_OFFLINE default empty value ([bcfb124](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/bcfb124001f5f82653d4b47c8bee0d9f92b0948a))
+
 ## [1.7.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.0...v1.7.1) (2020-11-20)
 
 
