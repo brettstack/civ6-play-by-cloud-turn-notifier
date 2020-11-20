@@ -54,7 +54,8 @@
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "serverless-http": "^2.6.0",
-    "shortid": "^2.2.16"
+    "shortid": "^2.2.16",
+    "winston": "^3.3.3"
   },
   "resolutions": {
     "bunyan": "^1.8.12"

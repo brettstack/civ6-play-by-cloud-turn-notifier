@@ -1,6 +1,7 @@
 import 'source-map-support/register'
 // import Discord from 'discord.js'
 import fetch from 'node-fetch'
+import { createLogger, format, transports } from 'winston'
 import middy from '@middy/core'
 import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import sampleLogging from '@dazn/lambda-powertools-middleware-sample-logging'
@@ -8,6 +9,21 @@ import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
 import '../../aws'
 import Game from '../../models/Game'
+
+const logger = createLogger({
+  level: 'warning',
+  format: format.combine(
+    format.colorize(),
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    format.errors({ stack: true }),
+    format.json(),
+  ),
+  transports: [
+    new transports.Console(),
+  ],
+})
 
 export const MESSAGE_TEMPLATE = `{{playerName}}, it's your turn.
 Turn: {{turnNumber}}
@@ -28,6 +44,8 @@ export async function webhookHandler(event) {
 }
 
 async function processMessage(record, index) {
+  logger.debug('PROCESS_MESSAGE_CALLED_WITH', { index, record })
+
   const {
     messageId,
     body,
@@ -46,12 +64,21 @@ async function processMessage(record, index) {
 
   const bodyJson = JSON.parse(body)
 
+  logger.debug('PROCESS_MESSAGE_MESSAGE_BODY_JSON', bodyJson)
+
   const {
     gameId,
     botUsername,
     avatarUrl,
     messageTemplate,
   } = getMessageAttributeStringValues({ messageAttributes })
+
+  logger.debug('PROCESS_MESSAGE_MESSAGE_ATTRIBUTE_STRING_VALUES', {
+    gameId,
+    botUsername,
+    avatarUrl,
+    messageTemplate,
+  })
 
   if (!gameId) {
     throw new Error(`\`Records[${index}].messageAttributes.gameId\` is missing.`)
@@ -62,6 +89,13 @@ async function processMessage(record, index) {
     value2: playerName,
     value3: turnNumber,
   } = bodyJson
+
+  logger.debug('PROCESS_MESSAGE_VALUES_FROM_CIV', {
+    gameName,
+    playerName,
+    turnNumber,
+  })
+
   const game = await Game.get(gameId)
 
   if (!game) {
@@ -70,17 +104,23 @@ async function processMessage(record, index) {
 
   const discordWebhookUrl = game.get('discordWebhookUrl')
   const players = game.get('players')
-  const message = getMessageFromTemplate({
+
+  logger.debug('PROCESS_MESSAGE_GAME_VALUES', { discordWebhookUrl, players })
+
+  const messageFromTemplate = getMessageFromTemplate({
     messageTemplate,
     gameName,
     playerName,
     turnNumber,
     players,
   })
+
+  logger.debug('PROCESS_MESSAGE_MESSAGE_FROM_TEMPLATE', { messageFromTemplate })
+
   const targetWebhookBody = {
     username: botUsername,
     avatar_url: avatarUrl,
-    content: message,
+    content: messageFromTemplate,
     /*
     // TODO: Add Civ6 memes
     "embeds": [
@@ -92,6 +132,9 @@ async function processMessage(record, index) {
     ]
     */
   }
+
+  logger.debug('PROCESS_MESSAGE_DISCORD_REQUEST_BODY', { targetWebhookBody })
+
   const response = await fetch(discordWebhookUrl, {
     body: JSON.stringify(targetWebhookBody),
     method: 'POST',
@@ -99,6 +142,8 @@ async function processMessage(record, index) {
   })
 
   const responseText = await response.text()
+
+  logger.debug('PROCESS_MESSAGE_RESPONSE_TEXT', { responseText })
 
   if (!response.ok) {
     throw new Error(`HTTP response not ok: ${response.status} ${responseText}`)
