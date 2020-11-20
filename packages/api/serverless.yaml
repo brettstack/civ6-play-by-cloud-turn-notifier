@@ -3,8 +3,9 @@ provider:
   name: aws
   stackName: ${{self:service}}-${{self:provider.stage}}
   runtime: nodejs12.x
-  memorySize: 128
+  memorySize: 256
   timeout: 6
+  logRetentionInDays: ${{self:custom.stages.${{self:provider.stage}}.logRetentionInDays}}
   stage: ${{opt:stage, self:custom.defaultStage}}
   profile: ${{self:custom.stages.${{self:provider.stage}}.profile}}
   region: us-east-1
@@ -31,16 +32,19 @@ custom:
     dev:
       profile: civ6_dev
       domainEnabled: false
+      logRetentionInDays: 1
     staging:
       profile: civ6_staging
       domainName: staging.api.civ.halfstack.software
       validationDomain: halfstack.software
       domainEnabled: true
+      logRetentionInDays: 3
     prod:
       profile: civ6_prod
       domainName: api.civ.halfstack.software
       validationDomain: halfstack.software
       domainEnabled: true
+      logRetentionInDays: 14
   apiGatewayServiceProxies:
     - sqs:
         path: /webhook
