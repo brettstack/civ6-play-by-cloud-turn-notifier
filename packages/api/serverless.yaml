@@ -15,7 +15,7 @@ provider:
       format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
       level: INFO # INFO, ERROR
   environment:
-    IS_OFFLINE: ${{env:IS_OFFLINE}}
+    IS_OFFLINE: ${{env:IS_OFFLINE, ''}}
 
 plugins:
   - serverless-domain-manager
@@ -68,7 +68,7 @@ custom:
 functions:
   webhook:
     reservedConcurrency: 1
-    handler: functions/webhook/lambda.webhookHandler
+    handler: functions/webhook/lambda.webhookHandlerMiddy
     events:
       - sqs:
           arn: !GetAtt WebhookSqsQueue.Arn

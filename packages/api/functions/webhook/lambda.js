@@ -1,5 +1,4 @@
 import 'source-map-support/register'
-// import Discord from 'discord.js'
 import fetch from 'node-fetch'
 import { createLogger, format, transports } from 'winston'
 import middy from '@middy/core'
@@ -11,27 +10,30 @@ import '../../aws'
 import Game from '../../models/Game'
 
 const logger = createLogger({
-  level: 'warning',
+  level: 'debug',
   format: format.combine(
-    format.colorize(),
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss',
     }),
     format.errors({ stack: true }),
     format.json(),
   ),
-  transports: [
-    new transports.Console(),
-  ],
+  transports: new transports.Console({
+    handleExceptions: true,
+    handleRejections: true,
+  }),
 })
-
+let log = logger.child({ awsRequestId: null })
 export const MESSAGE_TEMPLATE = `{{playerName}}, it's your turn.
 Turn: {{turnNumber}}
 Game: {{gameName}}`
 const BOT_USERNAME = 'Civ6 Turnbot'
 const AVATAR_URL = 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png'
 
-export async function webhookHandler(event) {
+export async function webhookHandler(event, context) {
+  log = logger.child({ awsRequestId: context.awsRequestId })
+  log.debug('WEBHOOK_HANDLER_CALLED_WITH', { event })
+
   const { Records } = event
 
   if (!Records || !Array.isArray(Records)) {
@@ -44,7 +46,7 @@ export async function webhookHandler(event) {
 }
 
 async function processMessage(record, index) {
-  logger.debug('PROCESS_MESSAGE_CALLED_WITH', { index, record })
+  log.debug('PROCESS_MESSAGE_CALLED_WITH', { index, record })
 
   const {
     messageId,
@@ -64,7 +66,7 @@ async function processMessage(record, index) {
 
   const bodyJson = JSON.parse(body)
 
-  logger.debug('PROCESS_MESSAGE_MESSAGE_BODY_JSON', bodyJson)
+  log.debug('PROCESS_MESSAGE_MESSAGE_BODY_JSON', bodyJson)
 
   const {
     gameId,
@@ -73,7 +75,7 @@ async function processMessage(record, index) {
     messageTemplate,
   } = getMessageAttributeStringValues({ messageAttributes })
 
-  logger.debug('PROCESS_MESSAGE_MESSAGE_ATTRIBUTE_STRING_VALUES', {
+  log.debug('PROCESS_MESSAGE_MESSAGE_ATTRIBUTE_STRING_VALUES', {
     gameId,
     botUsername,
     avatarUrl,
@@ -90,7 +92,7 @@ async function processMessage(record, index) {
     value3: turnNumber,
   } = bodyJson
 
-  logger.debug('PROCESS_MESSAGE_VALUES_FROM_CIV', {
+  log.debug('PROCESS_MESSAGE_VALUES_FROM_CIV', {
     gameName,
     playerName,
     turnNumber,
@@ -105,7 +107,7 @@ async function processMessage(record, index) {
   const discordWebhookUrl = game.get('discordWebhookUrl')
   const players = game.get('players')
 
-  logger.debug('PROCESS_MESSAGE_GAME_VALUES', { discordWebhookUrl, players })
+  log.debug('PROCESS_MESSAGE_GAME_VALUES', { discordWebhookUrl, players })
 
   const messageFromTemplate = getMessageFromTemplate({
     messageTemplate,
@@ -115,7 +117,7 @@ async function processMessage(record, index) {
     players,
   })
 
-  logger.debug('PROCESS_MESSAGE_MESSAGE_FROM_TEMPLATE', { messageFromTemplate })
+  log.debug('PROCESS_MESSAGE_MESSAGE_FROM_TEMPLATE', { messageFromTemplate })
 
   const targetWebhookBody = {
     username: botUsername,
@@ -133,7 +135,7 @@ async function processMessage(record, index) {
     */
   }
 
-  logger.debug('PROCESS_MESSAGE_DISCORD_REQUEST_BODY', { targetWebhookBody })
+  log.debug('PROCESS_MESSAGE_DISCORD_REQUEST_BODY', { targetWebhookBody })
 
   const response = await fetch(discordWebhookUrl, {
     body: JSON.stringify(targetWebhookBody),
@@ -143,7 +145,7 @@ async function processMessage(record, index) {
 
   const responseText = await response.text()
 
-  logger.debug('PROCESS_MESSAGE_RESPONSE_TEXT', { responseText })
+  log.debug('PROCESS_MESSAGE_RESPONSE_TEXT', { responseText })
 
   if (!response.ok) {
     throw new Error(`HTTP response not ok: ${response.status} ${responseText}`)
@@ -205,9 +207,9 @@ function getMessageAttributeStringValues({ messageAttributes }) {
 
   return messageAttributeValues
 }
-const handler = middy(webhookHandler)
+export const webhookHandlerMiddy = middy(webhookHandler)
 
-handler
+webhookHandlerMiddy
   // .use(captureCorrelationIds({
   //   sampleDebugLogRate: parseFloat(process.env.SAMPLE_DEBUG_LOG_RATE || '0.01'),
   // }))
