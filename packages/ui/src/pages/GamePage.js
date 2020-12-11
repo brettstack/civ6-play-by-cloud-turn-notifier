@@ -91,9 +91,11 @@ function GamePage() {
           {' '}
           <strong>\@their_username</strong>
           {' '}
-          into the Discord channel. For example,
+          into the Discord channel, followed by pressing &lt;Enter&gt; For example,
           {' '}
-          <strong>\@Brett</strong>
+          <strong>\@Brett</strong> followed by &lt;Enter&gt; should return something like:
+          {' '}
+          &lt;@<strong>1234567890</strong>&gt;
           {' '}
           .
         </p>
