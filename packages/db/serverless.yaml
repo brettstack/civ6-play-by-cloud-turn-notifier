@@ -36,6 +36,7 @@ resources:
   Resources:
     GameTable:
         Type: AWS::DynamoDB::Table
+        DeletionPolicy: Retain
         Properties:
           TableName: Game
           BillingMode: PAY_PER_REQUEST
