@@ -6,8 +6,8 @@ import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import sampleLogging from '@dazn/lambda-powertools-middleware-sample-logging'
 // import captureCorrelationIds from '@dazn/lambda-powertools-middleware-correlation-ids'
 // import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
-import '../../aws'
-import Game from '../../models/Game'
+// import '../../aws'
+import { getGame } from '../../controllers/game'
 
 const logger = createLogger({
   level: 'debug',
@@ -32,12 +32,12 @@ const AVATAR_URL = 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurti
 
 export async function webhookHandler(event, context) {
   log = logger.child({ awsRequestId: context.awsRequestId })
-  log.debug('WEBHOOK_HANDLER_CALLED_WITH', { event })
+  log.debug('WEBHOOK_HANDLER:CALLED_WITH', { event })
 
   const { Records } = event
 
   if (!Records || !Array.isArray(Records)) {
-    throw new Error(`Lambda didn't receive a \`Records\` array in the \`event\` object. Received: ${Records}.`)
+    throw new Error(`Lambda didn't receive a \`Records\` array in the \`event\` object. Records: ${Records}.`)
   }
 
   const recordPromises = Records.map(processMessage)
@@ -46,7 +46,7 @@ export async function webhookHandler(event, context) {
 }
 
 async function processMessage(record, index) {
-  log.debug('PROCESS_MESSAGE_CALLED_WITH', { index, record })
+  log.debug('PROCESS_MESSAGE:CALLED_WITH', { index, record })
 
   const {
     messageId,
@@ -55,18 +55,18 @@ async function processMessage(record, index) {
   } = record
 
   if (!messageId) {
-    throw new Error(`Records[${index}] is missing \`messageId\`.`)
+    throw new Error(`Record is missing \`messageId\`. Index: ${index}.`)
   }
 
   // TODO: Check if `messageId` has been processed
 
   if (!body) {
-    throw new Error(`Records[${index}].body is missing.`)
+    throw new Error(`Record is missing \`body\`. Index: ${index}.`)
   }
 
   const bodyJson = JSON.parse(body)
 
-  log.debug('PROCESS_MESSAGE_MESSAGE_BODY_JSON', bodyJson)
+  log.debug('PROCESS_MESSAGE:MESSAGE_BODY_JSON', bodyJson)
 
   const {
     gameId,
@@ -75,7 +75,7 @@ async function processMessage(record, index) {
     messageTemplate,
   } = getMessageAttributeStringValues({ messageAttributes })
 
-  log.debug('PROCESS_MESSAGE_MESSAGE_ATTRIBUTE_STRING_VALUES', {
+  log.debug('PROCESS_MESSAGE:MESSAGE_ATTRIBUTE_STRING_VALUES', {
     gameId,
     botUsername,
     avatarUrl,
@@ -83,7 +83,7 @@ async function processMessage(record, index) {
   })
 
   if (!gameId) {
-    throw new Error(`\`Records[${index}].messageAttributes.gameId\` is missing.`)
+    throw new Error(`\`Record is missing \`messageAttributes.gameId\`. Index: ${index}.`)
   }
 
   const {
@@ -92,22 +92,30 @@ async function processMessage(record, index) {
     value3: turnNumber,
   } = bodyJson
 
-  log.debug('PROCESS_MESSAGE_VALUES_FROM_CIV', {
+  log.debug('PROCESS_MESSAGE:VALUES_FROM_CIV', {
     gameName,
     playerName,
     turnNumber,
   })
 
-  const game = await Game.get(gameId)
+  const game = await getGame({
+    gameId,
+    includeDiscordWebhookUrl: true
+  })
 
   if (!game) {
-    throw new Error(`No game found with id: ${gameId}`)
+    throw new Error(`No game found. Game ID: ${gameId}.`)
   }
 
-  const discordWebhookUrl = game.get('discordWebhookUrl')
-  const players = game.get('players')
+  log.debug('PROCESS_MESSAGE:GAME', { game })
 
-  log.debug('PROCESS_MESSAGE_GAME_VALUES', { discordWebhookUrl, players })
+  const {discordWebhookUrl, players} = game
+
+  log.debug('PROCESS_MESSAGE:GAME_VALUES', { discordWebhookUrl, players })
+
+  if (!discordWebhookUrl) {
+    throw new Error(`Game doesn't have \`discordWebhookUrl\`. Game ID: ${gameId}`)
+  }
 
   const messageFromTemplate = getMessageFromTemplate({
     messageTemplate,
@@ -117,7 +125,7 @@ async function processMessage(record, index) {
     players,
   })
 
-  log.debug('PROCESS_MESSAGE_MESSAGE_FROM_TEMPLATE', { messageFromTemplate })
+  log.debug('PROCESS_MESSAGE:MESSAGE_FROM_TEMPLATE', { messageFromTemplate })
 
   const targetWebhookBody = {
     username: botUsername,
@@ -135,7 +143,7 @@ async function processMessage(record, index) {
     */
   }
 
-  log.debug('PROCESS_MESSAGE_DISCORD_REQUEST_BODY', { targetWebhookBody })
+  log.debug('PROCESS_MESSAGE:DISCORD_REQUEST_BODY', { targetWebhookBody })
 
   const response = await fetch(discordWebhookUrl, {
     body: JSON.stringify(targetWebhookBody),
@@ -145,10 +153,10 @@ async function processMessage(record, index) {
 
   const responseText = await response.text()
 
-  log.debug('PROCESS_MESSAGE_RESPONSE_TEXT', { responseText })
+  log.debug('PROCESS_MESSAGE:RESPONSE_TEXT', { responseText })
 
   if (!response.ok) {
-    throw new Error(`HTTP response not ok: ${response.status} ${responseText}`)
+    throw new Error(`HTTP response not ok. Status: ${response.status}; Text: ${responseText}.`)
   }
 
   return responseText

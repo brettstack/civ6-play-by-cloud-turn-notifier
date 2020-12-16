@@ -1,6 +1,6 @@
 import express from 'express'
 import wrapAsync from '../wrap-async'
-import { createGame, getGame, updateGame } from '../controllers/game'
+import { createGame, getGame, updateGame } from '../../../controllers/game'
 
 const gameRouter = express.Router()
 gameRouter.post('/', wrapAsync(async (req, res) => {

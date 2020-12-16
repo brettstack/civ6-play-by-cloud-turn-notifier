@@ -1,10 +1,8 @@
 import 'source-map-support/register'
-import serverless from 'serverless-http'
+import serverlessExpress from '@vendia/serverless-express'
 import app from './app'
-import '../../aws'
 
-export const handler = serverless(app, {
-  request(request, event) {
-    request.requestContext = event.requestContext
-  },
-})
+const binaryMimeTypes = []
+const server = serverlessExpress.createServer(app, null, binaryMimeTypes)
+
+export const handler = (event, context) => serverlessExpress.proxy(server, event, context)

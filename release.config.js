@@ -1,3 +1,5 @@
+const packageJson = require('./package.json')
+
 module.exports = {
   plugins: [
     '@semantic-release/commit-analyzer',
@@ -7,9 +9,7 @@ module.exports = {
     ['@semantic-release/github', {
       assets: [
         'CHANGELOG.md',
-        'release/civ6-pbc-db.zip',
-        'release/civ6-pbc-api.zip',
-        'release/civ6-pbc-ui.zip',
+        'release.zip',
       ],
     }],
     '@semantic-release/git',

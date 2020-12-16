@@ -1,9 +1,6 @@
 {
   "extends": [
-    "airbnb"
-  ],
-  "plugins": [
-    "only-warn"
+    "airbnb",
   ],
   "env": {
     "node": true,

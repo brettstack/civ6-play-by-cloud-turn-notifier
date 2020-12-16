@@ -30,7 +30,7 @@ const EVENT = {
     md5OfBody: '098f6bcd4621d373cade4e832627b4f6',
     eventSource: 'aws:sqs',
     eventSourceARN: 'arn:aws:sqs:us-east-2:123456789012:my-queue',
-    awsRegion: 'us-east-1',
+    awsRegion: 'us-west-2',
   }],
 }
 async function run() {

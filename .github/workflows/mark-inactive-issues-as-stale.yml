@@ -1,0 +1,17 @@
+name: "Mark inactive issues as stale"
+on:
+  workflow_dispatch:
+  schedule:
+  # Run weekly
+  - cron: "0 0 * * 0"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        stale-issue-message: 'This issue has been marked as stale because it has been over 30 days since the last activity. It will be closed in 14 days if there is no further activity.'
+        days-before-stale: 30
+        days-before-close: 14

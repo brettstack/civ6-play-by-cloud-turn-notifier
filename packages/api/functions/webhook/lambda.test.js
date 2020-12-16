@@ -38,13 +38,12 @@ jest.mock('../../models/Game', () => {
     },
   }
   return {
-    get: jest.fn(async (gameId) => {
-      const game = games[gameId]
+    get: jest.fn(async ({ id }) => {
+      const game = games[id]
       if (!game) return null
+
       return {
-        get(property) {
-          return game[property]
-        },
+        Item: game
       }
     }),
   }
@@ -208,7 +207,7 @@ describe('webhookHandler: unhappy paths ', () => {
       },
     )
     const context = awsLambdaMockContext()
-    const rejectedReasons = 'No game found with id: missing'
+    const rejectedReasons = 'No game found. Game ID: missing.'
     fetch.mockRejectedValueOnce(new Error(rejectedReasons))
     await expect(webhookHandler(event, context)).resolves.toEqual([{
       reason: new Error(rejectedReasons),
@@ -232,7 +231,7 @@ describe('webhookHandler: unhappy paths ', () => {
 
     const response = new Response(JSON.stringify(responseBody), responseInit)
     fetch.mockResolvedValueOnce(Promise.resolve(response))
-    const rejectedReasons = 'HTTP response not ok: 400 {"message":"400"}'
+    const rejectedReasons = 'HTTP response not ok. Status: 400; Text: {"message":"400"}.'
     const event = eventMocks(
       'aws:sqs',
       {
