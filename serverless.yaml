@@ -47,6 +47,7 @@ custom:
     development:
       profile: civ6-pbc_dev
       logRetentionInDays: 1
+      retainDataResources: false
       amplify:
       api:
         domainEnabled: false
@@ -55,6 +56,7 @@ custom:
     staging:
       profile: civ6-pbc_staging
       logRetentionInDays: 3
+      retainDataResources: false
       isDomainRoute53: true
       api:
         domainEnabled: true
@@ -67,6 +69,8 @@ custom:
     production:
       profile: civ6-pbc_prod
       logRetentionInDays: 14
+      retainDataResources: true
+      pointInTimeRecoveryEnabled: true
       isDomainRoute53: true
       api:
         domainEnabled: true
@@ -243,6 +247,10 @@ resources:
       !Equals
         - ${{self:custom.customDomain.enabled}}
         - true
+    RetainDataResources:
+      !Equals
+        - ${{self:custom.stageConfig.retainDataResources, false}}
+        - true
   
   Resources:
     # NOTE: Following guidance here to reduce the chance of Lambda throttling
@@ -280,10 +288,11 @@ resources:
 
     GameTable:
         Type: AWS::DynamoDB::Table
+        DeletionPolicy: !If [RetainDataResources, Retain, Delete]
         Properties:
           BillingMode: PAY_PER_REQUEST
           PointInTimeRecoverySpecification:
-            PointInTimeRecoveryEnabled: false
+            PointInTimeRecoveryEnabled: ${{self:custom.stageConfig.pointInTimeRecoveryEnabled, false}}
           KeySchema:
             - KeyType: HASH
               AttributeName: id
@@ -293,6 +302,7 @@ resources:
 
     UserTable:
       Type: AWS::DynamoDB::Table
+      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
       Properties:
         BillingMode: PAY_PER_REQUEST
         PointInTimeRecoverySpecification:
@@ -306,6 +316,7 @@ resources:
 
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
+      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
       Properties:
         Policies:
           PasswordPolicy:
@@ -326,6 +337,7 @@ resources:
 
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
+      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
       Properties:
         UserPoolId: !Ref CognitoUserPool
         ClientName: CognitoIdentityPool
@@ -334,6 +346,7 @@ resources:
 
     CognitoIdentityPool:
       Type: AWS::Cognito::IdentityPool
+      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
       Properties:
         AllowUnauthenticatedIdentities: false
         # SupportedLoginProviders:
@@ -391,6 +404,7 @@ resources:
 
     CognitoIdentityPoolRoles:
       Type: AWS::Cognito::IdentityPoolRoleAttachment
+      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
       Properties:
         IdentityPoolId: !Ref CognitoIdentityPool
         Roles:
