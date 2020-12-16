@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.2...v1.7.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* retain dynamodb table when stack is deleted ([de8011f](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/de8011f17ea6c7d8a76e7902d8e877d52cfc75d8))
+
 ## [1.7.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.1...v1.7.2) (2020-11-20)
 
 
