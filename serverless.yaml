@@ -47,7 +47,6 @@ custom:
     development:
       profile: civ6-pbc_dev
       logRetentionInDays: 1
-      retainDataResources: false
       amplify:
       api:
         domainEnabled: false
@@ -56,7 +55,6 @@ custom:
     staging:
       profile: civ6-pbc_staging
       logRetentionInDays: 3
-      retainDataResources: false
       isDomainRoute53: true
       api:
         domainEnabled: true
