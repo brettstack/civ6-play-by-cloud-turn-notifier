@@ -27,7 +27,7 @@ function GamePage() {
   const { gameId } = useParams()
   const playByCloudWebhookUrl = `https://api.civ.halfstack.software/webhook?gameId=${gameId}`
   const [game, setGame] = useState({})
-  const [errorMessage, setErrorMessage] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState('') // eslint-disable-line no-unused-vars
   const [loading, setLoading] = React.useState(false)
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function GamePage() {
     try {
       const players = getPlayersFromInputs()
 
-      const { game: saveGameGame, errorMessage: saveGameErrorMessage } = await saveGame({ gameId, players })
+      const { game: saveGameGame, errorMessage: saveGameErrorMessage } = await saveGame({ gameId, players }) // eslint-disable-line no-unused-vars
       if (saveGameErrorMessage) {
         setErrorMessage(saveGameErrorMessage)
         setLoading(false)
