@@ -12,42 +12,21 @@ Below is for development purposes only. If you're having problems using the serv
 
 ![architecture diagram](https://raw.githubusercontent.com/brettstack/civ6-play-by-cloud-turn-notifier/master/architecture-diagram.png)
 
-### Local development
+### Deploy to AWS
 
-Start the individual services in separate terminals:
-
-```shell
-cd packages/db
-npm run start:dev
-```
+Update your `~/.aws/credentials` with a profile called `[civ6_dev]` and run the following
 
 ```shell
 cd packages/api
-npm run start:dev
-```
-
-```shell
-cd packages/ui
-npm run start:dev
-```
-
-### Deploying the project
-
-Ensure you have AWS CLI set up correctly with credentials set to your desired account, then deploy the `api` and `db` packages:
-
-```
-cd packages/api
 npm i
-npm run deploy
-cd ../db
-npm i
-npm run deploy
 cd ../ui
 npm i
-npm run deploy
+cd ../..
+npm run deploy:dev
 ```
 
-After `api` and `db` are deployed to AWS, you can run the UI locally using `npm start`.
+Update the values in `packages/ui/.env.development` with the relevant values from `stack-outputs.json`
+
 
 ### Testing
 
@@ -64,13 +43,16 @@ After `api` and `db` are deployed to AWS, you can run the UI locally using `npm 
 
 #### Domain
 
-1. After deploying the stack, run `sls create_domain` to create the API Gateway Custom Domain.
-2. Run `npm run deploy` again to create the base path mappings
-3. In DNS settings, create a CNAME record, 
-   1. Specify the subdomain in the `@` field (e.g. `civ`)
-   2. Copy `Target Domain Name` from the API Gateway console into `Target Domain`
-   3. This takes time to propagate
+To use a custom domain, you must first manually create two certificates via Amazon Certificate Manager - one for UI, and another for API. For production, create certificates for `example.com` and `api.example.com`. For staging, create certificates for `staging.example.com` and `staging.api.example.com`.
 
-## See also
+After the stack is successfully deployed, create CNAME records in your DNS settings for both API and UI:
 
-https://glitch.com/edit/#!/civ6-cloud-hook-to-distord?path=server.js:9:0
+1. API:
+   1. Navigate to Custom domain names in the API Gateway Console
+   1. Copy `API Gateway domain name` from the API Gateway console into `Domain name` in DNS Settings
+   1. Specify the subdomain in the `@` field (e.g. `api.civ` or `staging.api.civ`)
+   1. This takes time to propagate
+1. UI:
+   1. Navigate to Domain management in the Amplify Console
+   1. Click Actions -> View DNS Records
+   1. Create two CNAME records as descsribed

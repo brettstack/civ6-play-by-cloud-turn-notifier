@@ -5,7 +5,7 @@ provider:
   runtime: nodejs12.x
   memorySize: 1024
   timeout: 6
-  logRetentionInDays: ${{self:custom.stages.${{self:provider.stage}}.logRetentionInDays}}
+  logRetentionInDays: ${{self:custom.stageConfig.logRetentionInDays}}
   stage: ${{opt:stage, env:NODE_ENV, 'development'}}
   profile: ${{self:custom.stageConfig.profile}}
   region: us-west-2
@@ -55,11 +55,11 @@ custom:
     staging:
       profile: civ6-pbc_staging
       logRetentionInDays: 3
-      isDomainRoute53: true
+      isDomainRoute53: false
       api:
         domainEnabled: true
         domainName: staging.api.civ.halfstack.software
-        validationDomain: halfstack.software
+        # validationDomain: halfstack.software
       amplify:
         domainName: staging.civ.halfstack.software
       alarms:
@@ -67,13 +67,13 @@ custom:
     production:
       profile: civ6-pbc_prod
       logRetentionInDays: 14
-      retainDataResources: true
+      # retainDataResources: true
       pointInTimeRecoveryEnabled: true
-      isDomainRoute53: true
+      isDomainRoute53: false
       api:
         domainEnabled: true
         domainName: api.civ.halfstack.software
-        validationDomain: halfstack.software
+        # validationDomain: halfstack.software
       amplify:
         domainName: civ.halfstack.software
       alarms:
@@ -85,7 +85,9 @@ custom:
   customDomain:
     domainName: ${{self:custom.stageConfig.api.domainName, ''}}
     certificateName: ${{self:custom.stageConfig.api.domainName, ''}}
+    # enabled: false
     enabled: ${{self:custom.stageConfig.api.domainEnabled, false}}
+    autoDomain: true #${{self:custom.stageConfig.api.domainEnabled, false}}
     createRoute53Record: ${{self:custom.stageConfig.api.isDomainRoute53, false}}
   serverless-offline:
     httpPort: 4911
@@ -110,8 +112,8 @@ custom:
   # amplify:
   #   accessTokenSecretName: AmplifyGithub3
   #   repository: https://github.com/brettstack/civ6-play-by-cloud-turn-notifier
-  #   branch: ${{self:custom.stages.${{self:provider.stage}}.branch}}
-  #   domainName: ${{self:custom.stages.${{self:provider.stage}}.domainName, ''}}
+  #   branch: ${{self:custom.stageConfig.branch}}
+  #   domainName: ${{self:custom.stageConfig.domainName, ''}}
   #   buildSpecValues:
   #     artifactBaseDirectory: packages/ui/build
   #     preBuildWorkingDirectory: packages/ui
@@ -243,12 +245,12 @@ resources:
   Conditions:
     IsApiCustomDomainEnabled:
       !Equals
-        - ${{self:custom.customDomain.enabled}}
+        - ${{self:custom.stageConfig.api.domainEnabled, false}}
         - true
-    RetainDataResources:
-      !Equals
-        - ${{self:custom.stageConfig.retainDataResources, false}}
-        - true
+    # RetainDataResources:
+    #   !Equals
+    #     - ${{self:custom.stageConfig.retainDataResources, false}}
+    #     - true
   
   Resources:
     # NOTE: Following guidance here to reduce the chance of Lambda throttling
@@ -275,18 +277,21 @@ resources:
               ResponseTemplates:
                 application/json: '{}'
 
-    AcmCertificate:
-      Type: AWS::CertificateManager::Certificate
-      Condition: IsApiCustomDomainEnabled
-      Properties:
-        DomainName: ${{self:custom.customDomain.domainName}}
-        DomainValidationOptions:
-          - DomainName: ${{self:custom.customDomain.domainName}}
-            ValidationDomain: ${{self:custom.stageConfig.api.validationDomain, ''}}
+    # NOTE: This only works when deploying to us-east-1 since ACM certs for EDGE APIs
+    # must exist in us-east-1 due to being associated with a CloudFront Distribution.
+    # Manually create cert in us-east-1 instead.
+    # AcmCertificate:
+    #   Type: AWS::CertificateManager::Certificate
+    #   Condition: IsApiCustomDomainEnabled
+    #   Properties:
+    #     DomainName: ${{self:custom.stageConfig.api.domainName}}
+    #     DomainValidationOptions:
+    #       - DomainName: ${{self:custom.stageConfig.api.domainName}}
+    #         ValidationDomain: ${{self:custom.stageConfig.api.validationDomain, ''}}
 
     GameTable:
         Type: AWS::DynamoDB::Table
-        DeletionPolicy: !If [RetainDataResources, Retain, Delete]
+        # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
         Properties:
           BillingMode: PAY_PER_REQUEST
           PointInTimeRecoverySpecification:
@@ -300,7 +305,7 @@ resources:
 
     UserTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
       Properties:
         BillingMode: PAY_PER_REQUEST
         PointInTimeRecoverySpecification:
@@ -314,7 +319,7 @@ resources:
 
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
-      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
       Properties:
         Policies:
           PasswordPolicy:
@@ -335,7 +340,7 @@ resources:
 
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
-      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
       Properties:
         UserPoolId: !Ref CognitoUserPool
         ClientName: CognitoIdentityPool
@@ -344,7 +349,7 @@ resources:
 
     CognitoIdentityPool:
       Type: AWS::Cognito::IdentityPool
-      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
       Properties:
         AllowUnauthenticatedIdentities: false
         # SupportedLoginProviders:
@@ -402,7 +407,7 @@ resources:
 
     CognitoIdentityPoolRoles:
       Type: AWS::Cognito::IdentityPoolRoleAttachment
-      DeletionPolicy: !If [RetainDataResources, Retain, Delete]
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
       Properties:
         IdentityPoolId: !Ref CognitoIdentityPool
         Roles:
