@@ -1,3 +1,13 @@
+# [1.8.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.3...v1.8.0) (2020-12-20)
+
+
+### Features
+
+* add custom domain name ([9d928e8](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/9d928e8ba90da14dafd0a72ca3792541c0768616))
+* add retainDataResources and pointInTimeRecoveryEnabled ([8eaadcd](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/8eaadcdb470c34a761045fc2a4cd6b154668a447))
+* add serverless-amplify-plugin ([0cddaca](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/0cddaca6fdcb546beb7235c579b4572a9dbba6a6))
+* large refactor ([40d9b77](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/40d9b77a9277ad8cb5096be59b5c460be108e063))
+
 ## [1.7.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.2...v1.7.3) (2020-12-16)
 
 
