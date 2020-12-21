@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.0...v1.8.1) (2020-12-21)
+
+
+### Bug Fixes
+
+* **ci:** rename actions ([5114c0a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/5114c0a83ba641265cb3203a9ead78fcdfdfa682))
+
 # [1.8.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.7.3...v1.8.0) (2020-12-20)
 
 
