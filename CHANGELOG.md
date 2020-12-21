@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.2...v1.8.3) (2020-12-21)
+
+
+### Bug Fixes
+
+* **ui:** use REACT_APP_ApiEndpoint even in development mode ([775a477](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/775a4779877dc7c7ae1c63e3ea39b836672733a8))
+
 ## [1.8.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.1...v1.8.2) (2020-12-21)
 
 
