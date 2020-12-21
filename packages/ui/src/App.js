@@ -13,8 +13,8 @@ const {
 } = process.env
 
 // Consider using https://www.npmjs.com/package/@beam-australia/react-env instead
-axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:4911/' : REACT_APP_ApiEndpoint//'https://api.civ.halfstack.software'
-// axios.defaults.baseURL = 'http://localhost:4911/' //REACT_APP_ApiEndpoint
+// axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:4911/' : REACT_APP_ApiEndpoint//'https://api.civ.halfstack.software'
+axios.defaults.baseURL = REACT_APP_ApiEndpoint
 
 function App() {
   return (
