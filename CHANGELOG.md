@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.1...v1.8.2) (2020-12-21)
+
+
+### Bug Fixes
+
+* **ci:** include serverless-amplify-plugin in release ([f6d2aec](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/f6d2aeca1fd075c7cfb5b583c9f4a46c04f8dbb4))
+
 ## [1.8.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.0...v1.8.1) (2020-12-21)
 
 
