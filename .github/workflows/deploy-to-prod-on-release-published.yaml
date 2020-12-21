@@ -9,10 +9,6 @@ jobs:
   deploy_prod:
     runs-on: ubuntu-latest
     steps:
-    # Checkout to get ./serverless-amplify-plugin
-    - name: Checkout
-      uses: actions/checkout@v2
-
     - name: Download release
       uses: Legion2/download-release-action@v2.1.0
       with:

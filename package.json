@@ -20,7 +20,7 @@
     "deploy:prod": "NODE_ENV=production sls deploy --stage production",
     "remove-stack:dev": "sls remove --stage development",
     "remove-stack:staging": "sls remove --stage staging",
-    "zip-release": "zip -r release.zip .serverless serverless.yaml package.json package-lock.json",
+    "zip-release": "zip -r release.zip serverless-amplify-plugin .serverless serverless.yaml package.json package-lock.json",
     "setup": "node scripts/setup/setup.js",
     "setup-file": "node scripts/setup/createSetupFile.js",
     "sqs-lambda": "node_modules/.bin/babel-node --require dotenv/config packages/api/scripts/sqs-lambda.js"
