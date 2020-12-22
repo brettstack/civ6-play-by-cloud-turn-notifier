@@ -13,4 +13,4 @@ stats.json
 .cache
 coverage
 .webpack
-stack-outputs.json
+stack-outputs.*.json

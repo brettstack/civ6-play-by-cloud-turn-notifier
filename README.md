@@ -25,7 +25,7 @@ cd ../..
 npm run deploy:dev
 ```
 
-Update the values in `packages/ui/.env.development` with the relevant values from `stack-outputs.json`
+Update the values in `packages/ui/.env.development` with the relevant values from `stack-outputs.development.json`
 
 
 ### Testing

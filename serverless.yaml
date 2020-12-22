@@ -140,7 +140,7 @@ custom:
   webpack:
     webpackConfig: ./functions.webpack.config.js
   output:
-    file: ./stack-outputs.json
+    file: ./stack-outputs.${{self:provider.stage}}.json
   # TODO: Add custom splitting with ./split-stack-splitter.js
   # splitStacks:
   #   perFunction: true
@@ -189,6 +189,7 @@ functions:
       - Effect: "Allow"
         Action:
           - dynamodb:GetItem
+          - dynamodb:UpdateItem
         Resource:
           - !GetAtt GameTable.Arn
           - !GetAtt UserTable.Arn

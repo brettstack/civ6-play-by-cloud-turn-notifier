@@ -12,6 +12,7 @@
     "package:dev": "sls package --stage development",
     "deploy-prepack:dev": "sls deploy --package .serverless --stage development",
     "deploy:dev": "sls deploy --stage development",
+    "deploy:dev:webhook": "sls deploy --stage development --function webhook",
     "package:staging": "NODE_ENV=production sls package --stage staging",
     "deploy-prepack:staging": "NODE_ENV=production sls deploy --package .serverless --stage staging",
     "deploy:staging": "NODE_ENV=production sls deploy --stage staging",

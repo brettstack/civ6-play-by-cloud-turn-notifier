@@ -26,6 +26,17 @@ export async function updateGame({
   return sanitizeGame({game})
 }
 
+export async function markGameInactive({
+  gameId,
+}) {
+  const game = await Game.update({
+    id: gameId,
+    state: 'INACTIVE',
+  }, { returnValues: 'ALL_NEW'})
+
+  return sanitizeGame({game})
+}
+
 export async function getGame({
   gameId,
   includeDiscordWebhookUrl
