@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.3...v1.9.0) (2020-12-22)
+
+
+### Features
+
+* mark games as inactive when discord webhook doesn't exist ([#32](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/issues/32)) ([8b3d298](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/8b3d298c79c8bdab62eede22e5e6fb0ea6d666a5))
+
 ## [1.8.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.2...v1.8.3) (2020-12-21)
 
 
