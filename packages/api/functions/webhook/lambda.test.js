@@ -248,7 +248,7 @@ describe('webhookHandler: unhappy paths ', () => {
 
     const response = new Response(JSON.stringify(responseBody), responseInit)
     fetch.mockResolvedValueOnce(Promise.resolve(response))
-    const rejectedReasons = 'HTTP response not ok. Status: 400; Text: {"message":"400"}.'
+    const rejectedReasons = 'HTTP response from Discord not ok. Status: 400; Text: {"message":"400"}.'
     const event = eventMocks(
       'aws:sqs',
       {

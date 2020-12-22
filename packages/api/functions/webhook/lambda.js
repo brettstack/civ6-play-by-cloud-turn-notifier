@@ -182,7 +182,7 @@ async function processMessage(record, index) {
       }
     } catch(e) {}
 
-    throw new Error(`HTTP response not ok. Status: ${response.status}; Text: ${responseText}.`)
+    throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}.`)
   }
 
   return `Notifaction sent. Game ID: ${gameId}; Discord Response Text: ${responseText}.`
