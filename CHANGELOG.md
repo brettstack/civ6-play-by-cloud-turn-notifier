@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.9.0...v1.9.1) (2020-12-22)
+
+
+### Bug Fixes
+
+* fix Lambda source maps ([4b725dd](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/4b725ddba458c6d9db2d278b2f69d31ce9f0473d))
+
 # [1.9.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.8.3...v1.9.0) (2020-12-22)
 
 
