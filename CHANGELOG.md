@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.9.1...v1.9.2) (2020-12-22)
+
+
+### Bug Fixes
+
+* add link for getting discord user id ([aca05fd](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/aca05fd78f9105dc20d518a8ad267d1fb1f97243)), closes [#21](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/issues/21)
+
 ## [1.9.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.9.0...v1.9.1) (2020-12-22)
 
 
