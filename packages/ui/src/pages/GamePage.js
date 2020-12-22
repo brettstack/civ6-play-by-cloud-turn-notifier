@@ -87,15 +87,7 @@ function GamePage() {
         <p>
           To @ mention a player when it's their turn, create a mapping below of the player's name in Civ to the player's Discord user id.
           {' '}
-          You can get a player's discord user id by typing
-          {' '}
-          <strong>\@their_username</strong>
-          {' '}
-          into the Discord channel. For example,
-          {' '}
-          <strong>\@Brett</strong>
-          {' '}
-          .
+          See <a href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-">Where can I find my User/Server/Message ID?</a>.
         </p>
         <form>
           <Grid
