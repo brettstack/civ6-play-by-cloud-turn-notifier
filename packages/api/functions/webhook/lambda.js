@@ -7,7 +7,7 @@ import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import captureCorrelationIds from '@dazn/lambda-powertools-middleware-correlation-ids'
 // import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
 // import '../../aws'
-import { getGame } from '../../controllers/game'
+import { getGame, markGameInactive } from '../../controllers/game'
 
 const logger = createLogger({
   level: 'debug',
@@ -109,9 +109,15 @@ async function processMessage(record, index) {
 
   log.debug('PROCESS_MESSAGE:GAME', { game })
 
-  const {discordWebhookUrl, players} = game
+  const {discordWebhookUrl, players, state} = game
 
-  log.debug('PROCESS_MESSAGE:GAME_VALUES', { discordWebhookUrl, players })
+  log.debug('PROCESS_MESSAGE:GAME_VALUES', { discordWebhookUrl, players, state })
+
+  if (state === 'INACTIVE') {
+    log.debug('PROCESS_MESSAGE:INACTIVE', { game })
+
+    return `Skipping inactive game. Game ID: ${gameId}.`
+  }
 
   if (!discordWebhookUrl) {
     throw new Error(`Game doesn't have \`discordWebhookUrl\`. Game ID: ${gameId}`)
@@ -151,15 +157,35 @@ async function processMessage(record, index) {
     headers: { 'Content-Type': 'application/json' },
   })
 
+  log.debug('PROCESS_MESSAGE:RESPONSE', { response })
+
   const responseText = await response.text()
 
   log.debug('PROCESS_MESSAGE:RESPONSE_TEXT', { responseText })
 
   if (!response.ok) {
+    log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK', { responseText })
+
+    try {
+      const responseJson = JSON.parse(responseText)
+
+      log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK_JSON', { responseJson })
+
+      const isMissingDiscordWebhook = responseJson.code === 10015
+
+      if (isMissingDiscordWebhook) {
+        const inactiveGame = await markGameInactive({ gameId })
+
+        log.debug('PROCESS_MESSAGE:GAME_MARKED_INACTIVE', { inactiveGame })
+
+        return `Game marked as inactive. Game ID: ${gameId}.`
+      }
+    } catch(e) {}
+
     throw new Error(`HTTP response not ok. Status: ${response.status}; Text: ${responseText}.`)
   }
 
-  return responseText
+  return `Notifaction sent. Game ID: ${gameId}; Discord Response Text: ${responseText}.`
 }
 
 export function getMessageFromTemplate({
