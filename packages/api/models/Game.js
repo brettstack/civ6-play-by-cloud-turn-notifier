@@ -14,6 +14,7 @@ const Game = new Entity({
     name: { type: 'string' },
     discordWebhookUrl: { type: 'string' },
     players: { type: 'map' },
+    state: { type: 'string' }
   },
   table: GameTable,
 })

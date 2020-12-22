@@ -120,6 +120,7 @@ async function processMessage(record, index) {
   }
 
   if (!discordWebhookUrl) {
+    log.error('PROCESS_MESSAGE:NO_DISCORD_WEBHOOK_URL', { game })
     throw new Error(`Game doesn't have \`discordWebhookUrl\`. Game ID: ${gameId}`)
   }
 
@@ -164,7 +165,7 @@ async function processMessage(record, index) {
   log.debug('PROCESS_MESSAGE:RESPONSE_TEXT', { responseText })
 
   if (!response.ok) {
-    log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK', { responseText })
+    log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK', { game, response, responseText })
 
     try {
       const responseJson = JSON.parse(responseText)
@@ -180,10 +181,14 @@ async function processMessage(record, index) {
 
         return `Game marked as inactive. Game ID: ${gameId}.`
       }
-    } catch(e) {}
+    } catch(error) {
+      log.error('PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE', { stack: error.stack, errorMessage: error.message })
+    }
 
     throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}.`)
   }
+
+  // TODO: Put metric
 
   return `Notifaction sent. Game ID: ${gameId}; Discord Response Text: ${responseText}.`
 }
