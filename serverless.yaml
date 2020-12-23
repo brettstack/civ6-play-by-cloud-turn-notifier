@@ -484,8 +484,8 @@ resources:
                 "properties": {
                   "metrics": [
                     [ "AWS/Lambda", "Duration", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}", { "stat": "Minimum" } ],
-                    [ ".", ".", ".", ".", { "state": "Average" } ],
-                    [ ".", ".", ".", ".", { "state": "Maximum" } ]
+                    [ ".",          ".",        { "stat": "Average" } ],
+                    [ ".",          ".",        { "stat": "Maximum" } ]
                   ],
                   "region": "${AWS::Region}",
                   "title": "Webhook duration",
@@ -502,7 +502,7 @@ resources:
                 "height": 6,
                 "properties": {
                     "metrics": [
-                      [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq}", { "label": "Number of messages" } ]
+                      [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq.QueueName}", { "label": "Number of messages" } ]
                     ],
                     "view": "timeSeries",
                     "stacked": false,
