@@ -37,6 +37,7 @@ plugins:
   - serverless-stack-output
   - serverless-cloudside-plugin
   - serverless-plugin-aws-alerts
+  - serverless-plugin-metric
   - './serverless-amplify-plugin'
   # - '@wizeline/serverless-amplify-plugin'
   - serverless-offline
@@ -160,6 +161,21 @@ custom:
       - functionErrors
       - functionInvocations
       - functionDuration
+
+  metrics:
+    - name: SKIP_INACTIVE
+      pattern: '{ $.message = "PROCESS_MESSAGE:SKIP_INACTIVE" }'
+      functions: [webhook]
+      namespace: ${{self:service}}
+    - name: GAME_MARKED_INACTIVE
+      pattern: '{ $.message = "PROCESS_MESSAGE:GAME_MARKED_INACTIVE" }'
+      functions: [webhook]
+      namespace: ${{self:service}}
+    - name: NOTIFICATION_SENT
+      pattern: '{ $.message = "PROCESS_MESSAGE:NOTIFICATION_SENT" }'
+      functions: [webhook]
+      namespace: ${{self:service}}
+
   serverlessTerminationProtection:
     stages:
       - staging
@@ -435,26 +451,140 @@ resources:
       Properties:
         DashboardBody: !Sub |
           {
-            "start": "-P7D",
+            "start": "-P10D",
             "end": "P0D",
             "widgets": [
               {
+                  "type": "metric",
+                  "x": 0,
+                  "y": 0,
+                  "width": 6,
+                  "height": 6,
+                  "properties": {
+                      "metrics": [
+                          [ "civ6-pbc", "webhook-GAME_MARKED_INACTIVE", { "label": "Games marked inactive" } ],
+                          [ ".", "webhook-NOTIFICATION_SENT", { "label": "Notifications sent" } ],
+                          [ ".", "webhook-SKIP_INACTIVE", { "label": "Inactive games skipped" } ],
+                          [ "AWS/Lambda", "Errors", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
+                      ],
+                      "view": "timeSeries",
+                      "stacked": false,
+                      "region": "${AWS::Region}",
+                      "stat": "Sum",
+                      "period": 3600,
+                      "title": "Webhook"
+                  }
+              },
+              {
                 "type": "metric",
-                "x": 0,
+                "x": 6,
                 "y": 0,
                 "width": 6,
                 "height": 6,
                 "properties": {
                   "metrics": [
-                    [ "AWS/Lambda", "Invocations", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
+                    [ "AWS/Lambda", "Duration", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
                   ],
                   "region": "${AWS::Region}",
-                  "title": "Send notifications (# invokes)",
+                  "title": "Webhook duration",
                   "view": "timeSeries",
                   "stacked": false,
                   "stat": "Sum",
                   "period": 86400
                 }
+              },
+              {
+                "type": "metric",
+                "x": 12,
+                "y": 0,
+                "width": 6,
+                "height": 6,
+                "properties": {
+                    "metrics": [
+                      [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq}", { "label": "Number of messages" } ]
+                    ],
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "region": "${AWS::Region}",
+                    "stat": "Maximum",
+                    "period": 3600,
+                    "title": "Webhook DLQ"
+                }
+              },
+              {
+                "type": "explorer",
+                "x": 0,
+                "y": 6,
+                "width": 24,
+                "height": 15,
+                "properties": {
+                    "metrics": [
+                        {
+                            "metricName": "Duration",
+                            "resourceType": "AWS::Lambda::Function",
+                            "stat": "p90"
+                        },
+                        {
+                            "metricName": "Errors",
+                            "resourceType": "AWS::Lambda::Function",
+                            "stat": "Sum"
+                        },
+                        {
+                            "metricName": "Invocations",
+                            "resourceType": "AWS::Lambda::Function",
+                            "stat": "Sum"
+                        },
+                        {
+                            "metricName": "Throttles",
+                            "resourceType": "AWS::Lambda::Function",
+                            "stat": "Sum"
+                        }
+                    ],
+                    "labels": [
+                        {
+                          "key": "FunctionName",
+                          "value": "${WebhookLambdaFunction}"
+                        }
+                    ],
+                    "widgetOptions": {
+                        "legend": {
+                            "position": "bottom"
+                        },
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "rowsPerPage": 50,
+                        "widgetsPerRow": 2
+                    },
+                    "period": 3600,
+                    "splitBy": "FunctionName"
+                }
+              },
+              {
+                  "type": "alarm",
+                  "x": 18,
+                  "y": 0,
+                  "width": 6,
+                  "height": 6,
+                  "properties": {
+                      "title": "Alarms",
+                      "alarms": [
+                          "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${WebhookLambdaFunction}-Errors-Alarm",
+                          "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${WebhookLambdaFunction}-Duration-Alarm"
+                      ]
+                  }
+              },
+              {
+                  "type": "log",
+                  "x": 0,
+                  "y": 21,
+                  "width": 24,
+                  "height": 6,
+                  "properties": {
+                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20\n| filter level = 'error'",
+                      "region": "${AWS::Region}",
+                      "stacked": false,
+                      "view": "table"
+                  }
               }
             ]
           }

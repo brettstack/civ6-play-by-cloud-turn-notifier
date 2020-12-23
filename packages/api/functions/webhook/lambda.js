@@ -114,7 +114,7 @@ async function processMessage(record, index) {
   log.debug('PROCESS_MESSAGE:GAME_VALUES', { discordWebhookUrl, players, state })
 
   if (state === 'INACTIVE') {
-    log.debug('PROCESS_MESSAGE:INACTIVE', { game })
+    log.info('PROCESS_MESSAGE:SKIP_INACTIVE', { gameId })
 
     return `Skipping inactive game. Game ID: ${gameId}.`
   }
@@ -177,7 +177,7 @@ async function processMessage(record, index) {
       if (isMissingDiscordWebhook) {
         const inactiveGame = await markGameInactive({ gameId })
 
-        log.debug('PROCESS_MESSAGE:GAME_MARKED_INACTIVE', { inactiveGame })
+        log.info('PROCESS_MESSAGE:GAME_MARKED_INACTIVE', { inactiveGame })
 
         return `Game marked as inactive. Game ID: ${gameId}.`
       }
@@ -188,7 +188,7 @@ async function processMessage(record, index) {
     throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}.`)
   }
 
-  // TODO: Put metric
+  log.info(`PROCESS_MESSAGE:NOTIFICATION_SENT`, { gameId, responseText})
 
   return `Notifaction sent. Game ID: ${gameId}; Discord Response Text: ${responseText}.`
 }
