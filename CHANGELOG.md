@@ -1,3 +1,13 @@
+## [1.10.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.10.0...v1.10.1) (2020-12-23)
+
+
+### Bug Fixes
+
+* add min, avg max webhook duration to dashboard ([7c8ae72](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/7c8ae7290ae790e0531a02932c98c917d2b687a8))
+* fix duration and num dlq messages widgets ([d28cd96](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/d28cd966898f635cfe2412e15c76189fb03ce305))
+* return null in getGame when game doesn't exist ([06ee810](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/06ee8108c94c6dc54b85c13a348e9af9b95e0cd2))
+* show existing player mappings ([0c39c14](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/0c39c1435eced689eb56d57707c5abd180449a1d))
+
 # [1.10.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.9.2...v1.10.0) (2020-12-23)
 
 
