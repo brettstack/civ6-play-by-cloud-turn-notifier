@@ -42,6 +42,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^1.7.0",
+    "husky": "^4.3.6",
     "nodemon": "^2.0.3",
     "replace-in-file": "^6.0.0",
     "semantic-release": "^17.0.4",
@@ -62,5 +63,10 @@
     "serverless-webpack": "^5.3.2",
     "webpack": "^4.43.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "cd packages/api && npm test"
+    }
+  }
 }
