@@ -26,9 +26,10 @@ function GamePage() {
   const classes = useStyles()
   const { gameId } = useParams()
   const playByCloudWebhookUrl = `https://api.civ.halfstack.software/webhook?gameId=${gameId}`
-  const [game, setGame] = useState({})
+  const [game, setGame] = useState({}) // eslint-disable-line no-unused-vars
   const [errorMessage, setErrorMessage] = React.useState('') // eslint-disable-line no-unused-vars
   const [loading, setLoading] = React.useState(false)
+  const [playerNameToDiscordIdMappings, setPlayerNameToDiscordIdMappings] = React.useState()
 
   useEffect(() => {
     const f = async () => {
@@ -36,6 +37,12 @@ function GamePage() {
 
       if (g) {
         setGame(g)
+        const playerNameToDiscordIdMappingsLocal = Object.entries(g.players || {})
+        // Create an array of length 9 for rendering 9 times
+        while (playerNameToDiscordIdMappingsLocal.length < 9) {
+          playerNameToDiscordIdMappingsLocal.push([null, {}])
+        }
+        setPlayerNameToDiscordIdMappings(playerNameToDiscordIdMappingsLocal)
       } else {
         // TODO: display error
         console.error(error)
@@ -65,12 +72,6 @@ function GamePage() {
     }
   }
 
-  const playerNameToDiscordIdMappings = Object.entries(game.players || {})
-  // Create an array of length 9 for rendering 9 times
-  while (playerNameToDiscordIdMappings.length < 9) {
-    playerNameToDiscordIdMappings.push([null, {}])
-  }
-
   return (
     <Container className={classes.root}>
       <div className={classes.inner}>
@@ -87,7 +88,7 @@ function GamePage() {
         <p>
           To @ mention a player when it's their turn, create a mapping below of the player's name in Civ to the player's Discord user id.
           {' '}
-          See <a href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-">Where can I find my User/Server/Message ID?</a>.
+          See <a href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-" target="_blank" rel="noopener noreferrer">Where can I find my User/Server/Message ID?</a>.
         </p>
         <form>
           <Grid
@@ -95,13 +96,13 @@ function GamePage() {
             spacing={3}
             align="center"
           >
-            {playerNameToDiscordIdMappings.map(([playerName, player], key) => (
+            {playerNameToDiscordIdMappings ? playerNameToDiscordIdMappings.map(([playerName, player], key) => (
               <PlayerNameToDiscordIdMapping
                 key={key} // eslint-disable-line react/no-array-index-key
                 playerName={playerName}
                 player={player}
               />
-            ))}
+            )): null}
             <Grid item xs={12} align="right">
               <Button
                 variant="contained"

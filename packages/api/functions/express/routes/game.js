@@ -12,6 +12,7 @@ gameRouter.put('/:gameId', wrapAsync(async (req, res) => {
   const { gameId } = req.params
   const { players } = req.body
   const game = await updateGame({ gameId, players })
+
   res.json(game)
 }))
 gameRouter.get('/:gameId', wrapAsync(async (req, res) => {

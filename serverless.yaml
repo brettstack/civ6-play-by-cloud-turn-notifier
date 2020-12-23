@@ -484,8 +484,8 @@ resources:
                 "properties": {
                   "metrics": [
                     [ "AWS/Lambda", "Duration", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}", { "stat": "Minimum" } ],
-                    [ ".", ".", ".", ".", ".", ".", { "state": "Average" } ],
-                    [ ".", ".", ".", ".", ".", ".", { "state": "Maximum" } ]
+                    [ ".", ".", ".", ".", { "state": "Average" } ],
+                    [ ".", ".", ".", ".", { "state": "Maximum" } ]
                   ],
                   "region": "${AWS::Region}",
                   "title": "Webhook duration",

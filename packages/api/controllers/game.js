@@ -23,7 +23,7 @@ export async function updateGame({
     players,
   }, { returnValues: 'ALL_NEW'})
 
-  return sanitizeGame({game})
+  return sanitizeGame({ gameData: game.Attributes })
 }
 
 export async function markGameInactive({
@@ -34,7 +34,7 @@ export async function markGameInactive({
     state: 'INACTIVE',
   }, { returnValues: 'ALL_NEW'})
 
-  return sanitizeGame({game})
+  return sanitizeGame({ gameData: game.Attributes})
 }
 
 export async function getGame({
@@ -43,12 +43,11 @@ export async function getGame({
 }) {
   const game = await Game.get({ id: gameId })
 
-  return sanitizeGame({game, includeDiscordWebhookUrl})
+  return sanitizeGame({ gameData: game.Item, includeDiscordWebhookUrl})
 }
 
-function sanitizeGame({game, includeDiscordWebhookUrl = false}) {
-  if (!game || !game.Item) return null
-  const gameData = game.Item
+function sanitizeGame({gameData, includeDiscordWebhookUrl = false}) {
+  if (!gameData) return null
 
   if (!includeDiscordWebhookUrl) {
     // Don't return sensitive data
