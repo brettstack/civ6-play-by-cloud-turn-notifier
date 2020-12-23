@@ -43,6 +43,10 @@ export async function getGame({
 }) {
   const game = await Game.get({ id: gameId })
 
+  if (!game) {
+    return null
+  }
+
   return sanitizeGame({ gameData: game.Item, includeDiscordWebhookUrl})
 }
 
