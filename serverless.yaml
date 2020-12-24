@@ -161,6 +161,11 @@ custom:
       - functionErrors
       - functionInvocations
       - functionDuration
+    definitions:
+      functionDuration:
+        threshold: 1000
+        evaluationPeriods: 5
+      
 
   metrics:
     - name: SKIP_INACTIVE
