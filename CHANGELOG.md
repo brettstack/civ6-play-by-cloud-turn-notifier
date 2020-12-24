@@ -1,3 +1,17 @@
+# [1.11.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.10.2...v1.11.0) (2020-12-24)
+
+
+### Bug Fixes
+
+* **alarms:** remove throttle alarm ([7ca9720](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/7ca9720a0303586a3f3b98122f2c2a4ce8807780))
+* **ui:** fix typos ([d52927b](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/d52927bc1245bed6d55d28a46fc167c17f5d197b))
+* **ui:** respect user preference for dark/light modoe ([1907211](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/1907211b352977d6cbd06571d4bae4380f1f7ae3))
+
+
+### Features
+
+* **ui:** dark mode ([6f7dc56](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/6f7dc56b90ccb73e626697bfdcde06de94747537))
+
 ## [1.10.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.10.1...v1.10.2) (2020-12-24)
 
 
