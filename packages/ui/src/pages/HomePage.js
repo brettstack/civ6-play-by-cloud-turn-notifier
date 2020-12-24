@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Container, Divider,
+  Container, Divider, Link
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useHistory } from 'react-router-dom'
@@ -37,7 +37,7 @@ function HomePage() {
           {' '}
           is a new game mode that that lets you play
           {' '}
-          <a href="https://civilization.com/" target="_blank" rel="noopener noreferrer">Civ 6</a>
+          <Link href="https://civilization.com/" target="_blank" rel="noopener noreferrer">Civ 6</Link>
           {' '}
           with friends without needing to be online at the same time.
           {' '}
@@ -65,7 +65,7 @@ function HomePage() {
           {' '}
           game, e.g. you can recieve notifications to your
           {' '}
-          <a href="https://discordapp.com/" target="_blank" rel="noopener noreferrer">Discord</a>
+          <Link href="https://discordapp.com/" target="_blank" rel="noopener noreferrer">Discord</Link>
           {' '}
           channel. However, setting this up requires significant technical knowledge.
         </p>
@@ -168,26 +168,26 @@ function HomePage() {
           {' '}
           For a detailed technical writeup, check out this blog post on
           {' '}
-          <a href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">
+          <Link href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">
             Building a Civilization VI "Play by Cloud" Webhook Turn Notifier Service
-          </a>
+          </Link>
         </p>
 
         <h2>Contact and Feedback</h2>
         <p>
           You can reach out to me on Twitter -
           {' '}
-          <a href="https://twitter.com/AWSbrett">Brett Andrews</a>
+          <Link href="https://twitter.com/AWSbrett">Brett Andrews</Link>
           . Or create an Issue on the
           {' '}
-          <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">civ6-play-by-cloud-turn-notifier GitHub repo</a>
+          <Link href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">civ6-play-by-cloud-turn-notifier GitHub repo</Link>
         </p>
 
         <h2>Open Source</h2>
         <p>
           The source code for this project is available on the
           {' '}
-          <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <Link href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</Link>
         </p>
       </div>
     </Container>
