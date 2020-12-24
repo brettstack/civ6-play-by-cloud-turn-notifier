@@ -569,8 +569,8 @@ resources:
                   "properties": {
                       "title": "Alarms",
                       "alarms": [
-                          "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${WebhookLambdaFunction}-Errors-Alarm",
-                          "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${WebhookLambdaFunction}-Duration-Alarm"
+                          "${WebhookFunctionErrorsAlarm.Arn}",
+                          "${WebhookFunctionDurationAlarm.Arn}"
                       ]
                   }
               },
