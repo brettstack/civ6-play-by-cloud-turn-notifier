@@ -157,7 +157,7 @@ custom:
             endpoint: ${{self:custom.stageConfig.alarms.notificationEmail}}
     # TODO: Add short and long alarms for each
     alarms:
-      - functionThrottles
+      # - functionThrottles
       - functionErrors
       - functionInvocations
       - functionDuration
