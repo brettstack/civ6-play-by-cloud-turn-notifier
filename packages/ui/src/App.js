@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-// import useMediaQuery from '@material-ui/core/useMediaQuery'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import {
@@ -20,7 +20,7 @@ const {
 axios.defaults.baseURL = REACT_APP_ApiEndpoint
 
 function App() {
-  const prefersDarkMode = true //useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = React.useMemo(
     () =>
       createMuiTheme({
