@@ -163,7 +163,7 @@ custom:
       - functionDuration
     definitions:
       functionDuration:
-        threshold: 1000
+        threshold: 5000
         evaluationPeriods: 5
       
 
