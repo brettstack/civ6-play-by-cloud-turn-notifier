@@ -1,3 +1,10 @@
+## [1.11.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.1...v1.11.2) (2020-12-27)
+
+
+### Bug Fixes
+
+* **alarm:** increase duration alarm to 5000 ([acc7584](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/acc7584d056d76a9fcaf85248dde97dd6c91baec))
+
 ## [1.11.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.0...v1.11.1) (2020-12-27)
 
 
