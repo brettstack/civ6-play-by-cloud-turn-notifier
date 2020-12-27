@@ -536,7 +536,7 @@ resources:
                   "x": 0,
                   "y": 6,
                   "width": 15,
-                  "height": 4,
+                  "height": 6,
                   "properties": {
                       "metrics": [
                           [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "This month", "period": 2592000 } ],
@@ -571,6 +571,19 @@ resources:
                       "title": "Notifications sent",
                       "start": "-P12M",
                       "end": "P0D"
+                  }
+              },
+              {
+                  "type": "log",
+                  "x": 15,
+                  "y": 9,
+                  "width": 3,
+                  "height": 3,
+                  "properties": {
+                      "query": "SOURCE '/aws/lambda/civ6-pbc-production-webhook' | FIELDS gameId\n| STATS count_distinct(gameId) as activeGames",
+                      "region": "${AWS::Region}",
+                      "title": "Active games",
+                      "view": "singleValue"
                   }
               },
               {
