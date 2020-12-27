@@ -1,3 +1,12 @@
+## [1.11.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.0...v1.11.1) (2020-12-27)
+
+
+### Bug Fixes
+
+* **dashboard:** minor improvements to log widget ([3e1decc](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/3e1decc20e5882210d3c517ca0dc3181332b430d))
+* minor dashboard improvements ([4a086d9](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/4a086d97d8cb2307601161ff1c9370d522abc56d))
+* treat NO_GAME_FOUND as client error (don't throw) ([22794e7](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/22794e7873a52a40e7b82a3079a9f0fa86589fae))
+
 # [1.11.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.10.2...v1.11.0) (2020-12-24)
 
 
