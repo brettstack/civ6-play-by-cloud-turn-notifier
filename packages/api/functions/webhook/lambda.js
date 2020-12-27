@@ -104,7 +104,8 @@ async function processMessage(record, index) {
   })
 
   if (!game) {
-    throw new Error(`No game found. Game ID: ${gameId}.`)
+    log.error('PROCESS_MESSAGE:NO_GAME_FOUND', { gameId })
+    return `No game found. Game ID: ${gameId}.`
   }
 
   log.debug('PROCESS_MESSAGE:GAME', { game })

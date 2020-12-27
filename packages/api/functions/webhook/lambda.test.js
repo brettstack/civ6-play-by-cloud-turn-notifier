@@ -203,7 +203,7 @@ describe('webhookHandler: unhappy paths ', () => {
     }])
   })
 
-  test('Rejected count increases on missing game', async () => {
+  test('No game found is handled instead of rejected', async () => {
     const event = eventMocks(
       'aws:sqs',
       {
@@ -224,12 +224,12 @@ describe('webhookHandler: unhappy paths ', () => {
       },
     )
     const context = awsLambdaMockContext()
-    const rejectedReasons = 'No game found. Game ID: missing.'
-    fetch.mockRejectedValueOnce(new Error(rejectedReasons))
-    await expect(webhookHandler(event, context)).resolves.toEqual([{
-      reason: new Error(rejectedReasons),
-      status: 'rejected',
-    }])
+    await expect(webhookHandler(event, context)).resolves.toEqual([
+      {
+        status: 'fulfilled',
+        value: 'No game found. Game ID: missing.',
+      },
+    ])
   })
 
   test('Rejected count increases on non-2xx HTTP status code', async () => {
