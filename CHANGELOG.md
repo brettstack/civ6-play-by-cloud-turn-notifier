@@ -1,3 +1,10 @@
+## [1.11.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.2...v1.11.3) (2020-12-27)
+
+
+### Bug Fixes
+
+* **dashboard:** add active games widget ([4628ee1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/4628ee198a9dd5938e59adfb92155d81febdb7b4))
+
 ## [1.11.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.1...v1.11.2) (2020-12-27)
 
 
