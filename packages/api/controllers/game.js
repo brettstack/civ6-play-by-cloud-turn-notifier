@@ -1,6 +1,5 @@
 import shortId from 'shortid'
 import Game from '../models/Game'
-import { dynamoDbDocumentClient } from '../dynamodb-init'
 
 export async function createGame({
   discordWebhookUrl,

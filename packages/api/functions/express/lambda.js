@@ -1,8 +1,10 @@
 import 'source-map-support/register'
-import serverlessExpress from '@vendia/serverless-express'
+import { configure } from 'aws-serverless-express'
 import app from './app'
+import logger from '../../utils/logger'
 
-const binaryMimeTypes = []
-const server = serverlessExpress.createServer(app, null, binaryMimeTypes)
+let log = logger.child({ awsRequestId: null })
 
-export const handler = (event, context) => serverlessExpress.proxy(server, event, context)
+const servererlessExpress = configure({ app, logger: log })
+export const handler = servererlessExpress.handler
+export const server = servererlessExpress.server

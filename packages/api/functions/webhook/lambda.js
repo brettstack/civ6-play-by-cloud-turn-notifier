@@ -1,6 +1,5 @@
 import 'source-map-support/register'
 import fetch from 'node-fetch'
-import { createLogger, format, transports } from 'winston'
 import middy from '@middy/core'
 import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import sampleLogging from '@dazn/lambda-powertools-middleware-sample-logging'
@@ -8,22 +7,10 @@ import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
 // import '../../aws'
 import { getGame, markGameInactive } from '../../controllers/game'
+import logger from '../../utils/logger'
 
-const logger = createLogger({
-  level: 'debug',
-  format: format.combine(
-    format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss',
-    }),
-    format.errors({ stack: true }),
-    format.json(),
-  ),
-  transports: new transports.Console({
-    handleExceptions: true,
-    handleRejections: true,
-  }),
-})
 let log = logger.child({ awsRequestId: null })
+
 export const MESSAGE_TEMPLATE = `{{playerName}}, it's your turn.
 Turn: {{turnNumber}}
 Game: {{gameName}}`

@@ -44,6 +44,7 @@
     "@middy/sqs-partial-batch-failure": "^1.0.0-beta.10",
     "@vendia/serverless-express": "^3.4.0",
     "aws-sdk": "^2.656.0",
+    "aws-serverless-express": "git+https://github.com/vendia/serverless-express.git#v4",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "discord.js": "^12.1.1",
