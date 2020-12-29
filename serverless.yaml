@@ -462,13 +462,12 @@ resources:
               {
                   "type": "metric",
                   "x": 0,
-                  "y": 0,
+                  "y": 9,
                   "width": 6,
                   "height": 6,
                   "properties": {
                       "metrics": [
                           [ "civ6-pbc", "webhook-GAME_MARKED_INACTIVE", { "label": "Games marked inactive" } ],
-                          [ ".", "webhook-NOTIFICATION_SENT", { "label": "Notifications sent" } ],
                           [ ".", "webhook-SKIP_INACTIVE", { "label": "Inactive games skipped" } ],
                           [ "AWS/Lambda", "Errors", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
                       ],
@@ -483,7 +482,7 @@ resources:
               {
                 "type": "metric",
                 "x": 6,
-                "y": 0,
+                "y": 9,
                 "width": 6,
                 "height": 6,
                 "properties": {
@@ -502,7 +501,7 @@ resources:
               {
                 "type": "metric",
                 "x": 12,
-                "y": 0,
+                "y": 9,
                 "width": 6,
                 "height": 6,
                 "properties": {
@@ -520,7 +519,7 @@ resources:
               {
                   "type": "alarm",
                   "x": 18,
-                  "y": 0,
+                  "y": 9,
                   "width": 6,
                   "height": 6,
                   "properties": {
@@ -534,14 +533,14 @@ resources:
               {
                   "type": "metric",
                   "x": 0,
-                  "y": 6,
+                  "y": 0,
                   "width": 15,
                   "height": 6,
                   "properties": {
                       "metrics": [
-                          [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "This month", "period": 2592000 } ],
-                          [ "...", { "label": "This week", "period": 604800 } ],
-                          [ "...", { "label": "Today", "period": 86400 } ]
+                          [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "Monthly", "period": 2678400 } ],
+                          [ "...", { "label": "Weekly", "period": 604800 } ],
+                          [ "...", { "label": "Daily", "period": 86400 } ]
                       ],
                       "view": "timeSeries",
                       "stacked": false,
@@ -555,12 +554,12 @@ resources:
               {
                   "type": "metric",
                   "x": 15,
-                  "y": 6,
+                  "y": 0,
                   "width": 9,
                   "height": 3,
                   "properties": {
                       "metrics": [
-                          [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "This month", "period": 2592000 } ],
+                          [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "This month", "period": 2678400 } ],
                           [ "...", { "label": "This week", "period": 604800 } ],
                           [ "...", { "label": "Today", "period": 86400 } ]
                       ],
@@ -576,7 +575,7 @@ resources:
               {
                   "type": "log",
                   "x": 15,
-                  "y": 9,
+                  "y": 3,
                   "width": 3,
                   "height": 3,
                   "properties": {
@@ -593,7 +592,7 @@ resources:
                   "width": 24,
                   "height": 6,
                   "properties": {
-                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error' | DISPLAY errorMessage",
+                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY errorMessage, message",
                       "region": "${AWS::Region}",
                       "stacked": false,
                       "view": "table"
