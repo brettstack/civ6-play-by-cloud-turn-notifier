@@ -165,17 +165,6 @@ custom:
       functionDuration:
         threshold: 5000
         evaluationPeriods: 5
-      noNotificationsSent:
-        metric: webhook-NOTIFICATION_SENT
-        threshold: 1
-        statistic: Sum
-        period: 3600
-        evaluationPeriods: 1
-        dataPointsToAlarm: 1
-        comparisonOperator: LessThanThreshold
-        # pattern: 'webhook-NOTIFICATION_SENT'
-        treatMissingData: missing
-        description: No notifications have been sent in the past hour. There may be something wrong with the Webhook service, or there may simply have been no turns taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
 
   metrics:
     - name: SKIP_INACTIVE
@@ -228,8 +217,6 @@ functions:
         Resource:
           - !GetAtt GameTable.Arn
           - !GetAtt UserTable.Arn
-    alarms:
-      - noNotificationsSent
 
   express:
     handler: packages/api/functions/express/lambda.handler
@@ -467,6 +454,24 @@ resources:
         ProviderARNs:
           - !GetAtt CognitoUserPool.Arn
 
+    WebhookNoNotificationsSentAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        Namespace: civ6-pbc
+        MetricName: webhook-NOTIFICATION_SENT
+        AlarmDescription: No notifications have been sent in the past hour. There may be
+          something wrong with the Webhook service, or there may simply have been no turns
+          taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
+        Threshold: 1
+        Period: 3600
+        EvaluationPeriods: 1
+        ComparisonOperator: LessThanThreshold
+        AlarmActions:
+          - !Ref AwsAlertsAlarm
+          - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:opsitem:2#CATEGORY=Availability
+        TreatMissingData: missing
+        Statistic: Sum
+
     Dashboard:
       Type: AWS::CloudWatch::Dashboard
       Properties:
@@ -553,18 +558,21 @@ resources:
                   "width": 15,
                   "height": 6,
                   "properties": {
-                      "metrics": [
-                          [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "Monthly", "period": 2678400 } ],
-                          [ "...", { "label": "Weekly", "period": 604800 } ],
-                          [ "...", { "label": "Daily", "period": 86400 } ]
-                      ],
+                      "annotations": {
+                          "alarms": [
+                              "${WebhookNoNotificationsSentAlarm}"
+                          ]
+                      },
+                      "yAxis": {
+                        "left": {
+                          "min": 0
+                        }
+                      },
                       "view": "timeSeries",
                       "stacked": false,
                       "region": "${AWS::Region}",
                       "stat": "Sum",
-                      "title": "Notifications sent",
-                      "start": "-P12M",
-                      "end": "P0D"
+                      "title": "Notifications sent"
                   }
               },
               {
