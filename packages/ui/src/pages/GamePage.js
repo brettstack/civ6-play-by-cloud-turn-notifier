@@ -38,8 +38,8 @@ function GamePage() {
       if (g) {
         setGame(g)
         const playerNameToDiscordIdMappingsLocal = Object.entries(g.players || {})
-        // Create an array of length 9 for rendering 9 times
-        while (playerNameToDiscordIdMappingsLocal.length < 9) {
+        // Create an array of length 12 for rendering 12 times
+        while (playerNameToDiscordIdMappingsLocal.length < 12) {
           playerNameToDiscordIdMappingsLocal.push([null, {}])
         }
         setPlayerNameToDiscordIdMappings(playerNameToDiscordIdMappingsLocal)
