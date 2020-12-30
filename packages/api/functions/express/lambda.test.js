@@ -1,15 +1,9 @@
 import 'regenerator-runtime/runtime'
 import eventMocks from '@serverless/event-mocks'
 import awsLambdaMockContext from 'aws-lambda-mock-context'
+import logger from '../../utils/logger'
 
-jest.mock('aws-sdk', () => ({
-  SQS: jest.fn(() => ({
-    deleteMessageBatch: mockDeleteMessageBatch,
-  })),
-  config: {
-    update: jest.fn(),
-  },
-}))
+logger.transports.forEach(transport => transport.silent = true)
 
 jest.mock('../../models/User', () => {
   return {}
@@ -17,6 +11,10 @@ jest.mock('../../models/User', () => {
 
 jest.mock('../../models/Game', () => {
   const games = {
+    'existing-game': {
+      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
+      state: 'INACTIVE'
+    },
     'inactive-game': {
       discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
       state: 'INACTIVE'
@@ -50,7 +48,44 @@ const {
 } = require('./lambda')
 
 describe('api: happy paths ', () => {
-  test('Works', async (done) => {
+  test('Get game', async (done) => {
+    jest.setTimeout(30000)
+
+    const context = awsLambdaMockContext()
+    const path = 'game/existing-game'
+    const event = eventMocks(
+      'aws:apiGateway',
+      {
+        path: `/${path}`,
+        pathParameters: {
+          proxy: path
+        }
+      },
+    )
+    const response = await handler(event, context)
+    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
+    delete response.multiValueHeaders.date
+    expect(response).toEqual({
+      body: '{"state":"INACTIVE"}',
+      "isBase64Encoded": false,
+      "multiValueHeaders": {
+        "access-control-allow-origin": ["*"],
+        "connection": ["close"],
+        "content-length": ["20"],
+        "content-type": ["application/json; charset=utf-8"],
+        "etag": ["W/\"14-0887awgcDIOOWGL9976PtoR9sOs\""],
+        "x-powered-by": ["Express"]
+      },
+      "statusCode": 200
+    })
+    done()
+  })
+})
+
+describe('api: unhappy paths ', () => {
+  test('Game not found', async (done) => {
+    jest.setTimeout(30000)
+
     const context = awsLambdaMockContext()
     const event = eventMocks(
       'aws:apiGateway',
@@ -58,21 +93,18 @@ describe('api: happy paths ', () => {
         path: '/game/abc123'
       },
     )
-    
     const response = await handler(event, context)
-    const responseBodyJson = JSON.parse(response.body)
-    expect(responseBodyJson.message).toEqual('Not Found')
     expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
-    delete response.body
     delete response.multiValueHeaders.date
     expect(response).toEqual({
       "isBase64Encoded": false,
+      "body": '{"message":"Not Found"}',
       "multiValueHeaders": {
         "access-control-allow-origin": ["*"],
         "connection": ["close"],
-        "content-length": ["1061"],
+        "content-length": ["23"],
         "content-type": ["application/json; charset=utf-8"],
-        "etag": ["W/\"425-ASJPpKsRe9wK952sx6h6kgu6W5Q\""],
+        "etag": ["W/\"17-SuRA/yvUWUo8rK6x7dKURLeBo+0\""],
         "x-powered-by": ["Express"]
       },
       "statusCode": 404

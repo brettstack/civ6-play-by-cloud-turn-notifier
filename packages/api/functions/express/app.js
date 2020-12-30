@@ -4,7 +4,7 @@ import cors from 'cors'
 import usersRouter from './routes/users'
 import gameRouter from './routes/game'
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+const IS_DEVELOPMENT  = process.env.NODE_ENV === 'development'
 
 const app = express()
 const router = express.Router()
@@ -28,7 +28,7 @@ app.use((err, req, res, next) => {
     message: err.message,
   }
 
-  if (!IS_PRODUCTION) {
+  if (IS_DEVELOPMENT) {
     response.trace = err.stack
   }
   
