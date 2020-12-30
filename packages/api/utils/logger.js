@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from 'winston'
 
-const logger = createLogger({
+export const logger = createLogger({
   level: 'debug',
   format: format.combine(
     format.timestamp({
@@ -15,4 +15,14 @@ const logger = createLogger({
   }),
 })
 
-export default logger
+let logMetadata = { awsRequestId: null }
+export let log = logger.child(logMetadata)
+
+export function addLogMetadata({ metadata }) {
+  const newLogMetadata = {
+    ...logMetadata,
+    ...metadata
+  }
+  log = logger.child(newLogMetadata)
+  logMetadata = newLogMetadata
+}

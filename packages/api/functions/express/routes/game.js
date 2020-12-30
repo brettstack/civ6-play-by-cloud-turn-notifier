@@ -3,11 +3,14 @@ import wrapAsync from '../wrap-async'
 import { createGame, getGame, updateGame } from '../../../controllers/game'
 
 const gameRouter = express.Router()
+
 gameRouter.post('/', wrapAsync(async (req, res) => {
   const { discordWebhookUrl } = req.body
   const game = await createGame({ discordWebhookUrl })
+  
   res.json(game)
 }))
+
 gameRouter.put('/:gameId', wrapAsync(async (req, res) => {
   const { gameId } = req.params
   const { players } = req.body
@@ -15,6 +18,7 @@ gameRouter.put('/:gameId', wrapAsync(async (req, res) => {
 
   res.json(game)
 }))
+
 gameRouter.get('/:gameId', wrapAsync(async (req, res) => {
   const { gameId } = req.params
   const game = await getGame({ gameId })

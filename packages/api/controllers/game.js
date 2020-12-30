@@ -1,5 +1,6 @@
 import shortId from 'shortid'
 import Game from '../models/Game'
+import { log } from '../utils/logger'
 
 export async function createGame({
   discordWebhookUrl,
@@ -10,6 +11,9 @@ export async function createGame({
     discordWebhookUrl,
   }
   const game = await Game.update(item, { returnValues: 'ALL_NEW'})
+
+  log.info('GAME_CONTROLLER:GAME_CREATED', { game })
+
   return game.Attributes
 }
 
@@ -22,6 +26,8 @@ export async function updateGame({
     players,
   }, { returnValues: 'ALL_NEW'})
 
+  log.info('GAME_CONTROLLER:GAME_UPDATED', { game })
+
   return sanitizeGame({ gameData: game.Attributes })
 }
 
@@ -32,6 +38,8 @@ export async function markGameInactive({
     id: gameId,
     state: 'INACTIVE',
   }, { returnValues: 'ALL_NEW'})
+
+  log.info('GAME_CONTROLLER:GAME_MARKED_INACTIVE', { game })
 
   return sanitizeGame({ gameData: game.Attributes})
 }

@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import eventMocks from '@serverless/event-mocks'
 import awsLambdaMockContext from 'aws-lambda-mock-context'
-import logger from '../../utils/logger'
+import { logger } from '../../utils/logger'
 
 logger.transports.forEach(transport => transport.silent = true)
 

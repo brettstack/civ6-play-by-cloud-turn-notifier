@@ -7,9 +7,7 @@ import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
 // import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
 // import '../../aws'
 import { getGame, markGameInactive } from '../../controllers/game'
-import logger from '../../utils/logger'
-
-let log = logger.child({ awsRequestId: null })
+import { log, addLogMetadata } from '../../utils/logger'
 
 export const MESSAGE_TEMPLATE = `{{playerName}}, it's your turn.
 Turn: {{turnNumber}}
@@ -18,7 +16,7 @@ const BOT_USERNAME = 'Civ6 Turnbot'
 const AVATAR_URL = 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png'
 
 export async function webhookHandler(event, context) {
-  log = logger.child({ awsRequestId: context.awsRequestId })
+  addLogMetadata({ metadata: {awsRequestId: context.awsRequestId }})
   log.debug('WEBHOOK_HANDLER:CALLED_WITH', { event })
 
   const { Records } = event
@@ -163,9 +161,7 @@ async function processMessage(record, index) {
       const isMissingDiscordWebhook = responseJson.code === 10015
 
       if (isMissingDiscordWebhook) {
-        const inactiveGame = await markGameInactive({ gameId })
-
-        log.info('PROCESS_MESSAGE:GAME_MARKED_INACTIVE', { inactiveGame })
+        await markGameInactive({ gameId })
 
         return `Game marked as inactive. Game ID: ${gameId}.`
       }

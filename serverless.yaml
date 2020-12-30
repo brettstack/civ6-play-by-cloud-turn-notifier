@@ -165,7 +165,17 @@ custom:
       functionDuration:
         threshold: 5000
         evaluationPeriods: 5
-      
+      noNotificationsSent:
+        metric: webhook-NOTIFICATION_SENT
+        threshold: 1
+        statistic: Sum
+        period: 3600
+        evaluationPeriods: 1
+        dataPointsToAlarm: 1
+        comparisonOperator: LessThanThreshold
+        # pattern: 'webhook-NOTIFICATION_SENT'
+        treatMissingData: missing
+        description: No notifications have been sent in the past hour. There may be something wrong with the Webhook service, or there may simply have been no turns taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
 
   metrics:
     - name: SKIP_INACTIVE
@@ -173,7 +183,11 @@ custom:
       functions: [webhook]
       namespace: ${{self:service}}
     - name: GAME_MARKED_INACTIVE
-      pattern: '{ $.message = "PROCESS_MESSAGE:GAME_MARKED_INACTIVE" }'
+      pattern: '{ $.message = "GAME_CONTROLLER:GAME_MARKED_INACTIVE" }'
+      functions: [webhook]
+      namespace: ${{self:service}}
+    - name: GAME_CREATED
+      pattern: '{ $.message = "GAME_CONTROLLER:GAME_CREATED" }'
       functions: [webhook]
       namespace: ${{self:service}}
     - name: NOTIFICATION_SENT
@@ -214,6 +228,8 @@ functions:
         Resource:
           - !GetAtt GameTable.Arn
           - !GetAtt UserTable.Arn
+    alarms:
+      - noNotificationsSent
 
   express:
     handler: packages/api/functions/express/lambda.handler
