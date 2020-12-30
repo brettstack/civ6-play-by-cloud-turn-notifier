@@ -10,11 +10,19 @@ const GameTable = new Table({
 const Game = new Entity({
   name: 'Game',
   attributes: {
-    id: { partitionKey: true },
-    name: { type: 'string' },
-    discordWebhookUrl: { type: 'string' },
-    players: { type: 'map' },
-    state: { type: 'string' }
+    id: {
+      partitionKey: true,
+    },
+    discordWebhookUrl: {
+      type: 'string',
+      required: 'always',
+    },
+    players: {
+      type: 'map',
+    },
+    state: {
+      type: 'string',
+    },
   },
   table: GameTable,
 })
