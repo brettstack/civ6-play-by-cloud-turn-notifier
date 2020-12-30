@@ -526,30 +526,31 @@ resources:
                 "width": 6,
                 "height": 6,
                 "properties": {
-                    "metrics": [
-                      [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq.QueueName}", { "label": "Number of messages" } ]
-                    ],
-                    "view": "timeSeries",
-                    "stacked": false,
-                    "region": "${AWS::Region}",
-                    "stat": "Maximum",
-                    "period": 3600,
-                    "title": "Webhook DLQ"
+                  "metrics": [
+                    [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq.QueueName}", { "label": "Number of messages" } ]
+                  ],
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "region": "${AWS::Region}",
+                  "stat": "Maximum",
+                  "period": 3600,
+                  "title": "Webhook DLQ"
                 }
               },
               {
-                  "type": "alarm",
-                  "x": 18,
-                  "y": 9,
-                  "width": 6,
-                  "height": 6,
-                  "properties": {
-                      "title": "Alarms",
-                      "alarms": [
-                          "${WebhookFunctionErrorsAlarm.Arn}",
-                          "${WebhookFunctionDurationAlarm.Arn}"
-                      ]
-                  }
+                "type": "alarm",
+                "x": 18,
+                "y": 9,
+                "width": 6,
+                "height": 3,
+                "properties": {
+                  "title": "Alarms",
+                  "region": "${AWS::Region}",
+                  "alarms": [
+                      "${WebhookFunctionErrorsAlarm.Arn}",
+                      "${WebhookFunctionDurationAlarm.Arn}"
+                  ]
+                }
               },
               {
                   "type": "metric",
@@ -560,7 +561,7 @@ resources:
                   "properties": {
                       "annotations": {
                           "alarms": [
-                              "${WebhookNoNotificationsSentAlarm}"
+                              "${WebhookNoNotificationsSentAlarm.Arn}"
                           ]
                       },
                       "yAxis": {
