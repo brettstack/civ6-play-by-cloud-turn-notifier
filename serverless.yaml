@@ -175,13 +175,13 @@ custom:
       pattern: '{ $.message = "GAME_CONTROLLER:GAME_MARKED_INACTIVE" }'
       functions: [webhook]
       namespace: ${{self:service}}
-    - name: GAME_CREATED
-      pattern: '{ $.message = "GAME_CONTROLLER:GAME_CREATED" }'
-      functions: [webhook]
-      namespace: ${{self:service}}
     - name: NOTIFICATION_SENT
       pattern: '{ $.message = "PROCESS_MESSAGE:NOTIFICATION_SENT" }'
       functions: [webhook]
+      namespace: ${{self:service}}
+    - name: GAME_CREATED
+      pattern: '{ $.message = "GAME_CONTROLLER:GAME_CREATED" }'
+      functions: [express]
       namespace: ${{self:service}}
 
   serverlessTerminationProtection:
@@ -454,7 +454,7 @@ resources:
         ProviderARNs:
           - !GetAtt CognitoUserPool.Arn
 
-    WebhookNoNotificationsSentAlarm:
+    NoNotificationsSentAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
         Namespace: civ6-pbc
@@ -464,6 +464,24 @@ resources:
           taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
         Threshold: 1
         Period: 3600
+        EvaluationPeriods: 1
+        ComparisonOperator: LessThanThreshold
+        AlarmActions:
+          - !Ref AwsAlertsAlarm
+          - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:opsitem:2#CATEGORY=Availability
+        TreatMissingData: missing
+        Statistic: Sum
+
+    NoGamesCreatedAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        Namespace: civ6-pbc
+        MetricName: express-GAME_CREATED
+        AlarmDescription: No games have been created in the past day. There may be
+          something wrong with the game create flow, or there may simply have been no games
+          created. Review the Express Lambda Function's CloudWatch Logs and Metrics.
+        Threshold: 1
+        Period: 86400
         EvaluationPeriods: 1
         ComparisonOperator: LessThanThreshold
         AlarmActions:
@@ -556,12 +574,12 @@ resources:
                   "type": "metric",
                   "x": 0,
                   "y": 0,
-                  "width": 15,
+                  "width": 7,
                   "height": 6,
                   "properties": {
                       "annotations": {
                           "alarms": [
-                              "${WebhookNoNotificationsSentAlarm.Arn}"
+                              "${NoNotificationsSentAlarm.Arn}"
                           ]
                       },
                       "yAxis": {
@@ -574,6 +592,30 @@ resources:
                       "region": "${AWS::Region}",
                       "stat": "Sum",
                       "title": "Notifications sent"
+                  }
+              },
+              {
+                  "type": "metric",
+                  "x": 7,
+                  "y": 0,
+                  "width": 7,
+                  "height": 6,
+                  "properties": {
+                      "annotations": {
+                          "alarms": [
+                              "${NoGamesCreatedAlarm.Arn}"
+                          ]
+                      },
+                      "yAxis": {
+                        "left": {
+                          "min": 0
+                        }
+                      },
+                      "view": "timeSeries",
+                      "stacked": false,
+                      "region": "${AWS::Region}",
+                      "stat": "Sum",
+                      "title": "Games created"
                   }
               },
               {
