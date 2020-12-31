@@ -89,7 +89,8 @@ async function processMessage(record, index) {
   })
 
   if (!game) {
-    log.error('PROCESS_MESSAGE:NO_GAME_FOUND', { gameId })
+    log.info('PROCESS_MESSAGE:NO_GAME_FOUND', { gameId })
+
     return `No game found. Game ID: ${gameId}.`
   }
 
@@ -106,8 +107,11 @@ async function processMessage(record, index) {
   }
 
   if (!discordWebhookUrl) {
-    log.error('PROCESS_MESSAGE:NO_DISCORD_WEBHOOK_URL', { game })
-    throw new Error(`Game doesn't have \`discordWebhookUrl\`. Game ID: ${gameId}`)
+    log.info('PROCESS_MESSAGE:NO_DISCORD_WEBHOOK_URL', { game })
+    
+    await markGameInactive({ gameId })
+
+    return `Game doesn't have \`discordWebhookUrl\`. Marked as inactive. Game ID: ${gameId}`
   }
 
   const messageFromTemplate = getMessageFromTemplate({
@@ -158,12 +162,14 @@ async function processMessage(record, index) {
 
       log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK_JSON', { responseJson })
 
-      const isMissingDiscordWebhook = responseJson.code === 10015
+      const discordWebhookDoesntExist = responseJson.code === 10015
 
-      if (isMissingDiscordWebhook) {
+      if (discordWebhookDoesntExist) {
+        log.info('PROCESS_MESSAGE:DISCORD_WEBHOOK_DOESNT_EXIST', { game })
+
         await markGameInactive({ gameId })
 
-        return `Game marked as inactive. Game ID: ${gameId}.`
+        return `Discord Webhook doesn't exist for this Game. Marked as inactive. Game ID: ${gameId}. Discord Webhook URL: ${discordWebhookUrl}`
       }
     } catch(error) {
       log.error('PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE', { stack: error.stack, errorMessage: error.message })

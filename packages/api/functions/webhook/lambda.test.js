@@ -28,25 +28,27 @@ jest.mock('aws-sdk', () => ({
   },
 }))
 
+const games = {
+  'invalid-discord-webhook-protocol': {
+    discordWebhookUrl: 'hsdfttps://discordapp.com/api/webhooks/invalid',
+  },
+  'd096960f-d4ac-44be-ab1b-aa415b73ff7f': {
+    discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl',
+  },
+  'invalid-discord-webhook-url': {
+    discordWebhookUrl: 'https://discordapp.com/api/webhooks/invalid',
+  },
+  'deleted-discord-webhook-url': {
+    discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasddeleted',
+  },
+  'no-discord-webhook-url': {
+  },
+  'inactive-game': {
+    discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
+    state: 'INACTIVE'
+  },
+}
 jest.mock('../../models/Game', () => {
-  const games = {
-    'invalid-discord-webhook-protocol': {
-      discordWebhookUrl: 'hsdfttps://discordapp.com/api/webhooks/invalid',
-    },
-    'd096960f-d4ac-44be-ab1b-aa415b73ff7f': {
-      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl',
-    },
-    'invalid-discord-webhook-url': {
-      discordWebhookUrl: 'https://discordapp.com/api/webhooks/invalid',
-    },
-    'deleted-discord-webhook-url': {
-      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasddeleted',
-    },
-    'inactive-game': {
-      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
-      state: 'INACTIVE'
-    },
-  }
   return {
     get: jest.fn(async ({ id }) => {
       const game = games[id]
@@ -80,7 +82,7 @@ const {
 } = require('./lambda')
 
 describe('webhookHandler: happy paths ', () => {
-  test('Works', async () => {
+  test('Notification sent', async () => {
     const context = awsLambdaMockContext()
     const event = eventMocks(
       'aws:sqs',
@@ -99,7 +101,7 @@ describe('webhookHandler: happy paths ', () => {
         }],
       },
     )
-    await expect(webhookHandler(event, context)).resolves.toEqual([
+    expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
         value: `Notifaction sent. Game ID: d096960f-d4ac-44be-ab1b-aa415b73ff7f; Discord Response Text: {}.`,
@@ -200,7 +202,7 @@ describe('webhookHandler: unhappy paths ', () => {
     const context = awsLambdaMockContext()
     const rejectedReasons = 'Only HTTP(S) protocols are supported'
     fetch.mockRejectedValueOnce(new Error(rejectedReasons))
-    await expect(webhookHandler(event, context)).resolves.toEqual([{
+    expect(webhookHandler(event, context)).resolves.toEqual([{
       reason: new Error(rejectedReasons),
       status: 'rejected',
     }])
@@ -227,7 +229,7 @@ describe('webhookHandler: unhappy paths ', () => {
       },
     )
     const context = awsLambdaMockContext()
-    await expect(webhookHandler(event, context)).resolves.toEqual([
+    expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
         value: 'No game found. Game ID: missing.',
@@ -235,7 +237,7 @@ describe('webhookHandler: unhappy paths ', () => {
     ])
   })
 
-  test('Rejected count increases on non-2xx HTTP status code', async () => {
+  test('Rejected count increases on unknown non-2xx HTTP status code', async () => {
     const context = awsLambdaMockContext()
     const meta = {
       'Content-Type': 'application/json',
@@ -271,7 +273,7 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    await expect(webhookHandler(event, context)).resolves.toEqual([{
+    expect(webhookHandler(event, context)).resolves.toEqual([{
       reason: new Error(rejectedReasons),
       status: 'rejected',
     }])
@@ -315,9 +317,40 @@ describe('webhookHandler: unhappy paths ', () => {
     await expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
-        value: `Game marked as inactive. Game ID: deleted-discord-webhook-url.`,
+        value: `Discord Webhook doesn't exist for this Game. Marked as inactive. Game ID: deleted-discord-webhook-url. Discord Webhook URL: https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasddeleted`,
       },
     ])
+    expect(games['deleted-discord-webhook-url'].state).toEqual('INACTIVE')
+  })
+
+  test(`Game is marked as inactive when it doesn't have discorodWebhookUrl`, async () => {
+    const context = awsLambdaMockContext()
+    const event = eventMocks(
+      'aws:sqs',
+      {
+        Records: [
+          {
+            messageAttributes: {
+              gameId: {
+                stringValue: 'no-discord-webhook-url',
+              },
+            },
+            body: JSON.stringify({
+              value1: 'Game Name',
+              value2: 'Player Name',
+              value3: Math.round(Math.random(0, 100) * 100).toString(),
+            }),
+          },
+        ],
+      },
+    )
+    await expect(webhookHandler(event, context)).resolves.toEqual([
+      {
+        status: 'fulfilled',
+        value: `Game doesn't have \`discordWebhookUrl\`. Marked as inactive. Game ID: no-discord-webhook-url`
+      },
+    ])
+    expect(games['no-discord-webhook-url'].state).toEqual('INACTIVE')
   })
 
   test(`Game marked as inactive is skipped`, async () => {
@@ -345,7 +378,7 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    await expect(webhookHandler(event, context)).resolves.toEqual([
+    expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
         value: `Skipping inactive game. Game ID: inactive-game.`,
