@@ -1,3 +1,23 @@
+# [1.12.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.3...v1.12.0) (2020-12-31)
+
+
+### Bug Fixes
+
+* add required to discordWebhookUrl ([b2aeb77](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/b2aeb776644c647c50ecc7a558957f68cdcf47e5))
+* mark game as inactive if it doesn't have a discordWebhookUrl ([6581051](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/6581051ee55f027a21a595654501bef19ae1ec3a))
+* **dashboard:** add no-notifications-sent alarm ([de45031](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/de4503107f4ba5351b78c00a857a1da2e0de1261))
+* **dashboard:** fix no-notifications-sent alarm ([d0f4e27](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/d0f4e27f9a27f22dc385846259033db2ce70c2f5))
+* update player length to 12 ([90dca4d](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/90dca4d0c0be5f7873c94093dee6a42084ae09f0))
+* **dashboard:** fix positioning and logs ([82c3d37](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/82c3d37d941cf4500532385c84f34bfadb758d30))
+
+
+### Features
+
+* **ops:** add NoGamesCreated alarm ([76c298f](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/76c298fdd98553aab1974b41877c4d45cd511eb4))
+* add custom logger to api lambda ([893c8f6](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/893c8f6196df5c603cf51bfbfdda67ed361a3aab))
+* add logging to api lambda ([f8265db](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/f8265db718fd7f70c9595b99f18dfc92e121e86a))
+* use serverless-express@v4 ([af83ff8](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/af83ff89efa9d98e072fbdc3c91db1bde1f4592d))
+
 ## [1.11.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.2...v1.11.3) (2020-12-27)
 
 
