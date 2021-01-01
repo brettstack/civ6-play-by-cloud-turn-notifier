@@ -769,5 +769,5 @@ resources:
       Value:
         Fn::If:
           - IsApiCustomDomainEnabled
-          - ${{self:custom.stageConfig.api.domainName, ''}}
+          - https://${{self:custom.stageConfig.api.domainName, ''}}
           - !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${{self:provider.stage}}
