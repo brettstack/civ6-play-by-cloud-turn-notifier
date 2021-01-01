@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.12.1...v1.12.2) (2021-01-01)
+
+
+### Bug Fixes
+
+* fix ApiEndpoint output ([8d77f0a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/8d77f0a41b50979a230e74d42af85dc44b643a4b))
+
 ## [1.12.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.12.0...v1.12.1) (2021-01-01)
 
 
