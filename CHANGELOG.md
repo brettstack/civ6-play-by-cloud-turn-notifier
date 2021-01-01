@@ -1,3 +1,11 @@
+## [1.12.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.12.0...v1.12.1) (2021-01-01)
+
+
+### Bug Fixes
+
+* add MainTable (unused) ([e795d65](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/e795d656f9ff61b3223d5997969e8835e8687e05))
+* add missing import dynamodb-toolbox ([1cc806c](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/1cc806c5f240e724e9b805c4f53fbf62485b67a1))
+
 # [1.12.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.11.3...v1.12.0) (2020-12-31)
 
 
