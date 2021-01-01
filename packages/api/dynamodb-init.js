@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk'
 import DynamoDB from 'aws-sdk/clients/dynamodb'
+import { Table } from 'dynamodb-toolbox'
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, NODE_ENV } = process.env
 
