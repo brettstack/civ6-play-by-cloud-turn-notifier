@@ -17,6 +17,7 @@ provider:
   environment:
     USER_TABLE: !Ref UserTable
     GAME_TABLE: !Ref GameTable
+    MAIN_TABLE: !Ref MainTable
 
     # Enable connection reuse for AWS SDK for instant performance boost
     # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
@@ -313,6 +314,35 @@ resources:
     #     DomainValidationOptions:
     #       - DomainName: ${{self:custom.stageConfig.api.domainName}}
     #         ValidationDomain: ${{self:custom.stageConfig.api.validationDomain, ''}}
+
+    MainTable:
+        Type: AWS::DynamoDB::Table
+        # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
+        Properties:
+          BillingMode: PAY_PER_REQUEST
+          PointInTimeRecoverySpecification:
+            PointInTimeRecoveryEnabled: ${{self:custom.stageConfig.pointInTimeRecoveryEnabled, false}}
+          KeySchema:
+            - KeyType: HASH
+              AttributeName: pk
+            - KeyType: RANGE
+              AttributeName: sk
+          AttributeDefinitions:
+            - AttributeName: pk
+              AttributeType: S
+            - AttributeName: sk
+              AttributeType: S
+            - AttributeName: data
+              AttributeType: S
+          GlobalSecondaryIndexes:
+            - IndexName: GSI1
+              KeySchema:
+                - AttributeName: sk
+                  KeyType: HASH
+                - AttributeName: data
+                  KeyType: RANGE
+              Projection:
+                ProjectionType: ALL
 
     GameTable:
         Type: AWS::DynamoDB::Table
@@ -736,4 +766,8 @@ resources:
       Value: !Ref GameTable
 
     ApiEndpoint:
-      Value: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${{self:provider.stage}}
+      Value:
+        Fn::If:
+          - IsApiCustomDomainEnabled
+          - ${{self:custom.stageConfig.api.domainName, ''}}
+          - !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${{self:provider.stage}}

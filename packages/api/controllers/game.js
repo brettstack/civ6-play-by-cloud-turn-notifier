@@ -57,6 +57,24 @@ export async function getGame({
   return sanitizeGame({ gameData: game.Item, includeDiscordWebhookUrl})
 }
 
+export async function queryOpenGames({
+  includeDiscordWebhookUrl = false
+} = {}) {
+  const games = await Game.query('GAME_STATE#OPEN', {
+    index: 'GSI1'
+  })
+
+  log.debug('GAME_CONTROLLER:QUERY_OPEN_GAMES:RESULT', { games })
+
+  console.log('games', games)
+
+  if (!games) {
+    return null
+  }
+
+  return sanitizeGame({ gameData: game.Item, includeDiscordWebhookUrl})
+}
+
 function sanitizeGame({gameData, includeDiscordWebhookUrl = false}) {
   if (!gameData) return null
 

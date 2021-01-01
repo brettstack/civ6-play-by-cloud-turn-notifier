@@ -1,6 +1,6 @@
 import express from 'express'
 import wrapAsync from '../wrap-async'
-import { createGame, getGame, updateGame } from '../../../controllers/game'
+import { createGame, getGame, queryOpenGames, updateGame } from '../../../controllers/game'
 
 const gameRouter = express.Router()
 
@@ -30,6 +30,18 @@ gameRouter.get('/:gameId', wrapAsync(async (req, res) => {
   }
 
   return res.json(game)
+}))
+
+gameRouter.get('/open-games', wrapAsync(async (req, res) => {
+  const games = await queryOpenGames()
+
+  if (!games) {
+    return res
+      .status(404)
+      .json({})
+  }
+
+  return res.json(games)
 }))
 
 export default gameRouter

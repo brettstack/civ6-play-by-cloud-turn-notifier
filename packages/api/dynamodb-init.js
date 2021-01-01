@@ -12,3 +12,13 @@ const dynamoDbConfig = {
   region: 'us-west-2',
 }
 export const dynamoDbDocumentClient = new DynamoDB.DocumentClient(dynamoDbConfig)
+
+export const MainTable = new Table({
+  name: process.env.MAIN_TABLE,
+  partitionKey: 'pk',
+  sortKey: 'sk',
+  DocumentClient: dynamoDbDocumentClient,
+  indexes: {
+    GSI1: { partitionKey: 'sk', sortKey: 'data' },
+  }
+})
