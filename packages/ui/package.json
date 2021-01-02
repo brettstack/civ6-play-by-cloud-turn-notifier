@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.5.0",
+    "antd": "^4.9.4",
     "aws-amplify": "^3.0.8",
     "aws-amplify-react": "^4.1.7",
     "axios": "^0.21.1",
@@ -22,9 +23,9 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "start-cloud-api": "react-scripts start",
     "package": "serverless package && zip -r ui.zip build .serverless serverless.yaml package.json package-lock.json",
@@ -50,8 +51,10 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^6.0.0",
     "@wizeline/serverless-amplify-plugin": "^1.2.1",
     "serverless-dotenv-plugin": "^2.3.2",
-    "webpack": "^4.44.2"
+    "webpack": "^4.44.2",
+    "craco-less": "^1.17.1"
   }
 }

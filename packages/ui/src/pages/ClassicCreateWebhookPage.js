@@ -1,32 +1,43 @@
 import React from 'react'
-import { Layout, Menu, Image } from 'antd'
-// import bg from '../assets/civ-6-wallpaper-with-text-cropped.jpg'
-import './HomePage.less'
-import { Link } from 'react-router-dom';
+import {
+  Container, Divider, Link
+} from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import { useHistory } from 'react-router-dom'
+import GeneratePlayByCloudWebhook from '../components/GeneratePlayByCloudWebhook'
 
-const { Header, Content, Footer } = Layout;
+const useStyles = makeStyles({
+  root: {
+    // height: '100vh',
+    alignItems: 'center',
+    display: 'flex',
+  },
+  inner: {
+    flex: '1',
+  },
+  divider: {
+    marginTop: '1rem',
+  },
+})
 
-function HomePage() {
+function ClassicCreateWebhookPage() {
+  const classes = useStyles()
+  const history = useHistory()
+
+  const onCreateGame = ({ game }) => {
+    history.push(`/classic/games/${game.id}`)
+  }
+
   return (
-    <Layout className="layout">
-    <Header>
-      {/* <div className="logo" /> */}
-      <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['home']}>
-        <Menu.Item key="home">
-          <Link to="/">Home</Link>
-        </Menu.Item>
-      </Menu>
-    </Header>
-    <Content>
-      <div className="hero-image"/>
-      <div className="container" style={{ flexDirection: 'column' }}>
+    <Container className={classes.root}>
+      <div className={classes.inner}>
         <h1>Civ 6 Play By Cloud</h1>
         <p>
           <strong>Civilization 6 Play By Cloud</strong>
           {' '}
           is a new game mode that that lets you play
           {' '}
-          <a href="https://civilization.com/" target="_blank" rel="noopener noreferrer">Civ 6</a>
+          <Link href="https://civilization.com/" target="_blank" rel="noopener noreferrer">Civ 6</Link>
           {' '}
           with friends without needing to be online at the same time.
           {' '}
@@ -35,6 +46,9 @@ function HomePage() {
           Use this service to send messages to your Discord channel to notify players of a new turn.
         </p>
 
+        <GeneratePlayByCloudWebhook onCreateGame={onCreateGame} />
+
+        <Divider className={classes.divider} />
         <h2>What is this?</h2>
         <p>
           The
@@ -51,7 +65,7 @@ function HomePage() {
           {' '}
           game, e.g. you can recieve notifications to your
           {' '}
-          <a href="https://discordapp.com/" target="_blank" rel="noopener noreferrer">Discord</a>
+          <Link href="https://discordapp.com/" target="_blank" rel="noopener noreferrer">Discord</Link>
           {' '}
           channel. However, setting this up requires significant technical knowledge.
         </p>
@@ -154,57 +168,30 @@ function HomePage() {
           {' '}
           For a detailed technical writeup, check out this blog post on
           {' '}
-          <a href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">
+          <Link href="https://www.halfstack.software/building-a-civilization-vi-play-by-cloud-webhook-turn-notifier-service/" target="_blank" rel="noopener noreferrer">
             Building a Civilization VI "Play by Cloud" Webhook Turn Notifier Service
-          </a>
+          </Link>
         </p>
 
         <h2>Contact and Feedback</h2>
         <p>
           You can reach out to me on Twitter -
           {' '}
-          <a href="https://twitter.com/AWSbrett">Brett Andrews</a>
+          <Link href="https://twitter.com/AWSbrett">Brett Andrews</Link>
           . Or create an Issue on the
           {' '}
-          <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">civ6-play-by-cloud-turn-notifier GitHub repo</a>
+          <Link href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">civ6-play-by-cloud-turn-notifier GitHub repo</Link>
         </p>
 
         <h2>Open Source</h2>
         <p>
           The source code for this project is available on the
           {' '}
-          <a href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <Link href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</Link>
         </p>
       </div>
-        {/* <div style={{
-          backgroundImage: `url(${bg})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          height: '100vh',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          display: 'block',
-          width: '100%',
-          // filter: 'blur(2px)'
-        }} />
-        <div style={{
-          height: '100vh',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 2,
-          width: '100%',
-          color: '#FFF'
-        }}>
-          <h1>Civilization Play by Cloud</h1>
-        </div> */}
-    </Content>
-    <Footer style={{ textAlign: 'center' }}>©2021 Created by Halfstack Software</Footer>
-  </Layout>
+    </Container>
   )
 }
 
-export default HomePage
+export default ClassicCreateWebhookPage

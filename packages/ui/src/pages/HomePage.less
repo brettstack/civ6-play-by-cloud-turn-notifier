@@ -1,0 +1,31 @@
+.hero-image {
+  height: auto;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: cover;
+  // background-position-x: -650px;
+  background-image: url('../assets/civ-6-wallpaper-with-text-sm.jpg');
+
+  &::before {
+    content: "";
+    width: 1px;
+    margin-left: -1px;
+    float: left;
+    height: 0;
+    padding-top: 100%;
+  }
+
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  @media (min-width: 1024px) {
+    background-image: url('../assets/civ-6-wallpaper-with-text-cropped.jpg');
+    background-position-x: left;
+    &::before {
+      padding-top: 20%;
+    }
+  }
+}
