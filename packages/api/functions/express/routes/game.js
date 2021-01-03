@@ -6,6 +6,7 @@ const gameRouter = express.Router()
 
 gameRouter.post('/', wrapAsync(async (req, res) => {
   const { discordWebhookUrl } = req.body
+
   const game = await createGame({ discordWebhookUrl })
   
   res.json(game)

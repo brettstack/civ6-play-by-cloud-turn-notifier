@@ -109,7 +109,7 @@ async function processMessage(record, index) {
   if (!discordWebhookUrl) {
     log.info('PROCESS_MESSAGE:NO_DISCORD_WEBHOOK_URL', { game })
     
-    await markGameInactive({ gameId })
+    await markGameInactive({ gameId, setDiscordWebhookUrlToNONE: true })
 
     return `Game doesn't have \`discordWebhookUrl\`. Marked as inactive. Game ID: ${gameId}`
   }

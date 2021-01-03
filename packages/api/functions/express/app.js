@@ -28,6 +28,7 @@ app.use((err, req, res, next) => {
     message: err.message,
   }
 
+  /* istanbul ignore next */
   if (IS_DEVELOPMENT) {
     response.trace = err.stack
   }

@@ -9,7 +9,7 @@ const Game = new Entity({
     },
     discordWebhookUrl: {
       type: 'string',
-      required: 'always',
+      required: true,
     },
     players: {
       type: 'map',

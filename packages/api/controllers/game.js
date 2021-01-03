@@ -5,6 +5,8 @@ import { log } from '../utils/logger'
 export async function createGame({
   discordWebhookUrl,
 }) {
+  if (!discordWebhookUrl) throw new Error('discordWebhookUrl is required')
+
   const id = shortId.generate()
   const item = {
     id,
@@ -33,11 +35,17 @@ export async function updateGame({
 
 export async function markGameInactive({
   gameId,
+  setDiscordWebhookUrlToNONE = false
 }) {
-  const game = await Game.update({
+  const updateValues = {
     id: gameId,
     state: 'INACTIVE',
-  }, { returnValues: 'ALL_NEW'})
+  }
+
+  if (setDiscordWebhookUrlToNONE) {
+    updateValues.discordWebhookUrl = 'NONE'
+  }
+  const game = await Game.update(updateValues, { returnValues: 'ALL_NEW'})
 
   log.info('GAME_CONTROLLER:GAME_MARKED_INACTIVE', { game })
 
@@ -65,8 +73,6 @@ export async function queryOpenGames({
   })
 
   log.debug('GAME_CONTROLLER:QUERY_OPEN_GAMES:RESULT', { games })
-
-  console.log('games', games)
 
   if (!games) {
     return null

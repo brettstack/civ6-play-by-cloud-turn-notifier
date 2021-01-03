@@ -12,6 +12,13 @@ if (NODE_ENV != 'test' && (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY)) {
 const dynamoDbConfig = {
   region: 'us-west-2',
 }
+
+if (process.env.MOCK_DYNAMODB_ENDPOINT) {
+  dynamoDbConfig.endpoint = process.env.MOCK_DYNAMODB_ENDPOINT
+  dynamoDbConfig.sslEnabled = false
+  dynamoDbConfig.region = 'local'
+}
+
 export const dynamoDbDocumentClient = new DynamoDB.DocumentClient(dynamoDbConfig)
 
 export const MainTable = new Table({

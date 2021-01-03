@@ -1,59 +1,33 @@
 import 'regenerator-runtime/runtime'
-import eventMocks from '@serverless/event-mocks'
-import awsLambdaMockContext from 'aws-lambda-mock-context'
+import createEvent from '@serverless/event-mocks'
 import { logger } from '../../utils/logger'
 
-logger.transports.forEach(transport => transport.silent = true)
+logger.level = 'error'
 
-jest.mock('../../models/User', () => {
-  return {}
-})
-
-jest.mock('../../models/Game', () => {
-  const games = {
-    'existing-game': {
-      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
-      state: 'INACTIVE'
-    },
-    'inactive-game': {
-      discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
-      state: 'INACTIVE'
-    },
-  }
+function makeContext() {
   return {
-    get: jest.fn(async ({ id }) => {
-      const game = games[id]
-      if (!game) return null
-
-      return {
-        Item: game
-      }
-    }),
-    update: jest.fn(async ({ id, state }) => {
-      const game = games[id]
-      if (!game) return null
-
-      game.state = state
-
-      return {
-        Item: game
-      }
-    }),
+    awsRequestId: 'ef6e0ff0-4d67-11eb-87d2-3192f87a25ff',
   }
-})
+}
 
 const {
   handler,
   server
 } = require('./lambda')
 
+afterAll(() => {
+  server.on('close', () => {
+    expect(server.listening).toBe(false)
+    done()
+  })
+  server.close()
+})
+
 describe('api: happy paths ', () => {
   test('Get game', async (done) => {
-    jest.setTimeout(30000)
-
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const path = 'game/existing-game'
-    const event = eventMocks(
+    const event = createEvent(
       'aws:apiGateway',
       {
         path: `/${path}`,
@@ -66,28 +40,69 @@ describe('api: happy paths ', () => {
     expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
     delete response.multiValueHeaders.date
     expect(response).toEqual({
-      body: '{"state":"INACTIVE"}',
+      body: '{"id":"existing-game","state":"INACTIVE"}',
       "isBase64Encoded": false,
       "multiValueHeaders": {
         "access-control-allow-origin": ["*"],
         "connection": ["close"],
-        "content-length": ["20"],
+        "content-length": ["41"],
         "content-type": ["application/json; charset=utf-8"],
-        "etag": ["W/\"14-0887awgcDIOOWGL9976PtoR9sOs\""],
+        "etag": ["W/\"29-burXaNM8wKUv8eQx0nPgTNGAGBM\""],
         "x-powered-by": ["Express"]
       },
       "statusCode": 200
     })
     done()
-  })
+  }, 10000)
+
+  test('Create game', async (done) => {
+    const context = makeContext()
+    const path = 'game'
+    const event = createEvent(
+      'aws:apiGateway',
+      {
+        method: 'post',
+        httpMethod: 'post',
+        path: `/${path}`,
+        pathParameters: {
+          proxy: path
+        },
+        body: JSON.stringify({
+          discordWebhookUrl: 'https://example.com'
+        }),
+        multiValueHeaders: {
+          'Content-Type': ['application/json']
+        }
+      },
+    )
+    const response = await handler(event, context)
+    const responseBody = JSON.parse(response.body)
+    delete response.body
+    expect(typeof responseBody.id).toEqual('string')
+    expect(responseBody.discordWebhookUrl).toEqual('https://example.com')
+    expect(typeof response.multiValueHeaders.etag[0]).toEqual('string')
+    delete response.multiValueHeaders.etag
+    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
+    delete response.multiValueHeaders.date
+    expect(response).toEqual({
+      "isBase64Encoded": false,
+      "multiValueHeaders": {
+        "access-control-allow-origin": ["*"],
+        "connection": ["close"],
+        "content-length": ["151"],
+        "content-type": ["application/json; charset=utf-8"],
+        "x-powered-by": ["Express"]
+      },
+      "statusCode": 200
+    })
+    done()
+  }, 10000)
 })
 
 describe('api: unhappy paths ', () => {
   test('Game not found', async (done) => {
-    jest.setTimeout(30000)
-
-    const context = awsLambdaMockContext()
-    const event = eventMocks(
+    const context = makeContext()
+    const event = createEvent(
       'aws:apiGateway',
       {
         path: '/game/abc123'
@@ -110,23 +125,43 @@ describe('api: unhappy paths ', () => {
       "statusCode": 404
     })
     done()
-  })
+  }, 10000)
 
-  test('close server', async (done) => {
-    const context = awsLambdaMockContext()
-    const event = eventMocks(
+  test('Create game without discordWebhookUrl', async (done) => {
+    const context = makeContext()
+    const path = 'game'
+    const event = createEvent(
       'aws:apiGateway',
       {
-        path: '/game/abc123'
+        method: 'post',
+        httpMethod: 'post',
+        path: `/${path}`,
+        pathParameters: {
+          proxy: path
+        },
+        body: JSON.stringify({}),
+        multiValueHeaders: {
+          'Content-Type': ['application/json']
+        }
       },
     )
-
-    await handler(event, context)
-
-    server.on('close', () => {
-      expect(server.listening).toBe(false)
-      done()
+    const response = await handler(event, context)
+    expect(typeof response.multiValueHeaders.etag[0]).toEqual('string')
+    delete response.multiValueHeaders.etag
+    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
+    delete response.multiValueHeaders.date
+    expect(response).toEqual({
+      body: '{"message":"discordWebhookUrl is required"}',
+      "isBase64Encoded": false,
+      "multiValueHeaders": {
+        "access-control-allow-origin": ["*"],
+        "connection": ["close"],
+        "content-length": ["43"],
+        "content-type": ["application/json; charset=utf-8"],
+        "x-powered-by": ["Express"]
+      },
+      "statusCode": 500
     })
-    server.close()
-  })
+    done()
+  }, 10000)
 })

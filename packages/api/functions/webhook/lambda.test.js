@@ -1,9 +1,15 @@
 import 'regenerator-runtime/runtime'
 import eventMocks from '@serverless/event-mocks'
-import awsLambdaMockContext from 'aws-lambda-mock-context'
 import { logger } from '../../utils/logger'
+import { getGame } from '../../controllers/game'
 
-logger.transports.forEach(transport => transport.silent = true)
+// logger.transports.forEach(transport => transport.silent = true)
+
+function makeContext() {
+  return {
+    awsRequestId: 'ef6e0ff0-4d67-11eb-87d2-3192f87a25ff',
+  }
+}
 
 jest.mock('node-fetch')
 
@@ -28,49 +34,6 @@ jest.mock('aws-sdk', () => ({
   },
 }))
 
-const games = {
-  'invalid-discord-webhook-protocol': {
-    discordWebhookUrl: 'hsdfttps://discordapp.com/api/webhooks/invalid',
-  },
-  'd096960f-d4ac-44be-ab1b-aa415b73ff7f': {
-    discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdfghjkl',
-  },
-  'invalid-discord-webhook-url': {
-    discordWebhookUrl: 'https://discordapp.com/api/webhooks/invalid',
-  },
-  'deleted-discord-webhook-url': {
-    discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasddeleted',
-  },
-  'no-discord-webhook-url': {
-  },
-  'inactive-game': {
-    discordWebhookUrl: 'https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasdinactive',
-    state: 'INACTIVE'
-  },
-}
-jest.mock('../../models/Game', () => {
-  return {
-    get: jest.fn(async ({ id }) => {
-      const game = games[id]
-      if (!game) return null
-
-      return {
-        Item: game
-      }
-    }),
-    update: jest.fn(async ({ id, state }) => {
-      const game = games[id]
-      if (!game) return null
-
-      game.state = state
-
-      return {
-        Item: game
-      }
-    }),
-  }
-})
-
 const fetch = require('node-fetch')
 
 const { Response, Headers } = jest.requireActual('node-fetch')
@@ -83,7 +46,7 @@ const {
 
 describe('webhookHandler: happy paths ', () => {
   test('Notification sent', async () => {
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const event = eventMocks(
       'aws:sqs',
       {
@@ -124,31 +87,31 @@ describe('webhookHandler: happy paths ', () => {
         discordUserId: '<@invalid>',
       },
     }
-    test('discordUserId with correct format', async () => {
+    test('discordUserId with correct format', () => {
       expect(getDiscordUserId({
         playerName: 'player one',
         players,
       })).toEqual('<@269379221674000384>')
     })
-    test('discordUserId with @ prefix only', async () => {
+    test('discordUserId with @ prefix only', () => {
       expect(getDiscordUserId({
         playerName: 'player two',
         players,
       })).toEqual('<@269379221674000384>')
     })
-    test('discordUserId number only', async () => {
+    test('discordUserId number only', () => {
       expect(getDiscordUserId({
         playerName: 'player three',
         players,
       })).toEqual('<@269379221674000384>')
     })
-    test('discordUserId with incorrect (non-numerical) value', async () => {
+    test('discordUserId with incorrect (non-numerical) value', () => {
       expect(getDiscordUserId({
         playerName: 'player four',
         players,
       })).toEqual('player four')
     })
-    test('discordUserId not set for player', async () => {
+    test('discordUserId not set for player', () => {
       expect(getDiscordUserId({
         playerName: 'player five',
         players,
@@ -157,7 +120,7 @@ describe('webhookHandler: happy paths ', () => {
   })
 
   describe('getMessageFromTemplate', () => {
-    test('discordUserId with correct format', async () => {
+    test('discordUserId with correct format', () => {
       expect(getMessageFromTemplate({
         messageTemplate: MESSAGE_TEMPLATE,
         gameName: 'my game',
@@ -175,8 +138,8 @@ describe('webhookHandler: unhappy paths ', () => {
     fetch.mockReset()
   })
   test('Fails on an invalid event object', async () => {
-    const context = awsLambdaMockContext()
-    await expect(webhookHandler({}, context)).rejects.toThrow('Lambda didn\'t receive a `Records` array')
+    const context = makeContext()
+    expect(webhookHandler({}, context)).rejects.toThrow('Lambda didn\'t receive a `Records` array')
   })
 
   test('Rejected count increases on fetch error', async () => {
@@ -199,7 +162,7 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const rejectedReasons = 'Only HTTP(S) protocols are supported'
     fetch.mockRejectedValueOnce(new Error(rejectedReasons))
     expect(webhookHandler(event, context)).resolves.toEqual([{
@@ -228,7 +191,7 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
@@ -238,7 +201,7 @@ describe('webhookHandler: unhappy paths ', () => {
   })
 
   test('Rejected count increases on unknown non-2xx HTTP status code', async () => {
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const meta = {
       'Content-Type': 'application/json',
       Accept: '*/*',
@@ -253,7 +216,6 @@ describe('webhookHandler: unhappy paths ', () => {
 
     const response = new Response(JSON.stringify(responseBody), responseInit)
     fetch.mockResolvedValueOnce(Promise.resolve(response))
-    const rejectedReasons = 'HTTP response from Discord not ok. Status: 400; Text: {"message":"400"}.'
     const event = eventMocks(
       'aws:sqs',
       {
@@ -273,6 +235,7 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
+    const rejectedReasons = 'HTTP response from Discord not ok. Status: 400; Text: {"message":"400"}.'
     expect(webhookHandler(event, context)).resolves.toEqual([{
       reason: new Error(rejectedReasons),
       status: 'rejected',
@@ -280,7 +243,7 @@ describe('webhookHandler: unhappy paths ', () => {
   })
 
   test(`Game is marked as inactive when discord webhook doesn't exist`, async () => {
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const meta = {
       'Content-Type': 'application/json',
       Accept: '*/*',
@@ -314,17 +277,20 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    await expect(webhookHandler(event, context)).resolves.toEqual([
+    expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
         value: `Discord Webhook doesn't exist for this Game. Marked as inactive. Game ID: deleted-discord-webhook-url. Discord Webhook URL: https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasddeleted`,
       },
     ])
-    expect(games['deleted-discord-webhook-url'].state).toEqual('INACTIVE')
+    
+    await sleep(500)
+    const game = await getGame({ gameId: 'deleted-discord-webhook-url' })
+    expect(game.state).toEqual('INACTIVE')
   })
 
   test(`Game is marked as inactive when it doesn't have discorodWebhookUrl`, async () => {
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const event = eventMocks(
       'aws:sqs',
       {
@@ -344,17 +310,20 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    await expect(webhookHandler(event, context)).resolves.toEqual([
+    expect(webhookHandler(event, context)).resolves.toEqual([
       {
         status: 'fulfilled',
         value: `Game doesn't have \`discordWebhookUrl\`. Marked as inactive. Game ID: no-discord-webhook-url`
       },
     ])
-    expect(games['no-discord-webhook-url'].state).toEqual('INACTIVE')
+    await sleep(500)
+    const game = await getGame({ gameId: 'no-discord-webhook-url', includeDiscordWebhookUrl: true })
+    expect(game.state).toEqual('INACTIVE')
+    expect(game.discordWebhookUrl).toEqual('NONE')
   })
 
   test(`Game marked as inactive is skipped`, async () => {
-    const context = awsLambdaMockContext()
+    const context = makeContext()
     const meta = {
       'Content-Type': 'application/json',
       Accept: '*/*',
@@ -386,3 +355,13 @@ describe('webhookHandler: unhappy paths ', () => {
     ])
   })
 })
+
+function sleep(ms) {
+  return new Promise((resolve, reject) => {
+    try {
+      setTimeout(resolve, ms)
+    } catch (err) {
+      reject(err)
+    }
+  })
+}
