@@ -689,7 +689,7 @@ resources:
                   "width": 24,
                   "height": 6,
                   "properties": {
-                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY errorMessage, message",
+                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY @ingestionTime, errorMessage, message",
                       "region": "${AWS::Region}",
                       "stacked": false,
                       "view": "table"

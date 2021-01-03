@@ -172,7 +172,7 @@ async function processMessage(record, index) {
         return `Discord Webhook doesn't exist for this Game. Marked as inactive. Game ID: ${gameId}. Discord Webhook URL: ${discordWebhookUrl}`
       }
     } catch(error) {
-      log.error('PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE', { stack: error.stack, errorMessage: error.message })
+      log.error('PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE', { game, stack: error.stack, errorMessage: error.message })
     }
 
     throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}.`)
