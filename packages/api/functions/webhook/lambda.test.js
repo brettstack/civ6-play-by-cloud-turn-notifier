@@ -284,7 +284,7 @@ describe('webhookHandler: unhappy paths ', () => {
       },
     ])
     
-    await sleep(500)
+    await sleep(20)
     const game = await getGame({ gameId: 'deleted-discord-webhook-url' })
     expect(game.state).toEqual('INACTIVE')
   })
@@ -316,7 +316,7 @@ describe('webhookHandler: unhappy paths ', () => {
         value: `Game doesn't have \`discordWebhookUrl\`. Marked as inactive. Game ID: no-discord-webhook-url`
       },
     ])
-    await sleep(500)
+    await sleep(20)
     const game = await getGame({ gameId: 'no-discord-webhook-url', includeDiscordWebhookUrl: true })
     expect(game.state).toEqual('INACTIVE')
     expect(game.discordWebhookUrl).toEqual('NONE')

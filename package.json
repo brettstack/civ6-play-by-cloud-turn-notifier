@@ -5,7 +5,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cd packages/api && npm run test -- --coverage",
     "start:ui": "cd packages/ui && npm start",
     "start:ui:local-api": "REACT_APP_ApiEndpoint=http://localhost:4911 npm run start:ui",
     "start:api": "sls offline cloudside",

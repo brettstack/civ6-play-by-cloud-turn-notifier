@@ -164,8 +164,10 @@ custom:
       - functionDuration
     definitions:
       functionDuration:
-        threshold: 5000
+        threshold: 2000
         evaluationPeriods: 5
+        datapointsToAlarm: 5
+        statistic: p95
 
   metrics:
     - name: SKIP_INACTIVE
@@ -484,6 +486,32 @@ resources:
         ProviderARNs:
           - !GetAtt CognitoUserPool.Arn
 
+    MonthlyBudget:
+      Type: AWS::Budgets::Budget
+      Properties:
+        Budget:
+          BudgetName: Monthly
+          BudgetType: COST
+          TimeUnit: MONTHLY
+          BudgetLimit:
+            Amount: 1
+            Unit: USD
+        NotificationsWithSubscribers:
+          - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 10 # 1st alert sent when % of Monthly total is spent.
+            Subscribers:
+              - SubscriptionType: EMAIL
+                Address: ${{self:custom.stageConfig.alarms.notificationEmail}}
+          - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 95 # 2nd alert sent when % of Monthly total is spent.
+            Subscribers:
+            - SubscriptionType: EMAIL
+              Address: ${{self:custom.stageConfig.alarms.notificationEmail}}
+
     NoNotificationsSentAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
@@ -555,23 +583,28 @@ resources:
                 "width": 6,
                 "height": 6,
                 "properties": {
-                  "metrics": [
-                    [ "AWS/Lambda", "Duration", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}", { "stat": "Minimum" } ],
-                    [ ".",          ".",        { "stat": "Average" } ],
-                    [ ".",          ".",        { "stat": "Maximum" } ]
-                  ],
-                  "region": "${AWS::Region}",
-                  "title": "Webhook duration",
+                  "annotations": {
+                      "alarms": [
+                      "${ExpressFunctionDurationAlarm.Arn}"
+                      ]
+                  },
+                  "yAxis": {
+                    "left": {
+                      "min": 0
+                    }
+                  },
                   "view": "timeSeries",
                   "stacked": false,
-                  "period": 3600
+                  "region": "${AWS::Region}",
+                  "stat": "p90",
+                  "title": "Duration"
                 }
               },
               {
                 "type": "metric",
                 "x": 12,
                 "y": 9,
-                "width": 6,
+                "width": 3,
                 "height": 6,
                 "properties": {
                   "metrics": [
@@ -596,57 +629,59 @@ resources:
                   "region": "${AWS::Region}",
                   "alarms": [
                       "${WebhookFunctionErrorsAlarm.Arn}",
-                      "${WebhookFunctionDurationAlarm.Arn}"
+                      "${WebhookFunctionDurationAlarm.Arn}",
+                      "${ExpressFunctionErrorsAlarm.Arn}",
+                      "${ExpressFunctionDurationAlarm.Arn}"
                   ]
                 }
               },
               {
-                  "type": "metric",
-                  "x": 0,
-                  "y": 0,
-                  "width": 7,
-                  "height": 6,
-                  "properties": {
-                      "annotations": {
-                          "alarms": [
-                              "${NoNotificationsSentAlarm.Arn}"
-                          ]
-                      },
-                      "yAxis": {
-                        "left": {
-                          "min": 0
-                        }
-                      },
-                      "view": "timeSeries",
-                      "stacked": false,
-                      "region": "${AWS::Region}",
-                      "stat": "Sum",
-                      "title": "Notifications sent"
-                  }
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 7,
+                "height": 6,
+                "properties": {
+                  "annotations": {
+                      "alarms": [
+                        "${NoNotificationsSentAlarm.Arn}"
+                      ]
+                  },
+                  "yAxis": {
+                    "left": {
+                      "min": 0
+                    }
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "region": "${AWS::Region}",
+                  "stat": "Sum",
+                  "title": "Notifications sent"
+                }
               },
               {
-                  "type": "metric",
-                  "x": 7,
-                  "y": 0,
-                  "width": 7,
-                  "height": 6,
-                  "properties": {
-                      "annotations": {
-                          "alarms": [
-                              "${NoGamesCreatedAlarm.Arn}"
-                          ]
-                      },
-                      "yAxis": {
-                        "left": {
-                          "min": 0
-                        }
-                      },
-                      "view": "timeSeries",
-                      "stacked": false,
-                      "region": "${AWS::Region}",
-                      "stat": "Sum",
-                      "title": "Games created"
-                  }
+                "type": "metric",
+                "x": 7,
+                "y": 0,
+                "width": 3,
+                "height": 6,
+                "properties": {
+                  "annotations": {
+                      "alarms": [
+                          "${NoGamesCreatedAlarm.Arn}"
+                      ]
+                  },
+                  "yAxis": {
+                    "left": {
+                      "min": 0
+                    }
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "region": "${AWS::Region}",
+                  "stat": "Sum",
+                  "title": "Games created"
+                }
               },
               {
                   "type": "metric",
@@ -689,59 +724,11 @@ resources:
                   "width": 24,
                   "height": 6,
                   "properties": {
-                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY @ingestionTime, errorMessage, message",
+                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | SOURCE '/aws/lambda/${ExpressLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY @ingestionTime, errorMessage, message",
                       "region": "${AWS::Region}",
                       "stacked": false,
                       "view": "table"
                   }
-              },
-              {
-                "type": "explorer",
-                "x": 0,
-                "y": 18,
-                "width": 24,
-                "height": 15,
-                "properties": {
-                    "metrics": [
-                        {
-                            "metricName": "Duration",
-                            "resourceType": "AWS::Lambda::Function",
-                            "stat": "p90"
-                        },
-                        {
-                            "metricName": "Errors",
-                            "resourceType": "AWS::Lambda::Function",
-                            "stat": "Sum"
-                        },
-                        {
-                            "metricName": "Invocations",
-                            "resourceType": "AWS::Lambda::Function",
-                            "stat": "Sum"
-                        },
-                        {
-                            "metricName": "Throttles",
-                            "resourceType": "AWS::Lambda::Function",
-                            "stat": "Sum"
-                        }
-                    ],
-                    "labels": [
-                        {
-                          "key": "FunctionName",
-                          "value": "${WebhookLambdaFunction}"
-                        }
-                    ],
-                    "widgetOptions": {
-                        "legend": {
-                            "position": "bottom"
-                        },
-                        "view": "timeSeries",
-                        "stacked": false,
-                        "rowsPerPage": 50,
-                        "widgetsPerRow": 2
-                    },
-                    "period": 3600,
-                    "splitBy": "FunctionName"
-                }
               }
             ]
           }
