@@ -4,7 +4,7 @@ provider:
   stackName: ${{self:service}}-${{self:provider.stage}}
   runtime: nodejs12.x
   memorySize: 1024
-  timeout: 6
+  timeout: 20
   logRetentionInDays: ${{self:custom.stageConfig.logRetentionInDays}}
   stage: ${{opt:stage, env:NODE_ENV, 'development'}}
   profile: ${{self:custom.stageConfig.profile}}
@@ -286,7 +286,7 @@ resources:
     WebhookSqsQueue:
       Type: AWS::SQS::Queue
       Properties:
-        VisibilityTimeout: 36 # functions.webhook.timeout * 6
+        VisibilityTimeout: 120 # functions.webhook.timeout * 6
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt WebhookSqsQueueDlq.Arn
           maxReceiveCount: 5

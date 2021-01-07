@@ -2,10 +2,6 @@ import 'source-map-support/register'
 import fetch from 'node-fetch'
 import middy from '@middy/core'
 import sqsPartialBatchFailureMiddleware from '@middy/sqs-partial-batch-failure'
-// import sampleLogging from '@dazn/lambda-powertools-middleware-sample-logging'
-// import captureCorrelationIds from '@dazn/lambda-powertools-middleware-correlation-ids'
-// import logTimeout from '@dazn/lambda-powertools-middleware-log-timeout'
-// import '../../aws'
 import { getGame, markGameInactive } from '../../controllers/game'
 import { log, addLogMetadata } from '../../utils/logger'
 
@@ -236,14 +232,6 @@ function getMessageAttributeStringValues({ messageAttributes }) {
 
   return messageAttributeValues
 }
-export const webhookHandlerMiddy = middy(webhookHandler)
 
-webhookHandlerMiddy
-  // .use(captureCorrelationIds({
-  //   sampleDebugLogRate: parseFloat(process.env.SAMPLE_DEBUG_LOG_RATE || '0.01'),
-  // }))
-  // .use(sampleLogging({
-  //   sampleRate: parseFloat(process.env.SAMPLE_DEBUG_LOG_RATE || '0.01'),
-  // }))
-  // .use(logTimeout())
+export const webhookHandlerMiddy = middy(webhookHandler)
   .use(sqsPartialBatchFailureMiddleware())
