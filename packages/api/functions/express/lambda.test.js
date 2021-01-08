@@ -12,16 +12,7 @@ function makeContext() {
 
 const {
   handler,
-  server
 } = require('./lambda')
-
-afterAll(() => {
-  server.on('close', () => {
-    expect(server.listening).toBe(false)
-    done()
-  })
-  server.close()
-})
 
 describe('api: happy paths ', () => {
   test('Get game', async (done) => {
@@ -37,14 +28,11 @@ describe('api: happy paths ', () => {
       },
     )
     const response = await handler(event, context)
-    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
-    delete response.multiValueHeaders.date
     expect(response).toEqual({
       body: '{"id":"existing-game","state":"INACTIVE"}',
       "isBase64Encoded": false,
       "multiValueHeaders": {
         "access-control-allow-origin": ["*"],
-        "connection": ["close"],
         "content-length": ["41"],
         "content-type": ["application/json; charset=utf-8"],
         "etag": ["W/\"29-burXaNM8wKUv8eQx0nPgTNGAGBM\""],
@@ -82,13 +70,10 @@ describe('api: happy paths ', () => {
     expect(responseBody.discordWebhookUrl).toEqual('https://example.com')
     expect(typeof response.multiValueHeaders.etag[0]).toEqual('string')
     delete response.multiValueHeaders.etag
-    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
-    delete response.multiValueHeaders.date
     expect(response).toEqual({
       "isBase64Encoded": false,
       "multiValueHeaders": {
         "access-control-allow-origin": ["*"],
-        "connection": ["close"],
         "content-length": ["151"],
         "content-type": ["application/json; charset=utf-8"],
         "x-powered-by": ["Express"]
@@ -109,14 +94,11 @@ describe('api: unhappy paths ', () => {
       },
     )
     const response = await handler(event, context)
-    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
-    delete response.multiValueHeaders.date
     expect(response).toEqual({
       "isBase64Encoded": false,
       "body": '{"message":"Not Found"}',
       "multiValueHeaders": {
         "access-control-allow-origin": ["*"],
-        "connection": ["close"],
         "content-length": ["23"],
         "content-type": ["application/json; charset=utf-8"],
         "etag": ["W/\"17-SuRA/yvUWUo8rK6x7dKURLeBo+0\""],
@@ -148,14 +130,11 @@ describe('api: unhappy paths ', () => {
     const response = await handler(event, context)
     expect(typeof response.multiValueHeaders.etag[0]).toEqual('string')
     delete response.multiValueHeaders.etag
-    expect(typeof response.multiValueHeaders.date[0]).toEqual('string')
-    delete response.multiValueHeaders.date
     expect(response).toEqual({
       body: '{"message":"discordWebhookUrl is required"}',
       "isBase64Encoded": false,
       "multiValueHeaders": {
         "access-control-allow-origin": ["*"],
-        "connection": ["close"],
         "content-length": ["43"],
         "content-type": ["application/json; charset=utf-8"],
         "x-powered-by": ["Express"]
