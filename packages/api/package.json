@@ -42,7 +42,7 @@
     "@dazn/lambda-powertools-middleware-sample-logging": "^1.23.0",
     "@middy/core": "^1.0.0-beta.10",
     "@middy/sqs-partial-batch-failure": "^1.0.0-beta.10",
-    "@vendia/serverless-express": "file:../../../serverless-express",
+    "@vendia/serverless-express": "^4.0.0-rc.4",
     "aws-sdk": "^2.656.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -52,7 +52,6 @@
     "express": "^4.17.1",
     "lodash": "^4.17.19",
     "node-fetch": "^2.6.0",
-    "serverless-http": "file:../../../serverless-http",
     "shortid": "^2.2.15"
   }
 }
