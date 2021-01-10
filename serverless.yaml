@@ -3,7 +3,7 @@ provider:
   name: aws
   stackName: ${{self:service}}-${{self:provider.stage}}
   runtime: nodejs12.x
-  memorySize: 1024
+  memorySize: 128
   timeout: 20
   logRetentionInDays: ${{self:custom.stageConfig.logRetentionInDays}}
   stage: ${{opt:stage, env:NODE_ENV, 'development'}}
