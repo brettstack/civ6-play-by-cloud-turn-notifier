@@ -1,3 +1,20 @@
+# [1.13.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.12.2...v1.13.0) (2021-01-11)
+
+
+### Bug Fixes
+
+* add ingestionTime to error log and log game in PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE ([94ab57e](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/94ab57e79b82f72a5560c66d2e5a4369c5dcdc5f))
+* change lambda functions to 128MB ([9f9972d](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/9f9972d23b51f6e03a96daf9630ee5c48727c6ce))
+* increase lambda duration to 20s ([040554b](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/040554b3d03df05d931386c8f3248a1758a0c42d))
+* update lambda function memorySizes ([66b45b2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/66b45b28ba15331b73708b202eeab08e66c18f19))
+* **ops:** add cost alert; tweak duration alarm; update dashboard ([7b4ae4a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/7b4ae4aa8f88627e7b608cbf5bacce21ec301ab6))
+
+
+### Features
+
+* set NONE discordWebhookUrl when one doesn't exist; test with dynalite ([226b326](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/226b32644b2b5799736e98b7fbc112f83967d1eb))
+* update to serverless@2 and @vendia/serverless-express@4.rc ([572ba79](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/572ba795dc4f5a78078e1d6a37da39c51d594fc9))
+
 ## [1.12.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.12.1...v1.12.2) (2021-01-01)
 
 

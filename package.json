@@ -1,6 +1,6 @@
 {
   "name": "civ6-pbc",
-  "version": "1.12.2",
+  "version": "1.13.0",
   "private": true,
   "description": "",
   "main": "handler.js",
