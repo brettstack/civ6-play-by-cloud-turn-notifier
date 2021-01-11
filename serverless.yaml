@@ -204,6 +204,7 @@ custom:
 functions:
   webhook:
     reservedConcurrency: 1
+    memorySize: 512
     handler: packages/api/functions/webhook/lambda.webhookHandlerMiddy
     events:
       - sqs:
@@ -223,6 +224,7 @@ functions:
 
   express:
     handler: packages/api/functions/express/lambda.handler
+    memorySize: 1024
     events:
         - http: ANY /
           cors: true
@@ -691,17 +693,18 @@ resources:
                   "height": 3,
                   "properties": {
                       "metrics": [
-                          [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "This month", "period": 2678400 } ],
-                          [ "...", { "label": "This week", "period": 604800 } ],
-                          [ "...", { "label": "Today", "period": 86400 } ]
+                        [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "Today", "period": 86400 } ],
+                        [ "...", { "label": "This week", "period": 604800 } ],
+                        [ "...", { "label": "This month", "yAxis": "right", "period": 2678400 } ]
                       ],
                       "view": "singleValue",
                       "stacked": false,
                       "region": "${AWS::Region}",
                       "stat": "Sum",
                       "title": "Notifications sent",
-                      "start": "-P12M",
-                      "end": "P0D"
+                      "start": "-P4W",
+                      "end": "P0D",
+                      "period": 2678400
                   }
               },
               {
