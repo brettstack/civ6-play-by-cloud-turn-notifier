@@ -469,7 +469,7 @@ function addBaseResourcesAndOutputs({
 
   if (redirect404PagesToRoot) {
     Resources[`${namePascalCase}AmplifyApp`].Properties.CustomRules = [{
-      Source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$)([^.]+$)/>',
+      Source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|json|map)$)([^.]+$)/>',
       Target: '/',
       Status: 200
     }]

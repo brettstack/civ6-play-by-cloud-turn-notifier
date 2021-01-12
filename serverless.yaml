@@ -9,6 +9,7 @@ provider:
   stage: ${{opt:stage, env:NODE_ENV, 'development'}}
   profile: ${{self:custom.stageConfig.profile}}
   region: us-west-2
+  # Access serverless variables with ${{self:custom.example}} so it doesn't conflict with AWS ${AWS::Example}
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}"
   logs:
     restApi:
@@ -22,6 +23,7 @@ provider:
     # Enable connection reuse for AWS SDK for instant performance boost
     # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  cors: true
 
 package:
   individually: true
@@ -141,6 +143,8 @@ custom:
   #           - node_modules/**/*
   webpack:
     webpackConfig: ./functions.webpack.config.js
+    excludeFiles: packages/**/*.test.[t|j]s
+
   output:
     file: ./stack-outputs.${{self:provider.stage}}.json
   # TODO: Add custom splitting with ./split-stack-splitter.js
@@ -227,9 +231,7 @@ functions:
     memorySize: 1024
     events:
         - http: ANY /
-          cors: true
         - http: 'ANY {proxy+}'
-          cors: true
     iamRoleStatements:
       - Effect: "Allow"
         Action:
