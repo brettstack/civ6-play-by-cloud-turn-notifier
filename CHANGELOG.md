@@ -1,3 +1,12 @@
+## [1.13.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.0...v1.13.1) (2021-01-17)
+
+
+### Bug Fixes
+
+* add Lambda Insights ([a18d47a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/a18d47a90ef09a7f7f5235beecceff2ca9311e88))
+* fix manifest and sourcemaps loading in UI ([c56151a](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/c56151a452635ecb539bf06e9586df058f6e8b93))
+* optimize lambda+sqs integration ([77b5bbc](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/77b5bbcf307b518e89d5327dbb5ab6e43dc4ed4b))
+
 # [1.13.0](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.12.2...v1.13.0) (2021-01-11)
 
 
