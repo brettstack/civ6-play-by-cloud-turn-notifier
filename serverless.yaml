@@ -207,7 +207,10 @@ custom:
           integration.request.querystring.MessageAttribute.1.Value.DataType: "'String'"
 functions:
   webhook:
-    reservedConcurrency: 1
+    # NOTE: Lambda generally uses 5 pollers at low load and it's recommended to set reservedConcurrency to at least 5
+    # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-scaling
+    # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource
+    reservedConcurrency: 5
     memorySize: 512
     handler: packages/api/functions/webhook/lambda.webhookHandlerMiddy
     layers:
@@ -215,6 +218,8 @@ functions:
     events:
       - sqs:
           arn: !GetAtt WebhookSqsQueue.Arn
+          batchSize: 100
+          maximumBatchingWindow: 20
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -282,12 +287,16 @@ resources:
     #     - true
   
   Resources:
-    # NOTE: Following guidance here to reduce the chance of Lambda throttling
-    # https://medium.com/@zaccharles/lambda-concurrency-limits-and-sqs-triggers-dont-mix-well-sometimes-eb23d90122e0
     WebhookSqsQueue:
       Type: AWS::SQS::Queue
       Properties:
-        VisibilityTimeout: 120 # functions.webhook.timeout * 6
+        # NOTE: Following guidance here to reduce the chance of Lambda throttling
+        # https://medium.com/@zaccharles/lambda-concurrency-limits-and-sqs-triggers-dont-mix-well-sometimes-eb23d90122e0
+        # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
+        # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource
+        # functions.webhook.timeout * 6 + functions.webhook.events.sqs.maximumBatchingWindow
+        # 20 * 6 + 20 
+        VisibilityTimeout: 140
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt WebhookSqsQueueDlq.Arn
           maxReceiveCount: 5

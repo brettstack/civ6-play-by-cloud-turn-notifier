@@ -12,7 +12,7 @@ const BOT_USERNAME = 'Civ6 Turnbot'
 const AVATAR_URL = 'http://www.megabearsfan.net/image.axd/2017/8/CivVI-JohnCurtin_250x250.png'
 
 export async function webhookHandler(event, context) {
-  addLogMetadata({ metadata: {awsRequestId: context.awsRequestId }})
+  addLogMetadata({ metadata: { awsRequestId: context.awsRequestId } })
   log.debug('WEBHOOK_HANDLER:CALLED_WITH', { event })
 
   const { Records } = event
@@ -20,6 +20,8 @@ export async function webhookHandler(event, context) {
   if (!Records || !Array.isArray(Records)) {
     throw new Error(`Lambda didn't receive a \`Records\` array in the \`event\` object. Records: ${Records}.`)
   }
+
+  log.info('WEBHOOK_HANDLER:NUMBER_RECORDS', { numRecords: Records.length })
 
   const recordPromises = Records.map(processMessage)
 
@@ -92,7 +94,7 @@ async function processMessage(record, index) {
 
   log.debug('PROCESS_MESSAGE:GAME', { game })
 
-  const {discordWebhookUrl, players, state} = game
+  const { discordWebhookUrl, players, state } = game
 
   log.debug('PROCESS_MESSAGE:GAME_VALUES', { discordWebhookUrl, players, state })
 
@@ -104,7 +106,7 @@ async function processMessage(record, index) {
 
   if (!discordWebhookUrl) {
     log.info('PROCESS_MESSAGE:NO_DISCORD_WEBHOOK_URL', { game })
-    
+
     await markGameInactive({ gameId, setDiscordWebhookUrlToNONE: true })
 
     return `Game doesn't have \`discordWebhookUrl\`. Marked as inactive. Game ID: ${gameId}`
@@ -167,14 +169,14 @@ async function processMessage(record, index) {
 
         return `Discord Webhook doesn't exist for this Game. Marked as inactive. Game ID: ${gameId}. Discord Webhook URL: ${discordWebhookUrl}`
       }
-    } catch(error) {
+    } catch (error) {
       log.error('PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE', { game, stack: error.stack, errorMessage: error.message })
     }
 
     throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}.`)
   }
 
-  log.info(`PROCESS_MESSAGE:NOTIFICATION_SENT`, { gameId, responseText})
+  log.info(`PROCESS_MESSAGE:NOTIFICATION_SENT`, { gameId, responseText })
 
   return `Notifaction sent. Game ID: ${gameId}; Discord Response Text: ${responseText}.`
 }
