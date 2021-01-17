@@ -210,6 +210,8 @@ functions:
     reservedConcurrency: 1
     memorySize: 512
     handler: packages/api/functions/webhook/lambda.webhookHandlerMiddy
+    layers:
+      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12"
     events:
       - sqs:
           arn: !GetAtt WebhookSqsQueue.Arn
@@ -229,6 +231,8 @@ functions:
   express:
     handler: packages/api/functions/express/lambda.handler
     memorySize: 1024
+    layers:
+      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12"
     events:
         - http: ANY /
         - http: 'ANY {proxy+}'
@@ -252,13 +256,6 @@ functions:
         Resource:
           - !GetAtt GameTable.Arn
           - !GetAtt UserTable.Arn
-      # - Effect: Allow
-      #   Action:
-      #     - logs:CreateLogGroup
-      #     - logs:CreateLogStream
-      #     - logs:PutLogEvents
-      #   Resource:
-      #     - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${{self:provider.stackName}}-express:*:*
 
   autoConfirmUser:
     handler: packages/api/functions/cognito/auto-confirm-user.handler
@@ -489,6 +486,16 @@ resources:
         Type: COGNITO_USER_POOLS
         ProviderARNs:
           - !GetAtt CognitoUserPool.Arn
+    
+    WebhookIamRoleLambdaExecution:
+      Properties:
+        ManagedPolicyArns:
+          - 'arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy'
+    
+    ExpressIamRoleLambdaExecution:
+      Properties:
+        ManagedPolicyArns:
+          - 'arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy'
 
     MonthlyBudget:
       Type: AWS::Budgets::Budget
