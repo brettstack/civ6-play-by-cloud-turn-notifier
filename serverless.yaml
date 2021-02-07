@@ -94,8 +94,6 @@ custom:
   serverless-offline:
     httpPort: 4911
     noPrependStageInUrl: true
-    useChildProcesses: true # hack to get watching working
-    useSeparateProcesses: true
   amplify:
     isManual: true
     domainName: ${{self:custom.stageConfig.amplify.domainName, ''}}
@@ -236,8 +234,12 @@ functions:
     layers:
       - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12"
     events:
-        - http: ANY /
-        - http: 'ANY {proxy+}'
+      - http:
+         method: ANY
+         path: /
+      - http: 
+         method: ANY
+         path: '{proxy+}'
     iamRoleStatements:
       - Effect: "Allow"
         Action:
