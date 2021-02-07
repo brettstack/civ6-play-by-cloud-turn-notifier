@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@wizeline/serverless-amplify-plugin": "^1.2.1",
-    "serverless-dotenv-plugin": "^2.3.2"
+    "serverless-dotenv-plugin": "^2.3.2",
+    "webpack": "^4.44.2"
   }
 }

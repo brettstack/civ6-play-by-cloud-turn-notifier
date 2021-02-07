@@ -4,8 +4,8 @@ import { Table } from 'dynamodb-toolbox'
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, NODE_ENV } = process.env
 
-if (NODE_ENV != 'test' && (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY)) {
-  const credentials = new AWS.SharedIniFileCredentials({profile: 'civ6_dev'})
+if (NODE_ENV !== 'test' && (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY)) {
+  const credentials = new AWS.SharedIniFileCredentials({ profile: 'civ6_dev' })
   AWS.config.credentials = credentials
 }
 
@@ -28,5 +28,5 @@ export const MainTable = new Table({
   DocumentClient: dynamoDbDocumentClient,
   indexes: {
     GSI1: { partitionKey: 'sk', sortKey: 'data' },
-  }
+  },
 })
