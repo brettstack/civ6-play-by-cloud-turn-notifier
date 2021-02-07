@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.2...v1.13.3) (2021-02-07)
+
+
+### Bug Fixes
+
+* update dependencies ([87b652f](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/87b652f1daf2a69dcbb205dbdc3b519d259475e4))
+
 ## [1.13.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.1...v1.13.2) (2021-02-07)
 
 
