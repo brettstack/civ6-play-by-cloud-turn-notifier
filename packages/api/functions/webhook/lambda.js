@@ -153,7 +153,7 @@ async function processMessage(record, index) {
   log.debug('PROCESS_MESSAGE:RESPONSE_TEXT', { responseText })
 
   if (!response.ok) {
-    log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK', { game, response, responseText })
+    log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK', { game, discordWebhookUrl, response, responseText })
 
     try {
       const responseJson = JSON.parse(responseText)
@@ -161,9 +161,10 @@ async function processMessage(record, index) {
       log.debug('PROCESS_MESSAGE:RESPONSE_NOT_OK_JSON', { responseJson })
 
       const discordWebhookDoesntExist = responseJson.code === 10015
+      const isInvalidWebhookToken = responseJson.code === 50027
 
-      if (discordWebhookDoesntExist) {
-        log.info('PROCESS_MESSAGE:DISCORD_WEBHOOK_DOESNT_EXIST', { game })
+      if (discordWebhookDoesntExist || isInvalidWebhookToken) {
+        log.info('PROCESS_MESSAGE:INACTIVE_WEBHOOK', { game })
 
         await markGameInactive({ gameId })
 
@@ -173,7 +174,7 @@ async function processMessage(record, index) {
       log.error('PROCESS_MESSAGE:ERROR_PROCESSING_NOT_OK_RESPONSE', { game, stack: error.stack, errorMessage: error.message })
     }
 
-    throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}.`)
+    throw new Error(`HTTP response from Discord not ok. Status: ${response.status}; Text: ${responseText}; Game ID: ${gameId}; ${discordWebhookUrl}.`)
   }
 
   log.info(`PROCESS_MESSAGE:NOTIFICATION_SENT`, { gameId, responseText })

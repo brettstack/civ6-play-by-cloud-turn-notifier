@@ -6,6 +6,7 @@ import { log, addLogMetadata } from '../../utils/logger'
 const serverlessExpressInstance = serverlessExpress({ app, log })
 
 export const handler = (event, context) => {
-  addLogMetadata({ metadata: { awsRequestId: context.awsRequestId }})
+  addLogMetadata({ metadata: { awsRequestId: context.awsRequestId } })
+
   return serverlessExpressInstance.handler(event, context)
 }

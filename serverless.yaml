@@ -36,13 +36,11 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-webpack
   - serverless-apigateway-service-proxy
-  # - serverless-plugin-split-stacks
   - serverless-stack-output
   - serverless-cloudside-plugin
   - serverless-plugin-aws-alerts
   - serverless-plugin-metric
-  - './serverless-amplify-plugin'
-  # - '@wizeline/serverless-amplify-plugin'
+  - '@brettstack/serverless-amplify-plugin'
   - serverless-offline
   - serverless-stack-termination-protection
 
@@ -147,10 +145,6 @@ custom:
 
   output:
     file: ./stack-outputs.${{self:provider.stage}}.json
-  # TODO: Add custom splitting with ./split-stack-splitter.js
-  # splitStacks:
-  #   perFunction: true
-  #   custom: ./split-stack-splitter.js
   alerts:
     dashboards: false
     nameTemplate: $[functionName]-$[metricName]-Alarm
@@ -172,6 +166,9 @@ custom:
         evaluationPeriods: 5
         datapointsToAlarm: 5
         statistic: p95
+      functionErrors:
+        threshold: 2
+        period: 300
 
   metrics:
     - name: SKIP_INACTIVE
@@ -514,7 +511,7 @@ resources:
           BudgetType: COST
           TimeUnit: MONTHLY
           BudgetLimit:
-            Amount: 1
+            Amount: 5
             Unit: USD
         NotificationsWithSubscribers:
           - Notification:
@@ -605,7 +602,7 @@ resources:
                 "properties": {
                   "annotations": {
                       "alarms": [
-                      "${ExpressFunctionDurationAlarm.Arn}"
+                      "${WebhookFunctionDurationAlarm.Arn}"
                       ]
                   },
                   "yAxis": {

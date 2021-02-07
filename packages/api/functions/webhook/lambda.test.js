@@ -235,7 +235,7 @@ describe('webhookHandler: unhappy paths ', () => {
         ],
       },
     )
-    const rejectedReasons = 'HTTP response from Discord not ok. Status: 400; Text: {"message":"400"}.'
+    const rejectedReasons = 'HTTP response from Discord not ok. Status: 400; Text: {"message":"400"}; Game ID: invalid-discord-webhook-url; https://discordapp.com/api/webhooks/invalid.'
     expect(webhookHandler(event, context)).resolves.toEqual([{
       reason: new Error(rejectedReasons),
       status: 'rejected',
@@ -254,7 +254,7 @@ describe('webhookHandler: unhappy paths ', () => {
       statusText: '{"message": "Unknown Webhook", "code": 10015}',
       headers,
     }
-    const responseBody = {message: "Unknown Webhook", "code": 10015}
+    const responseBody = { message: "Unknown Webhook", "code": 10015 }
 
     const response = new Response(JSON.stringify(responseBody), responseInit)
     fetch.mockResolvedValueOnce(Promise.resolve(response))
@@ -283,7 +283,7 @@ describe('webhookHandler: unhappy paths ', () => {
         value: `Discord Webhook doesn't exist for this Game. Marked as inactive. Game ID: deleted-discord-webhook-url. Discord Webhook URL: https://discordapp.com/api/webhooks/123456789/1234567890qwertyuiopasddeleted`,
       },
     ])
-    
+
     await sleep(20)
     const game = await getGame({ gameId: 'deleted-discord-webhook-url' })
     expect(game.state).toEqual('INACTIVE')
