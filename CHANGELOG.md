@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.1...v1.13.2) (2021-02-07)
+
+
+### Bug Fixes
+
+* cleanup; handle additional discord 4xx; adjust alarms; use serverless-amplify-plugin package; automerge dependabot; fix PR sandbox stacks ([ade08ea](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/ade08ea4586a25522e3d7bebc6e71152102ab5aa))
+
 ## [1.13.1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.0...v1.13.1) (2021-01-17)
 
 
