@@ -47,7 +47,9 @@ export default function GeneratePlayByCloudWebhook({ onCreateGame }) {
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
-  const handleButtonClick = async () => {
+  const handleButtonClick = async (event) => {
+    event.preventDefault()
+
     if (!loading) {
       setLoading(true)
       setErrorMessage('')
