@@ -104,9 +104,9 @@ custom:
       prefix: 'REACT_APP_'
       allow:
         - ApiEndpoint
-        - CognitoIdentityPoolId,
-        - CognitoUserPoolId,
-        - CognitoUserPoolClientId,
+        - CognitoIdentityPoolId
+        - CognitoUserPoolId
+        - CognitoUserPoolClientId
   # dotenv:
   #   path: ../../.env
   # amplify:
@@ -235,11 +235,17 @@ functions:
       - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12"
     events:
       - http:
-         method: ANY
-         path: /
+        method: ANY
+        path: /
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId: !Ref ApiGatewayAuthorizer
       - http: 
-         method: ANY
-         path: '{proxy+}'
+        method: ANY
+        path: '{proxy+}'
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId: !Ref ApiGatewayAuthorizer
     iamRoleStatements:
       - Effect: "Allow"
         Action:
