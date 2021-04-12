@@ -51,7 +51,8 @@ function GamePage() {
     f()
   }, [gameId])
 
-  async function handleSaveButtonClick() {
+  async function handleSaveButtonClick(event) {
+    event.preventDefault()
     if (loading) return
     setLoading(true)
     setErrorMessage('')
