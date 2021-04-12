@@ -1,3 +1,11 @@
+## [1.13.4](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.3...v1.13.4) (2021-04-12)
+
+
+### Bug Fixes
+
+* **ui:** fix submit refreshing page in firefox ([63a0469](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/63a0469b57e04a89e0658565ef79d58745bd36e5))
+* **ui:** fix submit refreshing page in firefox ([af9ebd1](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/af9ebd1bb0d7416f13b16c8a5e1a761902b6ed79))
+
 ## [1.13.3](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.2...v1.13.3) (2021-02-07)
 
 
