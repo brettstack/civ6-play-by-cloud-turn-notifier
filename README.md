@@ -4,6 +4,18 @@ This project is a hosted service for Civilization 6's Play By Cloud game format,
 
 Having issues? Reach out to me on Twitter [@AWSBrett](https://twitter.com/AWSbrett) or open a GitHub Issue.
 
+## Made with <a href="https://codegenie.codes">Code Genie</a>
+
+Starting a new software project? Check out Code Genie - a <a href="https://codegenie.codes">Full Stack App Generator</a> that generates source code based on your project's data model. Including:
+
+1. A React Next.js Web App hosted on Amplify Hosting
+1. Serverless Express REST API running on API Gateway and Lambda
+1. Cognito User Pools for Identity/Authentication
+1. DynamoDB Database
+1. Cloud Development Kit (CDK) for Infrastructure as Code (IAC)
+1. Continuous Integration/Delivery (CI/CD) with GitHub Actions
+1. And more!
+
 ## Development
 
 Below is for development purposes only. If you're having problems using the service, reach out to me on Twitter [@AWSBrett](https://twitter.com/AWSbrett) or open a GitHub Issue.
