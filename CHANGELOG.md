@@ -1,3 +1,10 @@
+## [1.13.9](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.8...v1.13.9) (2023-11-30)
+
+
+### Bug Fixes
+
+* remove serverless-plugin-aws-alerts ([41a4932](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/41a49327316bd6826df010a29b54f8a9bd9841b6))
+
 ## [1.13.8](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.7...v1.13.8) (2023-11-30)
 
 
