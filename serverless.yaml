@@ -2,7 +2,7 @@ service: civ6-pbc${{env:SERVERLESS_SERVICE_SUFFIX, ''}}
 provider:
   name: aws
   stackName: ${{self:service}}-${{self:provider.stage}}
-  runtime: nodejs12.x
+  runtime: nodejs16.x
   memorySize: 128
   timeout: 20
   logRetentionInDays: ${{self:custom.stageConfig.logRetentionInDays}}
@@ -209,7 +209,7 @@ functions:
     memorySize: 512
     handler: packages/api/functions/webhook/lambda.webhookHandlerMiddy
     layers:
-      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12"
+      - !Sub 'arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12'
     events:
       - sqs:
           arn: !GetAtt WebhookSqsQueue.Arn
@@ -220,7 +220,7 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: !GetAtt WebhookSqsQueueDlq.Arn
-      - Effect: "Allow"
+      - Effect: 'Allow'
         Action:
           - dynamodb:GetItem
           - dynamodb:UpdateItem
@@ -232,22 +232,22 @@ functions:
     handler: packages/api/functions/express/lambda.handler
     memorySize: 1024
     layers:
-      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12"
+      - !Sub 'arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:12'
     events:
       - http:
-         method: ANY
-         path: /
-      - http: 
-         method: ANY
-         path: '{proxy+}'
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: 'Allow'
         Action:
-          - "xray:PutTraceSegments"
-          - "xray:PutTelemetryRecords"
+          - 'xray:PutTraceSegments'
+          - 'xray:PutTelemetryRecords'
         Resource:
-          - "*"
-      - Effect: "Allow"
+          - '*'
+      - Effect: 'Allow'
         Action:
           - dynamodb:BatchGetItem
           - dynamodb:BatchWriteItem
@@ -267,24 +267,23 @@ functions:
   postAuthN:
     handler: packages/api/functions/cognito/post-authentication.handler
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: 'Allow'
         Action:
           - dynamodb:GetItem
           - dynamodb:PutItem
         Resource:
           - !GetAtt UserTable.Arn
-    
+
 resources:
   Conditions:
-    IsApiCustomDomainEnabled:
-      !Equals
-        - ${{self:custom.stageConfig.api.domainEnabled, false}}
-        - true
+    IsApiCustomDomainEnabled: !Equals
+      - ${{self:custom.stageConfig.api.domainEnabled, false}}
+      - true
     # RetainDataResources:
     #   !Equals
     #     - ${{self:custom.stageConfig.retainDataResources, false}}
     #     - true
-  
+
   Resources:
     WebhookSqsQueue:
       Type: AWS::SQS::Queue
@@ -294,7 +293,7 @@ resources:
         # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
         # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource
         # functions.webhook.timeout * 6 + functions.webhook.events.sqs.maximumBatchingWindow
-        # 20 * 6 + 20 
+        # 20 * 6 + 20
         VisibilityTimeout: 140
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt WebhookSqsQueueDlq.Arn
@@ -302,7 +301,7 @@ resources:
 
     WebhookSqsQueueDlq:
       Type: AWS::SQS::Queue
-    
+
     ApiGatewayMethodWebhookPost:
       Type: AWS::ApiGateway::Method
       Properties:
@@ -327,47 +326,47 @@ resources:
     #         ValidationDomain: ${{self:custom.stageConfig.api.validationDomain, ''}}
 
     MainTable:
-        Type: AWS::DynamoDB::Table
-        # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
-        Properties:
-          BillingMode: PAY_PER_REQUEST
-          PointInTimeRecoverySpecification:
-            PointInTimeRecoveryEnabled: ${{self:custom.stageConfig.pointInTimeRecoveryEnabled, false}}
-          KeySchema:
-            - KeyType: HASH
-              AttributeName: pk
-            - KeyType: RANGE
-              AttributeName: sk
-          AttributeDefinitions:
-            - AttributeName: pk
-              AttributeType: S
-            - AttributeName: sk
-              AttributeType: S
-            - AttributeName: data
-              AttributeType: S
-          GlobalSecondaryIndexes:
-            - IndexName: GSI1
-              KeySchema:
-                - AttributeName: sk
-                  KeyType: HASH
-                - AttributeName: data
-                  KeyType: RANGE
-              Projection:
-                ProjectionType: ALL
+      Type: AWS::DynamoDB::Table
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: ${{self:custom.stageConfig.pointInTimeRecoveryEnabled, false}}
+        KeySchema:
+          - KeyType: HASH
+            AttributeName: pk
+          - KeyType: RANGE
+            AttributeName: sk
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+          - AttributeName: data
+            AttributeType: S
+        GlobalSecondaryIndexes:
+          - IndexName: GSI1
+            KeySchema:
+              - AttributeName: sk
+                KeyType: HASH
+              - AttributeName: data
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
 
     GameTable:
-        Type: AWS::DynamoDB::Table
-        # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
-        Properties:
-          BillingMode: PAY_PER_REQUEST
-          PointInTimeRecoverySpecification:
-            PointInTimeRecoveryEnabled: ${{self:custom.stageConfig.pointInTimeRecoveryEnabled, false}}
-          KeySchema:
-            - KeyType: HASH
-              AttributeName: id
-          AttributeDefinitions:
-            - AttributeName: id
-              AttributeType: S
+      Type: AWS::DynamoDB::Table
+      # DeletionPolicy: !If [RetainDataResources, 'Retain', 'Delete']
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: ${{self:custom.stageConfig.pointInTimeRecoveryEnabled, false}}
+        KeySchema:
+          - KeyType: HASH
+            AttributeName: id
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
 
     UserTable:
       Type: AWS::DynamoDB::Table
@@ -478,7 +477,7 @@ resources:
         IdentityPoolId: !Ref CognitoIdentityPool
         Roles:
           authenticated: !GetAtt CognitoUserRole.Arn
-    
+
     # Due to a Serverless Framework bug, we need to create our own Authorizer, instead of
     # simply specifying `authorizer.arn: !GetAtt CognitoUserPool.Arn` in the function.
     # https://github.com/serverless/serverless/issues/3212#issuecomment-450574093
@@ -494,12 +493,12 @@ resources:
         Type: COGNITO_USER_POOLS
         ProviderARNs:
           - !GetAtt CognitoUserPool.Arn
-    
+
     WebhookIamRoleLambdaExecution:
       Properties:
         ManagedPolicyArns:
           - 'arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy'
-    
+
     ExpressIamRoleLambdaExecution:
       Properties:
         ManagedPolicyArns:
@@ -528,15 +527,16 @@ resources:
               ComparisonOperator: GREATER_THAN
               Threshold: 95 # 2nd alert sent when % of Monthly total is spent.
             Subscribers:
-            - SubscriptionType: EMAIL
-              Address: ${{self:custom.stageConfig.alarms.notificationEmail}}
+              - SubscriptionType: EMAIL
+                Address: ${{self:custom.stageConfig.alarms.notificationEmail}}
 
     NoNotificationsSentAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
         Namespace: civ6-pbc
         MetricName: webhook-NOTIFICATION_SENT
-        AlarmDescription: No notifications have been sent in the past hour. There may be
+        AlarmDescription:
+          No notifications have been sent in the past hour. There may be
           something wrong with the Webhook service, or there may simply have been no turns
           taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
         Threshold: 1
@@ -554,7 +554,8 @@ resources:
       Properties:
         Namespace: civ6-pbc
         MetricName: express-GAME_CREATED
-        AlarmDescription: No games have been created in the past day. There may be
+        AlarmDescription:
+          No games have been created in the past day. There may be
           something wrong with the game create flow, or there may simply have been no games
           created. Review the Express Lambda Function's CloudWatch Logs and Metrics.
         Threshold: 1
