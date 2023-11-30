@@ -39,7 +39,7 @@ plugins:
   - serverless-stack-output
   - serverless-cloudside-plugin
   # - serverless-plugin-aws-alerts
-  - serverless-plugin-metric
+  # - serverless-plugin-metric
   - '@brettstack/serverless-amplify-plugin'
   - serverless-offline
   - serverless-stack-termination-protection
@@ -168,23 +168,23 @@ custom:
   #       threshold: 2
   #       period: 300
 
-  metrics:
-    - name: SKIP_INACTIVE
-      pattern: '{ $.message = "PROCESS_MESSAGE:SKIP_INACTIVE" }'
-      functions: [webhook]
-      namespace: ${{self:service}}
-    - name: GAME_MARKED_INACTIVE
-      pattern: '{ $.message = "GAME_CONTROLLER:GAME_MARKED_INACTIVE" }'
-      functions: [webhook]
-      namespace: ${{self:service}}
-    - name: NOTIFICATION_SENT
-      pattern: '{ $.message = "PROCESS_MESSAGE:NOTIFICATION_SENT" }'
-      functions: [webhook]
-      namespace: ${{self:service}}
-    - name: GAME_CREATED
-      pattern: '{ $.message = "GAME_CONTROLLER:GAME_CREATED" }'
-      functions: [express]
-      namespace: ${{self:service}}
+  # metrics:
+  #   - name: SKIP_INACTIVE
+  #     pattern: '{ $.message = "PROCESS_MESSAGE:SKIP_INACTIVE" }'
+  #     functions: [webhook]
+  #     namespace: ${{self:service}}
+  #   - name: GAME_MARKED_INACTIVE
+  #     pattern: '{ $.message = "GAME_CONTROLLER:GAME_MARKED_INACTIVE" }'
+  #     functions: [webhook]
+  #     namespace: ${{self:service}}
+  #   - name: NOTIFICATION_SENT
+  #     pattern: '{ $.message = "PROCESS_MESSAGE:NOTIFICATION_SENT" }'
+  #     functions: [webhook]
+  #     namespace: ${{self:service}}
+  #   - name: GAME_CREATED
+  #     pattern: '{ $.message = "GAME_CONTROLLER:GAME_CREATED" }'
+  #     functions: [express]
+  #     namespace: ${{self:service}}
 
   serverlessTerminationProtection:
     stages:
