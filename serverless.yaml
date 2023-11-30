@@ -143,30 +143,30 @@ custom:
 
   output:
     file: ./stack-outputs.${{self:provider.stage}}.json
-  alerts:
-    dashboards: false
-    nameTemplate: $[functionName]-$[metricName]-Alarm
-    topics:
-      alarm:
-        topic: ${{self:service}}-${{self:provider.stage}}-alarm
-        notifications:
-          - protocol: email
-            endpoint: ${{self:custom.stageConfig.alarms.notificationEmail}}
-    # TODO: Add short and long alarms for each
-    alarms:
-      # - functionThrottles
-      - functionErrors
-      - functionInvocations
-      - functionDuration
-    definitions:
-      functionDuration:
-        threshold: 2000
-        evaluationPeriods: 5
-        datapointsToAlarm: 5
-        statistic: p95
-      functionErrors:
-        threshold: 2
-        period: 300
+  # alerts:
+  #   dashboards: false
+  #   nameTemplate: $[functionName]-$[metricName]-Alarm
+  #   topics:
+  #     alarm:
+  #       topic: ${{self:service}}-${{self:provider.stage}}-alarm
+  #       notifications:
+  #         - protocol: email
+  #           endpoint: ${{self:custom.stageConfig.alarms.notificationEmail}}
+  #   # TODO: Add short and long alarms for each
+  #   alarms:
+  #     # - functionThrottles
+  #     - functionErrors
+  #     - functionInvocations
+  #     - functionDuration
+  #   definitions:
+  #     functionDuration:
+  #       threshold: 2000
+  #       evaluationPeriods: 5
+  #       datapointsToAlarm: 5
+  #       statistic: p95
+  #     functionErrors:
+  #       threshold: 2
+  #       period: 300
 
   metrics:
     - name: SKIP_INACTIVE
@@ -530,229 +530,229 @@ resources:
               - SubscriptionType: EMAIL
                 Address: ${{self:custom.stageConfig.alarms.notificationEmail}}
 
-    NoNotificationsSentAlarm:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        Namespace: civ6-pbc
-        MetricName: webhook-NOTIFICATION_SENT
-        AlarmDescription:
-          No notifications have been sent in the past hour. There may be
-          something wrong with the Webhook service, or there may simply have been no turns
-          taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
-        Threshold: 1
-        Period: 3600
-        EvaluationPeriods: 1
-        ComparisonOperator: LessThanThreshold
-        AlarmActions:
-          - !Ref AwsAlertsAlarm
-          - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:opsitem:2#CATEGORY=Availability
-        TreatMissingData: missing
-        Statistic: Sum
+    # NoNotificationsSentAlarm:
+    #   Type: AWS::CloudWatch::Alarm
+    #   Properties:
+    #     Namespace: civ6-pbc
+    #     MetricName: webhook-NOTIFICATION_SENT
+    #     AlarmDescription:
+    #       No notifications have been sent in the past hour. There may be
+    #       something wrong with the Webhook service, or there may simply have been no turns
+    #       taken. Review the Webhook Lambda Function's CloudWatch Logs and Metrics.
+    #     Threshold: 1
+    #     Period: 3600
+    #     EvaluationPeriods: 1
+    #     ComparisonOperator: LessThanThreshold
+    #     AlarmActions:
+    #       - !Ref AwsAlertsAlarm
+    #       - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:opsitem:2#CATEGORY=Availability
+    #     TreatMissingData: missing
+    #     Statistic: Sum
 
-    NoGamesCreatedAlarm:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        Namespace: civ6-pbc
-        MetricName: express-GAME_CREATED
-        AlarmDescription:
-          No games have been created in the past day. There may be
-          something wrong with the game create flow, or there may simply have been no games
-          created. Review the Express Lambda Function's CloudWatch Logs and Metrics.
-        Threshold: 1
-        Period: 86400
-        EvaluationPeriods: 1
-        ComparisonOperator: LessThanThreshold
-        AlarmActions:
-          - !Ref AwsAlertsAlarm
-          - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:opsitem:2#CATEGORY=Availability
-        TreatMissingData: missing
-        Statistic: Sum
+    # NoGamesCreatedAlarm:
+    #   Type: AWS::CloudWatch::Alarm
+    #   Properties:
+    #     Namespace: civ6-pbc
+    #     MetricName: express-GAME_CREATED
+    #     AlarmDescription:
+    #       No games have been created in the past day. There may be
+    #       something wrong with the game create flow, or there may simply have been no games
+    #       created. Review the Express Lambda Function's CloudWatch Logs and Metrics.
+    #     Threshold: 1
+    #     Period: 86400
+    #     EvaluationPeriods: 1
+    #     ComparisonOperator: LessThanThreshold
+    #     AlarmActions:
+    #       - !Ref AwsAlertsAlarm
+    #       - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:opsitem:2#CATEGORY=Availability
+    #     TreatMissingData: missing
+    #     Statistic: Sum
 
-    Dashboard:
-      Type: AWS::CloudWatch::Dashboard
-      Properties:
-        DashboardBody: !Sub |
-          {
-            "start": "-P10D",
-            "end": "P0D",
-            "widgets": [
-              {
-                  "type": "metric",
-                  "x": 0,
-                  "y": 9,
-                  "width": 6,
-                  "height": 6,
-                  "properties": {
-                      "metrics": [
-                          [ "civ6-pbc", "webhook-GAME_MARKED_INACTIVE", { "label": "Games marked inactive" } ],
-                          [ ".", "webhook-SKIP_INACTIVE", { "label": "Inactive games skipped" } ],
-                          [ "AWS/Lambda", "Errors", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
-                      ],
-                      "view": "timeSeries",
-                      "stacked": false,
-                      "region": "${AWS::Region}",
-                      "stat": "Sum",
-                      "period": 3600,
-                      "title": "Webhook"
-                  }
-              },
-              {
-                "type": "metric",
-                "x": 6,
-                "y": 9,
-                "width": 6,
-                "height": 6,
-                "properties": {
-                  "annotations": {
-                      "alarms": [
-                      "${WebhookFunctionDurationAlarm.Arn}"
-                      ]
-                  },
-                  "yAxis": {
-                    "left": {
-                      "min": 0
-                    }
-                  },
-                  "view": "timeSeries",
-                  "stacked": false,
-                  "region": "${AWS::Region}",
-                  "stat": "p90",
-                  "title": "Duration"
-                }
-              },
-              {
-                "type": "metric",
-                "x": 12,
-                "y": 9,
-                "width": 3,
-                "height": 6,
-                "properties": {
-                  "metrics": [
-                    [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq.QueueName}", { "label": "Number of messages" } ]
-                  ],
-                  "view": "timeSeries",
-                  "stacked": false,
-                  "region": "${AWS::Region}",
-                  "stat": "Maximum",
-                  "period": 3600,
-                  "title": "Webhook DLQ"
-                }
-              },
-              {
-                "type": "alarm",
-                "x": 18,
-                "y": 9,
-                "width": 6,
-                "height": 3,
-                "properties": {
-                  "title": "Alarms",
-                  "region": "${AWS::Region}",
-                  "alarms": [
-                      "${WebhookFunctionErrorsAlarm.Arn}",
-                      "${WebhookFunctionDurationAlarm.Arn}",
-                      "${ExpressFunctionErrorsAlarm.Arn}",
-                      "${ExpressFunctionDurationAlarm.Arn}"
-                  ]
-                }
-              },
-              {
-                "type": "metric",
-                "x": 0,
-                "y": 0,
-                "width": 7,
-                "height": 6,
-                "properties": {
-                  "annotations": {
-                      "alarms": [
-                        "${NoNotificationsSentAlarm.Arn}"
-                      ]
-                  },
-                  "yAxis": {
-                    "left": {
-                      "min": 0
-                    }
-                  },
-                  "view": "timeSeries",
-                  "stacked": false,
-                  "region": "${AWS::Region}",
-                  "stat": "Sum",
-                  "title": "Notifications sent"
-                }
-              },
-              {
-                "type": "metric",
-                "x": 7,
-                "y": 0,
-                "width": 3,
-                "height": 6,
-                "properties": {
-                  "annotations": {
-                      "alarms": [
-                          "${NoGamesCreatedAlarm.Arn}"
-                      ]
-                  },
-                  "yAxis": {
-                    "left": {
-                      "min": 0
-                    }
-                  },
-                  "view": "timeSeries",
-                  "stacked": false,
-                  "region": "${AWS::Region}",
-                  "stat": "Sum",
-                  "title": "Games created"
-                }
-              },
-              {
-                  "type": "metric",
-                  "x": 15,
-                  "y": 0,
-                  "width": 9,
-                  "height": 3,
-                  "properties": {
-                      "metrics": [
-                        [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "Today", "period": 86400 } ],
-                        [ "...", { "label": "This week", "period": 604800 } ],
-                        [ "...", { "label": "This month", "yAxis": "right", "period": 2678400 } ]
-                      ],
-                      "view": "singleValue",
-                      "stacked": false,
-                      "region": "${AWS::Region}",
-                      "stat": "Sum",
-                      "title": "Notifications sent",
-                      "start": "-P4W",
-                      "end": "P0D",
-                      "period": 2678400
-                  }
-              },
-              {
-                  "type": "log",
-                  "x": 15,
-                  "y": 3,
-                  "width": 3,
-                  "height": 3,
-                  "properties": {
-                      "query": "SOURCE '/aws/lambda/civ6-pbc-production-webhook' | FIELDS gameId\n| STATS count_distinct(gameId) as activeGames",
-                      "region": "${AWS::Region}",
-                      "title": "Active games",
-                      "view": "singleValue"
-                  }
-              },
-              {
-                  "type": "log",
-                  "x": 0,
-                  "y": 12,
-                  "width": 24,
-                  "height": 6,
-                  "properties": {
-                      "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | SOURCE '/aws/lambda/${ExpressLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY @ingestionTime, errorMessage, message",
-                      "region": "${AWS::Region}",
-                      "stacked": false,
-                      "view": "table"
-                  }
-              }
-            ]
-          }
+    # Dashboard:
+    #   Type: AWS::CloudWatch::Dashboard
+    #   Properties:
+    #     DashboardBody: !Sub |
+    #       {
+    #         "start": "-P10D",
+    #         "end": "P0D",
+    #         "widgets": [
+    #           {
+    #               "type": "metric",
+    #               "x": 0,
+    #               "y": 9,
+    #               "width": 6,
+    #               "height": 6,
+    #               "properties": {
+    #                   "metrics": [
+    #                       [ "civ6-pbc", "webhook-GAME_MARKED_INACTIVE", { "label": "Games marked inactive" } ],
+    #                       [ ".", "webhook-SKIP_INACTIVE", { "label": "Inactive games skipped" } ],
+    #                       [ "AWS/Lambda", "Errors", "FunctionName", "${WebhookLambdaFunction}", "Resource", "${WebhookLambdaFunction}" ]
+    #                   ],
+    #                   "view": "timeSeries",
+    #                   "stacked": false,
+    #                   "region": "${AWS::Region}",
+    #                   "stat": "Sum",
+    #                   "period": 3600,
+    #                   "title": "Webhook"
+    #               }
+    #           },
+    #           {
+    #             "type": "metric",
+    #             "x": 6,
+    #             "y": 9,
+    #             "width": 6,
+    #             "height": 6,
+    #             "properties": {
+    #               "annotations": {
+    #                   "alarms": [
+    #                   "${WebhookFunctionDurationAlarm.Arn}"
+    #                   ]
+    #               },
+    #               "yAxis": {
+    #                 "left": {
+    #                   "min": 0
+    #                 }
+    #               },
+    #               "view": "timeSeries",
+    #               "stacked": false,
+    #               "region": "${AWS::Region}",
+    #               "stat": "p90",
+    #               "title": "Duration"
+    #             }
+    #           },
+    #           {
+    #             "type": "metric",
+    #             "x": 12,
+    #             "y": 9,
+    #             "width": 3,
+    #             "height": 6,
+    #             "properties": {
+    #               "metrics": [
+    #                 [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${WebhookSqsQueueDlq.QueueName}", { "label": "Number of messages" } ]
+    #               ],
+    #               "view": "timeSeries",
+    #               "stacked": false,
+    #               "region": "${AWS::Region}",
+    #               "stat": "Maximum",
+    #               "period": 3600,
+    #               "title": "Webhook DLQ"
+    #             }
+    #           },
+    #           {
+    #             "type": "alarm",
+    #             "x": 18,
+    #             "y": 9,
+    #             "width": 6,
+    #             "height": 3,
+    #             "properties": {
+    #               "title": "Alarms",
+    #               "region": "${AWS::Region}",
+    #               "alarms": [
+    #                   "${WebhookFunctionErrorsAlarm.Arn}",
+    #                   "${WebhookFunctionDurationAlarm.Arn}",
+    #                   "${ExpressFunctionErrorsAlarm.Arn}",
+    #                   "${ExpressFunctionDurationAlarm.Arn}"
+    #               ]
+    #             }
+    #           },
+    #           {
+    #             "type": "metric",
+    #             "x": 0,
+    #             "y": 0,
+    #             "width": 7,
+    #             "height": 6,
+    #             "properties": {
+    #               "annotations": {
+    #                   "alarms": [
+    #                     "${NoNotificationsSentAlarm.Arn}"
+    #                   ]
+    #               },
+    #               "yAxis": {
+    #                 "left": {
+    #                   "min": 0
+    #                 }
+    #               },
+    #               "view": "timeSeries",
+    #               "stacked": false,
+    #               "region": "${AWS::Region}",
+    #               "stat": "Sum",
+    #               "title": "Notifications sent"
+    #             }
+    #           },
+    #           {
+    #             "type": "metric",
+    #             "x": 7,
+    #             "y": 0,
+    #             "width": 3,
+    #             "height": 6,
+    #             "properties": {
+    #               "annotations": {
+    #                   "alarms": [
+    #                       "${NoGamesCreatedAlarm.Arn}"
+    #                   ]
+    #               },
+    #               "yAxis": {
+    #                 "left": {
+    #                   "min": 0
+    #                 }
+    #               },
+    #               "view": "timeSeries",
+    #               "stacked": false,
+    #               "region": "${AWS::Region}",
+    #               "stat": "Sum",
+    #               "title": "Games created"
+    #             }
+    #           },
+    #           {
+    #               "type": "metric",
+    #               "x": 15,
+    #               "y": 0,
+    #               "width": 9,
+    #               "height": 3,
+    #               "properties": {
+    #                   "metrics": [
+    #                     [ "civ6-pbc", "webhook-NOTIFICATION_SENT", { "label": "Today", "period": 86400 } ],
+    #                     [ "...", { "label": "This week", "period": 604800 } ],
+    #                     [ "...", { "label": "This month", "yAxis": "right", "period": 2678400 } ]
+    #                   ],
+    #                   "view": "singleValue",
+    #                   "stacked": false,
+    #                   "region": "${AWS::Region}",
+    #                   "stat": "Sum",
+    #                   "title": "Notifications sent",
+    #                   "start": "-P4W",
+    #                   "end": "P0D",
+    #                   "period": 2678400
+    #               }
+    #           },
+    #           {
+    #               "type": "log",
+    #               "x": 15,
+    #               "y": 3,
+    #               "width": 3,
+    #               "height": 3,
+    #               "properties": {
+    #                   "query": "SOURCE '/aws/lambda/civ6-pbc-production-webhook' | FIELDS gameId\n| STATS count_distinct(gameId) as activeGames",
+    #                   "region": "${AWS::Region}",
+    #                   "title": "Active games",
+    #                   "view": "singleValue"
+    #               }
+    #           },
+    #           {
+    #               "type": "log",
+    #               "x": 0,
+    #               "y": 12,
+    #               "width": 24,
+    #               "height": 6,
+    #               "properties": {
+    #                   "query": "SOURCE '/aws/lambda/${WebhookLambdaFunction}' | SOURCE '/aws/lambda/${ExpressLambdaFunction}' | FIELDS @timestamp, @message\n| SORT @timestamp desc\n| FILTER @message LIKE /Invoke Error/ OR errorType = 'Error' OR level = 'error'\n| DISPLAY @ingestionTime, errorMessage, message",
+    #                   "region": "${AWS::Region}",
+    #                   "stacked": false,
+    #                   "view": "table"
+    #               }
+    #           }
+    #         ]
+    #       }
 
   Outputs:
     CognitoUserPoolId:
