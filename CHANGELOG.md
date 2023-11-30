@@ -1,3 +1,10 @@
+## [1.13.8](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.7...v1.13.8) (2023-11-30)
+
+
+### Bug Fixes
+
+* remove alarms ([6684b8b](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/commit/6684b8b55a4c1d53f52d72475690646e53853447))
+
 ## [1.13.7](https://github.com/brettstack/civ6-play-by-cloud-turn-notifier/compare/v1.13.6...v1.13.7) (2023-11-30)
 
 
