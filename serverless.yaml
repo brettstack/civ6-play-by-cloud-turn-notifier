@@ -38,7 +38,7 @@ plugins:
   - serverless-apigateway-service-proxy
   - serverless-stack-output
   - serverless-cloudside-plugin
-  - serverless-plugin-aws-alerts
+  # - serverless-plugin-aws-alerts
   - serverless-plugin-metric
   - '@brettstack/serverless-amplify-plugin'
   - serverless-offline
