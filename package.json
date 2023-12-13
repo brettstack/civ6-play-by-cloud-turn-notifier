@@ -5,6 +5,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
+    "serverless:doctor": "serverless doctor",
     "test": "cd packages/api && npm run test -- --coverage",
     "start:ui": "cd packages/ui && npm start",
     "start:ui:local-api": "REACT_APP_ApiEndpoint=http://localhost:4911 npm run start:ui",

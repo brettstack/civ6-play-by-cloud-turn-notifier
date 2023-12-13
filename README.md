@@ -48,7 +48,7 @@ Update the values in `packages/ui/.env.development` with the relevant values fro
 
 #### Sending a test request to the service
 
-1. Copy `.env.sample` to a `.env` file in the root directory and update it with your Discord Webhook URL
+1. Copy `.env.development.example` to a `.env.development` file and update it with your Discord Webhook URL
 2. Run `node packages/api/scripts/send-webhook-request.js`
 
 ### Setup

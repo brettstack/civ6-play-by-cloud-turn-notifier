@@ -14,3 +14,5 @@ stats.json
 coverage
 .webpack
 stack-outputs.*.json
+scripts/*.json
+scripts/*.jsons
