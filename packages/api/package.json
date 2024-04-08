@@ -8,7 +8,7 @@
     "test:watch": "npm run test -- --watch",
     "start:dev": "IS_OFFLINE=true serverless offline start",
     "package": "serverless package && zip -r api.zip .serverless serverless.yaml package.json package-lock.json",
-    "deploy": "sls deploy",
+    "deploy": "serverless deploy",
     "deploy-package": "serverless deploy --package .serverless",
     "sqs-lambda": "node_modules/.bin/babel-node --require dotenv/config scripts/sqs-lambda.js"
   },

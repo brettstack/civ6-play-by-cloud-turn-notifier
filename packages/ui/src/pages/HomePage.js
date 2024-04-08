@@ -32,19 +32,6 @@ function HomePage() {
     <Container className={classes.root}>
       <div className={classes.inner}>
         <h1>Civ 6 Play By Cloud</h1>
-        <div style={{ background: 'white', color: 'black', padding: '1rem' }}>
-          <h2>Made with <a href="https://codegenie.codes">Code Genie</a></h2>
-          <p>Starting a new software project? Check out Code Genie - a <a href="https://codegenie.codes">Full Stack App Generator</a> that generates source code based on your project's data model. Including:</p>
-          <ol>
-            <li>A React Next.js Web App hosted on Amplify Hosting</li>
-            <li>Serverless Express REST API running on API Gateway and Lambda</li>
-            <li>Cognito User Pools for Identity/Authentication</li>
-            <li>DynamoDB Database</li>
-            <li>Cloud Development Kit (CDK) for Infrastructure as Code (IAC)</li>
-            <li>Continuous Integration/Delivery (CI/CD) with GitHub Actions</li>
-            <li>And more!</li>
-          </ol>
-        </div>
         <p>
           <strong>Civilization 6 Play By Cloud</strong>
           {' '}
@@ -202,6 +189,19 @@ function HomePage() {
           {' '}
           <Link href="https://github.com/brettstack/civ6-play-by-cloud-turn-notifier" target="_blank" rel="noopener noreferrer">GitHub</Link>
         </p>
+        <div style={{ background: 'white', color: 'black', padding: '1rem' }}>
+          <h2>Made with <a href="https://codegenie.codes">Code Genie</a></h2>
+          <p>Starting a new software project? Check out Code Genie - a <a href="https://codegenie.codes">Full Stack App Generator</a> that generates source code based on your project's data model. Including:</p>
+          <ol>
+            <li>A React Next.js Web App hosted on Amplify Hosting</li>
+            <li>Serverless Express REST API running on API Gateway and Lambda</li>
+            <li>Cognito User Pools for Identity/Authentication</li>
+            <li>DynamoDB Database</li>
+            <li>Cloud Development Kit (CDK) for Infrastructure as Code (IAC)</li>
+            <li>Continuous Integration/Delivery (CI/CD) with GitHub Actions</li>
+            <li>And more!</li>
+          </ol>
+        </div>
       </div>
     </Container>
   )

@@ -28,7 +28,7 @@
     "eject": "react-scripts eject",
     "start-cloud-api": "react-scripts start",
     "package": "serverless package && zip -r ui.zip build .serverless serverless.yaml package.json package-lock.json",
-    "deploy": "sls deploy",
+    "deploy": "serverless deploy",
     "deploy-package": "serverless deploy --package .serverless"
   },
   "eslintConfig": {
